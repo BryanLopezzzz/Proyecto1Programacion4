@@ -1,0 +1,44 @@
+package org.example.progra4proyecto1.logic;
+
+import org.example.progra4proyecto1.data.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
+
+@Service("empresaService")
+public class EmpresaService {
+
+    @Autowired private EmpresaRepository empresaRepository;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
+
+    @Transactional
+    public void registrar(Empresa empresa, String correo, String clave) {
+        if (usuarioRepository.findByCorreo(correo).isPresent())
+            throw new IllegalArgumentException("El correo ya está registrado");
+
+        Usuario usuario = new Usuario();
+        usuario.setCorreo(correo);
+        usuario.setClave(passwordEncoder.encode(clave));
+        usuario.setRol(Usuario.Rol.EMPRESA);
+        usuario.setEstado(Usuario.Estado.PENDIENTE);
+        usuarioRepository.save(usuario);
+
+        empresa.setUsuario(usuario);
+        empresaRepository.save(empresa);
+    }
+
+    public Optional<Empresa> findByCorreo(String correo) {
+        return empresaRepository.findByUsuario_Correo(correo);
+    }
+
+    public Optional<Empresa> findById(Integer id) {
+        return empresaRepository.findById(id);
+    }
+
+    public Iterable<Empresa> findAll() {
+        return empresaRepository.findAll();
+    }
+}
