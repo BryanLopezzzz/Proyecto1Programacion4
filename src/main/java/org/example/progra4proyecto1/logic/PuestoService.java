@@ -20,7 +20,8 @@ public class PuestoService {
     @Transactional
     public void publicar(Puesto puesto, Empresa empresa,
                          List<Integer> caracteristicaIds, List<Integer> niveles, Integer monedaId) {
-        if (puestoRepository.existsDuplicado(empresa, puesto.getDescripcion(), null))
+        //Se cambia debido a lo "nuevo" de PuestoRepositorio
+        if (puestoRepository.existsByEmpresaAndDescripcionIgnoreCaseAndActivoTrue(empresa, puesto.getDescripcion()))
             throw new IllegalArgumentException("Ya existe un puesto activo con esa descripción");
 
         Moneda moneda = monedaRepository.findById(monedaId)
@@ -101,6 +102,9 @@ public class PuestoService {
 
     public List<Puesto> findByEmpresa(Empresa empresa) { return puestoRepository.findByEmpresaOrderByFechaRegistroDesc(empresa); }
     public Optional<Puesto> findById(Integer id) { return puestoRepository.findById(id); }
-    public List<Puesto> findTop5Publicos() { return puestoRepository.findTop5Publicos(); }
+    //Se cambia debido a lo "nuevo" de PuestoRepositorio
+    public List<Puesto> findTop5Publicos() {
+        return puestoRepository.findTop5ByTipoAndActivoTrueOrderByFechaRegistroDesc(Puesto.TipoPuesto.PUBLICO);
+    }
     public List<Puesto> findByMesYAnio(int mes, int anio) { return puestoRepository.findByMesYAnio(mes, anio); }
 }

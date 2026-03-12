@@ -23,6 +23,9 @@ public class Empresa {
     @NotBlank(message = "La localización es requerida")
     private String localizacion;
 
+    //Esto es para validar el formato del telefono, en oferente se hace igual/similar
+    @Pattern(regexp = "^\\+506 \\d{4} \\d{4}$",
+            message = "El teléfono debe tener el formato +506 XXXX XXXX")
     @NotBlank(message = "El teléfono es requerido")
     private String telefono;
 
