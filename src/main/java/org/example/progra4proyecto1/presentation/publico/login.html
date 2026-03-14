@@ -3,85 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Bolsa de Empleo</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #fdfafb;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
-        }
-        .box {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            border-top: 5px solid #831843;
-            box-shadow: 0 10px 15px -3px rgba(76, 5, 25, 0.08);
-            width: 360px;
-        }
-        .logo {
-            text-align: center; font-size: 22px; font-weight: 900;
-            color: #4c0519; margin-bottom: 4px;
-        }
-        .logo-sub {
-            text-align: center; color: #9f1239; font-size: 12px;
-            margin-bottom: 26px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        label {
-            display: block; margin-top: 14px; font-size: 13px; color: #4c0519; font-weight: 600;
-        }
-        input {
-            width: 100%; padding: 9px 10px; margin-top: 4px;
-            border: 1px solid #fecdd3; border-radius: 8px; font-size: 14px;
-            color: #2d0a0a;
-        }
-        input:focus { border-color: #831843; outline: none; }
-        button {
-            width: 100%; padding: 11px; margin-top: 24px;
-            background: #831843; color: white; border: none;
-            border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 800;
-            transition: 0.3s;
-        }
-        button:hover { background: #4c0519; }
-        .error {
-            color: #9f1239; font-size: 13px; margin-top: 10px; text-align: center;
-            background: #fff1f2; padding: 8px; border-radius: 6px;
-            border: 1px solid #fecdd3;
-        }
-        .info {
-            color: #166534; font-size: 13px; margin-top: 10px; text-align: center;
-            background: #f0fdf4; padding: 8px; border-radius: 6px;
-        }
-        .links { margin-top: 20px; text-align: center; font-size: 13px; }
-        .links a { color: #831843; text-decoration: none; font-weight: 600; }
-        .links a:hover { color: #4c0519; text-decoration: underline; }
-        .divider { color: #fecdd3; margin: 0 6px; }
-    </style>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
 </head>
-<body>
-<div class="box">
+<body class="centered">
+<div class="auth-box narrow">
     <div class="logo">🏢 BolsaEmpleo</div>
     <div class="logo-sub">Inicia sesión en tu cuenta</div>
 
-    <div class="error" th:if="${error}" th:text="${error}"></div>
-    <div class="info"  th:if="${param.registrado}">
+    <div class="alert-error" th:if="${error}" th:text="${error}"></div>
+    <div class="alert-success" th:if="${param.registrado}">
         Registro exitoso. Espere la aprobación del administrador.
     </div>
 
     <form method="post" th:action="@{/login}">
         <label>Usuario (correo)</label>
         <input type="email" name="correo" required placeholder="correo@ejemplo.com" autofocus/>
-
         <label>Contraseña</label>
         <input type="password" name="clave" required placeholder="••••••••"/>
-
-        <button type="submit">Entrar</button>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:24px">Entrar</button>
     </form>
 
-    <div class="links">
+    <div class="auth-links" style="margin-top:20px">
         <a th:href="@{/registro/empresa}">Registrar Empresa</a>
         <span class="divider">|</span>
         <a th:href="@{/registro/oferente}">Registrar Oferente</a>
-        <br><br>
     </div>
 </div>
 </body>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Empresa - Dashboard</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/empresa/dashboard}">Dashboard</a>
+        <a th:href="@{/empresa/puestos}">Mis puestos</a>
+        <a th:href="@{/empresa/puestos/nuevo}">Publicar puesto</a>
+    </div>
+    <div>
+        <span class="user-info" th:text="${empresa.usuario.correo}"></span>
+        <a th:href="@{/logout}" style="margin-left:14px">Salir</a>
+    </div>
+</nav>
+<div class="container">
+    <h1>Empresa - Dashboard</h1>
+    <p>Bienvenido, <strong th:text="${empresa.nombre}"></strong>. Desde aquí administrás tus puestos y buscás candidatos.</p>
+    <a class="btn btn-primary"   th:href="@{/empresa/puestos}">Ver mis puestos</a>
+    <a class="btn btn-secondary" th:href="@{/empresa/puestos/nuevo}">Publicar nuevo puesto</a>
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>

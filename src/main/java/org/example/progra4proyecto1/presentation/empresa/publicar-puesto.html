@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Publicar Puesto</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/empresa/dashboard}">Dashboard</a>
+        <a th:href="@{/empresa/puestos}">Mis puestos</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container-narrow">
+    <h2>Publicar Nuevo Puesto</h2>
+
+    <div class="alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <form method="post" th:action="@{/empresa/puestos/nuevo}">
+
+        <label>Descripción del puesto *</label>
+        <textarea name="descripcion" required
+                  placeholder="Descripción detallada del puesto..."></textarea>
+
+        <div class="row2">
+            <div>
+                <label>Salario (₡) *</label>
+                <input type="number" step="0.01" name="salario" required min="1"
+                       placeholder="Ej: 800000"/>
+            </div>
+            <div>
+                <label>Moneda *</label>
+                <select name="monedaId" required>
+                    <option value="">-- Seleccione --</option>
+                    <option th:each="m : ${monedas}" th:value="${m.id}"
+                            th:text="${m.nombre + ' (' + m.codigo + ')'}"></option>
+                </select>
+            </div>
+        </div>
+
+        <label>Tipo de publicación *</label>
+        <select name="tipo" required>
+            <option value="">-- Seleccione --</option>
+            <option value="PUBLICO">Público (visible para todos)</option>
+            <option value="PRIVADO">Privado (solo para oferentes registrados)</option>
+        </select>
+
+        <label>Características requeridas (marque y asigne nivel 1-5)</label>
+        <div class="arbol">
+            <div class="grupo" th:each="raiz : ${raices}">
+                <strong th:text="${raiz.nombre}"></strong>
+                <ul th:if="${raiz.hijos != null && !raiz.hijos.isEmpty()}">
+                    <li th:each="hijo : ${raiz.hijos}">
+                        <label>
+                            <input type="checkbox" name="caracteristicas" th:value="${hijo.id}"/>
+                            <span th:text="${hijo.nombre}"></span>
+                        </label>
+                        <select name="niveles" class="nivel-sel">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <ul th:if="${hijo.hijos != null && !hijo.hijos.isEmpty()}" style="padding-left:14px;margin-top:4px">
+                            <li th:each="nieto : ${hijo.hijos}">
+                                <label>
+                                    <input type="checkbox" name="caracteristicas" th:value="${nieto.id}"/>
+                                    <span th:text="${nieto.nombre}"></span>
+                                </label>
+                                <select name="niveles" class="nivel-sel">
+                                    <option value="1">1</option><option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option><option value="5">5</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Publicar Puesto</button>
+    </form>
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>

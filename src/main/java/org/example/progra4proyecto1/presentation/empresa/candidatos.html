@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidatos para el Puesto</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/empresa/dashboard}">Dashboard</a>
+        <a th:href="@{/empresa/puestos}">Mis puestos</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container">
+    <h2>Candidatos para el puesto</h2>
+    <p>Puesto: <strong th:text="${puesto.descripcion}"></strong></p>
+
+    <table th:if="${!#lists.isEmpty(candidatos)}">
+        <thead>
+        <tr>
+            <th>Oferente</th>
+            <th>Requisitos cumplidos</th>
+            <th>% Coincidencia</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${candidatos}">
+            <td th:text="${c.oferente.nombre + ' ' + c.oferente.primerApellido}"></td>
+            <td th:text="${c.requisitosCumplidos + ' / ' + c.requisitosTotal}"></td>
+            <td>
+                <div class="bar-wrap">
+                    <div class="bar-outer">
+                        <div class="bar-inner"
+                             th:style="'width:' + ${c.porcentajeCoincidencia} + '%'">
+                        </div>
+                    </div>
+                    <span class="bar-label"
+                          th:text="${#numbers.formatDecimal(c.porcentajeCoincidencia, 1, 2) + '%'}">
+                    </span>
+                </div>
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm"
+                   th:href="@{/empresa/candidatos/{id}(id=${c.oferente.id})}">
+                    Ver detalle
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p class="empty" th:if="${#lists.isEmpty(candidatos)}">No se encontraron candidatos para este puesto.</p>
+    <br/>
+    <a class="btn btn-outline" th:href="@{/empresa/puestos}">← Volver a mis puestos</a>
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>

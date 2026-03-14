@@ -3,39 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Oferente - Dashboard</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #fdfafb; color: #2d0a0a; }
-        nav {
-            background: #4c0519; padding: 15px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        nav .brand { color: #fff1f2; font-weight: 800; font-size: 20px; }
-        nav a { color: #fecdd3; text-decoration: none; font-size: 13px; margin-left: 20px; }
-        nav a:hover { color: white; }
-        .container { padding: 40px 10%; }
-        h1 { color: #4c0519; font-size: 30px; font-weight: 900; margin-bottom: 8px; }
-        p  { color: #9f1239; font-size: 14px; margin-bottom: 28px; }
-        .grid { display: flex; gap: 16px; flex-wrap: wrap; }
-        .card-btn {
-            display: block; width: 190px; padding: 24px 16px;
-            border-radius: 12px; text-decoration: none; color: white;
-            text-align: center; font-size: 15px; font-weight: 800;
-            border-top: 4px solid rgba(255,255,255,0.2);
-            box-shadow: 0 10px 15px -3px rgba(76, 5, 25, 0.1);
-            transition: 0.3s;
-        }
-        .card-btn:hover { transform: translateY(-4px); opacity: .9; }
-        .c1 { background: #831843; }
-        .c2 { background: #9f1239; }
-        .c3 { background: #4c0519; }
-        footer {
-            background: #4c0519; color: #fecdd3;
-            padding: 30px 40px; margin-top: 60px;
-            display: flex; justify-content: space-between; font-size: 12px;
-        }
-        footer strong { color: white; }
-    </style>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
 </head>
 <body>
 <nav>
@@ -47,14 +15,14 @@
         <a th:href="@{/oferente/puestos}">Buscar puestos</a>
     </div>
     <div>
-        <span style="color:#fecdd3; font-size:13px" th:text="${oferente.usuario.correo}"></span>
+        <span class="user-info" th:text="${oferente.usuario.correo}"></span>
         <a th:href="@{/logout}" style="margin-left:16px">Salir</a>
     </div>
 </nav>
 <div class="container">
     <h1>Bienvenido</h1>
     <p th:text="'Hola, ' + ${oferente.nombre} + ' ' + ${oferente.primerApellido} + '. Administrá tus habilidades y tu CV.'"></p>
-    <div class="grid">
+    <div class="card-grid">
         <a class="card-btn c1" th:href="@{/oferente/habilidades}">Mis habilidades</a>
         <a class="card-btn c2" th:href="@{/oferente/cv}">Mi CV</a>
         <a class="card-btn c3" th:href="@{/oferente/puestos}">Buscar puestos</a>

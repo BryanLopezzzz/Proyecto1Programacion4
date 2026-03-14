@@ -3,56 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Mi CV</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #fdfafb; color: #2d0a0a; }
-        nav {
-            background: #4c0519; padding: 15px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        nav .brand { color: #fff1f2; font-weight: 800; font-size: 20px; }
-        nav a { color: #fecdd3; text-decoration: none; font-size: 13px; margin-left: 20px; }
-        nav a:hover { color: white; }
-        .container { padding: 40px 10%; max-width: 560px; }
-        h2 { color: #4c0519; font-size: 26px; font-weight: 900; margin-bottom: 22px; }
-        .card {
-            background: white; border-radius: 12px; padding: 28px;
-            border-top: 5px solid #831843;
-            box-shadow: 0 10px 15px -3px rgba(76, 5, 25, 0.06);
-        }
-        .alert-error {
-            color: #9f1239; background: #fff1f2; padding: 10px; border-radius: 8px;
-            margin-bottom: 14px; font-size: 13px; border: 1px solid #fecdd3;
-        }
-        .cv-actual {
-            background: #fff1f2; border: 1px solid #fecdd3;
-            border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 13px;
-        }
-        .cv-actual strong { color: #831843; }
-        label { display: block; font-size: 13px; color: #4c0519; font-weight: 600; margin-bottom: 8px; }
-        input[type=file] {
-            width: 100%; padding: 8px; border: 1px solid #fecdd3;
-            border-radius: 8px; font-size: 13px; background: white; color: #2d0a0a;
-        }
-        .btn {
-            display: inline-block; padding: 10px 22px; border: none;
-            border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 800;
-            color: white; text-decoration: none; margin-right: 8px; margin-top: 16px; transition: 0.3s;
-        }
-        .btn-main { background: #831843; }
-        .btn-main:hover { background: #4c0519; }
-        .btn-outline {
-            background: transparent; color: #831843;
-            border: 2px solid #831843;
-        }
-        .btn-outline:hover { background: #831843; color: white; }
-        footer {
-            background: #4c0519; color: #fecdd3;
-            padding: 30px 40px; margin-top: 60px;
-            display: flex; justify-content: space-between; font-size: 12px;
-        }
-        footer strong { color: white; }
-    </style>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
 </head>
 <body>
 <nav>
@@ -65,7 +16,7 @@
     </div>
     <div><a th:href="@{/logout}">Salir</a></div>
 </nav>
-<div class="container">
+<div class="container-narrow">
     <h2>Mi Currículum (CV)</h2>
     <div class="card">
         <div class="alert-error" th:if="${error}" th:text="${error}"></div>
@@ -82,7 +33,7 @@
         <form method="post" th:action="@{/oferente/cv/subir}" enctype="multipart/form-data">
             <label>Subir nuevo CV (solo PDF, máx. 5MB)</label>
             <input type="file" name="archivo" accept=".pdf" required/>
-            <button type="submit" class="btn btn-main">Subir CV</button>
+            <button type="submit" class="btn btn-primary">Subir CV</button>
         </form>
     </div>
 </div>

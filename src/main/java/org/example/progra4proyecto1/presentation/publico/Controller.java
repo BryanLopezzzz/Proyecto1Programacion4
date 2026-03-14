@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+//Bryan hizo un cambio en el html de registro, los cambios AQUÍ fueron
+//quitar @Valid, BindingResult y @ModelAttribute, reemplazarlos por @RequestParam individuales
+//para cada campo, construir el objeto manualmente antes de llamar al service, y agregar la
+//validación del teléfono. El GET ya no necesita mandar objeto al model porque el HTML no tiene th:object.
+
 @Controller
 public class Controller {
 
@@ -20,7 +25,6 @@ public class Controller {
     @Autowired private EmpresaService empresaService;
     @Autowired private OferenteService oferenteService;
     @Autowired private CaracteristicaRepository caracteristicaRepository;
-    @Autowired private MonedaRepository monedaRepository;
 
     @GetMapping("/")
     public String inicio(Model model) {
@@ -31,7 +35,6 @@ public class Controller {
     @GetMapping("/buscar")
     public String buscarForm(Model model) {
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
-        model.addAttribute("monedas", monedaRepository.findAll());
         model.addAttribute("resultados", List.of());
         return "/presentation/publico/buscar";
     }
@@ -42,7 +45,6 @@ public class Controller {
             @RequestParam(value = "modoTodos", defaultValue = "false") boolean modoTodos,
             Model model) {
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
-        model.addAttribute("monedas", monedaRepository.findAll());
         model.addAttribute("resultados", puestoService.buscarPublicos(ids, modoTodos));
         model.addAttribute("seleccionadas", ids);
         model.addAttribute("modoTodos", modoTodos);
@@ -55,37 +57,92 @@ public class Controller {
         return "/presentation/publico/login";
     }
 
+    // ---- EMPRESA ----
+
     @GetMapping("/registro/empresa")
-    public String regEmpresaForm(Model model) {
-        model.addAttribute("empresa", new Empresa());
+    public String regEmpresaForm() {
         return "/presentation/publico/registro-empresa";
     }
 
     @PostMapping("/registro/empresa")
     public String regEmpresaGuardar(
-            @Valid @ModelAttribute("empresa") Empresa empresa, BindingResult result,
-            @RequestParam String correo, @RequestParam String clave, @RequestParam String clave2, Model model) {
-        if (result.hasErrors()) return "/presentation/publico/registro-empresa";
-        if (!clave.equals(clave2)) { model.addAttribute("errorClave", "Las claves no coinciden"); return "/presentation/publico/registro-empresa"; }
-        try { empresaService.registrar(empresa, correo, clave); }
-        catch (IllegalArgumentException e) { model.addAttribute("errorGeneral", e.getMessage()); return "/presentation/publico/registro-empresa"; }
+            @RequestParam String nombre,
+            @RequestParam String correo,
+            @RequestParam String clave,
+            @RequestParam String clave2,
+            @RequestParam String localizacion,
+            @RequestParam String telefono,
+            @RequestParam String descripcion,
+            Model model) {
+
+        if (!clave.equals(clave2)) {
+            model.addAttribute("errorClave", "Las claves no coinciden");
+            return "/presentation/publico/registro-empresa";
+        }
+        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+            return "/presentation/publico/registro-empresa";
+        }
+
+        Empresa empresa = new Empresa();
+        empresa.setNombre(nombre);
+        empresa.setLocalizacion(localizacion);
+        empresa.setTelefono(telefono);
+        empresa.setDescripcion(descripcion);
+
+        try {
+            empresaService.registrar(empresa, correo, clave);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorGeneral", e.getMessage());
+            return "/presentation/publico/registro-empresa";
+        }
         return "redirect:/login?registrado=true";
     }
 
+    // ---- OFERENTE ----
+
     @GetMapping("/registro/oferente")
-    public String regOferenteForm(Model model) {
-        model.addAttribute("oferente", new Oferente());
+    public String regOferenteForm() {
         return "/presentation/publico/registro-oferente";
     }
 
     @PostMapping("/registro/oferente")
     public String regOferenteGuardar(
-            @Valid @ModelAttribute("oferente") Oferente oferente, BindingResult result,
-            @RequestParam String correo, @RequestParam String clave, @RequestParam String clave2, Model model) {
-        if (result.hasErrors()) return "/presentation/publico/registro-oferente";
-        if (!clave.equals(clave2)) { model.addAttribute("errorClave", "Las claves no coinciden"); return "/presentation/publico/registro-oferente"; }
-        try { oferenteService.registrar(oferente, correo, clave); }
-        catch (IllegalArgumentException e) { model.addAttribute("errorGeneral", e.getMessage()); return "/presentation/publico/registro-oferente"; }
+            @RequestParam String identificacion,
+            @RequestParam String nombre,
+            @RequestParam String primerApellido,
+            @RequestParam String nacionalidad,
+            @RequestParam String correo,
+            @RequestParam String clave,
+            @RequestParam String clave2,
+            @RequestParam String telefono,
+            @RequestParam String residencia,
+            Model model) {
+
+        if (!clave.equals(clave2)) {
+            model.addAttribute("errorClave", "Las claves no coinciden");
+            return "/presentation/publico/registro-oferente";
+        }
+        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+            return "/presentation/publico/registro-oferente";
+        }
+
+        Oferente oferente = new Oferente();
+        oferente.setIdentificacion(identificacion);
+        oferente.setNombre(nombre);
+        oferente.setPrimerApellido(primerApellido);
+        oferente.setNacionalidad(nacionalidad);
+        oferente.setTelefono(telefono);
+        oferente.setResidencia(residencia);
+
+        try {
+            oferenteService.registrar(oferente, correo, clave);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorGeneral", e.getMessage());
+            return "/presentation/publico/registro-oferente";
+        }
         return "redirect:/login?registrado=true";
     }
 } */
+

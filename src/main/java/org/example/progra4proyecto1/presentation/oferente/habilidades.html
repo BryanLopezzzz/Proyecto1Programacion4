@@ -3,54 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Mis Habilidades</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #fdfafb; color: #2d0a0a; }
-        nav {
-            background: #4c0519; padding: 15px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        nav .brand { color: #fff1f2; font-weight: 800; font-size: 20px; }
-        nav a { color: #fecdd3; text-decoration: none; font-size: 13px; margin-left: 20px; }
-        nav a:hover { color: white; }
-        .container { padding: 40px 10%; display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
-        h2, h3 { color: #4c0519; margin-bottom: 16px; font-weight: 900; }
-        .panel {
-            background: white; border-radius: 12px; padding: 24px;
-            border-top: 5px solid #831843;
-            box-shadow: 0 10px 15px -3px rgba(76, 5, 25, 0.06);
-        }
-        .panel-left  { flex: 1; min-width: 320px; }
-        .panel-right { min-width: 260px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #4c0519; color: #fff1f2; padding: 10px 14px; text-align: left; font-size: 13px; }
-        td { padding: 10px 14px; border-bottom: 1px solid #fff1f2; font-size: 13px; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #fff1f2; }
-        .nivel-badge {
-            display: inline-block; width: 30px; height: 30px; line-height: 30px;
-            text-align: center; border-radius: 50%;
-            background: #831843; color: white; font-weight: 900; font-size: 13px;
-        }
-        label { display: block; font-size: 13px; color: #4c0519; font-weight: 600; margin-top: 14px; }
-        select, input[type=number] {
-            width: 100%; padding: 8px 10px; margin-top: 4px;
-            border: 1px solid #fecdd3; border-radius: 8px; font-size: 14px; color: #2d0a0a;
-        }
-        select:focus, input:focus { border-color: #831843; outline: none; }
-        .btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; color: white; font-weight: 700; transition: 0.3s; }
-        .btn-add { background: #831843; margin-top: 16px; }
-        .btn-add:hover { background: #4c0519; }
-        .btn-del { background: transparent; color: #9f1239; border: 1px solid #fecdd3; font-size: 13px; }
-        .btn-del:hover { background: #9f1239; color: white; }
-        .empty { color: #9f1239; font-style: italic; font-size: 13px; margin-top: 10px; }
-        footer {
-            background: #4c0519; color: #fecdd3;
-            padding: 30px 40px; margin-top: 60px;
-            display: flex; justify-content: space-between; font-size: 12px;
-        }
-        footer strong { color: white; }
-    </style>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
 </head>
 <body>
 <nav>
@@ -63,9 +16,9 @@
     </div>
     <div><a th:href="@{/logout}">Salir</a></div>
 </nav>
-<div class="container">
+<div class="container panels">
 
-    <div class="panel panel-left">
+    <div class="card panel-left">
         <h2>Mis Habilidades</h2>
         <table th:if="${!#lists.isEmpty(habilidades)}">
             <thead>
@@ -78,7 +31,7 @@
                 <td>
                     <form method="post"
                           th:action="@{/oferente/habilidades/eliminar/{id}(id=${h.caracteristica.id})}">
-                        <button type="submit" class="btn btn-del">✕ Eliminar</button>
+                        <button type="submit" class="btn btn-outline btn-sm">✕ Eliminar</button>
                     </form>
                 </td>
             </tr>
@@ -87,7 +40,7 @@
         <p class="empty" th:if="${#lists.isEmpty(habilidades)}">No has registrado habilidades aún.</p>
     </div>
 
-    <div class="panel panel-right">
+    <div class="card panel-right">
         <h3>Agregar Habilidad</h3>
         <form method="post" th:action="@{/oferente/habilidades/agregar}">
             <label>Característica</label>
@@ -100,11 +53,9 @@
                     </option>
                 </optgroup>
             </select>
-
             <label>Nivel (1-5)</label>
             <input type="number" name="nivel" min="1" max="5" value="3"/>
-
-            <button type="submit" class="btn btn-add">Agregar habilidad</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:16px">Agregar habilidad</button>
         </form>
     </div>
 
