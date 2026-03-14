@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Empresa - Bolsa de Empleo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #fdfafb;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .box {
+            background: white; padding: 40px; border-radius: 12px;
+            border-top: 5px solid #831843;
+            box-shadow: 0 10px 15px -3px rgba(76, 5, 25, 0.08);
+            width: 480px;
+        }
+        h2 { color: #4c0519; text-align: center; margin-bottom: 22px; font-weight: 900; font-size: 22px; }
+        label { display: block; margin-top: 14px; font-size: 13px; color: #4c0519; font-weight: 600; }
+        input, textarea {
+            width: 100%; padding: 9px 10px; margin-top: 4px;
+            border: 1px solid #fecdd3; border-radius: 8px; font-size: 14px; color: #2d0a0a;
+        }
+        input:focus, textarea:focus { border-color: #831843; outline: none; }
+        textarea { height: 90px; resize: vertical; }
+        .field-error { color: #9f1239; font-size: 12px; margin-top: 3px; }
+        .alert-error {
+            color: #9f1239; background: #fff1f2; padding: 10px; border-radius: 8px;
+            margin-bottom: 14px; font-size: 13px; border: 1px solid #fecdd3;
+        }
+        button {
+            width: 100%; padding: 11px; margin-top: 22px;
+            background: #831843; color: white; border: none;
+            border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 800; transition: 0.3s;
+        }
+        button:hover { background: #4c0519; }
+        .links { text-align: center; margin-top: 16px; font-size: 13px; }
+        .links a { color: #831843; text-decoration: none; font-weight: 600; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>Registro de Empresa</h2>
+
+    <div class="alert-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></div>
+
+    <form method="post" th:action="@{/registro/empresa}" th:object="${empresa}">
+        <label>Nombre de la empresa *</label>
+        <input type="text" th:field="*{nombre}" required placeholder="Ej: TechCorp S.A."/>
+        <span class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+
+        <label>Correo electrónico *</label>
+        <input type="email" name="correo" required placeholder="contacto@empresa.com"/>
+
+        <label>Contraseña *</label>
+        <input type="password" name="clave" required minlength="6" placeholder="Mínimo 6 caracteres"/>
+
+        <label>Confirmar contraseña *</label>
+        <input type="password" name="clave2" required minlength="6" placeholder="Repetir contraseña"/>
+        <span class="field-error" th:if="${errorClave}" th:text="${errorClave}"></span>
+
+        <label>Localización *</label>
+        <input type="text" th:field="*{localizacion}" required placeholder="San José, Costa Rica"/>
+        <span class="field-error" th:if="${#fields.hasErrors('localizacion')}" th:errors="*{localizacion}"></span>
+
+        <label>Teléfono *</label>
+        <input type="text" th:field="*{telefono}" required placeholder="2222-3333"/>
+        <span class="field-error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+
+        <label>Descripción *</label>
+        <textarea th:field="*{descripcion}" required placeholder="Descripción de la empresa..."></textarea>
+        <span class="field-error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></span>
+
+        <button type="submit">Registrar Empresa</button>
+    </form>
+
+    <div class="links">
+        <a th:href="@{/login}">Ya tengo cuenta → Iniciar sesión</a>
+    </div>
+</div>
+</body>
+</html>

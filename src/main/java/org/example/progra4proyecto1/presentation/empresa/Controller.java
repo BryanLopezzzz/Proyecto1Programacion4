@@ -1,4 +1,4 @@
-package org.example.progra4proyecto1.presentation.empresa;
+/*package org.example.progra4proyecto1.presentation.empresa;
 
 import org.example.progra4proyecto1.data.CaracteristicaRepository;
 import org.example.progra4proyecto1.data.MonedaRepository;
@@ -88,4 +88,4 @@ public class Controller {
         model.addAttribute("habilidades", oferenteService.getHabilidades(oferente));
         return "/presentation/empresa/detalle-candidato";
     }
-}
+} */

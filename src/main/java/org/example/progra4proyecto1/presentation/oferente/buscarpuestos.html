@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Puestos</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #fdfafb; color: #2d0a0a; }
+        nav {
+            background: #4c0519; padding: 15px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        nav .brand { color: #fff1f2; font-weight: 800; font-size: 20px; }
+        nav a { color: #fecdd3; text-decoration: none; font-size: 13px; margin-left: 20px; }
+        nav a:hover { color: white; }
+        .container { padding: 40px 10%; max-width: 960px; }
+        h2 { color: #4c0519; font-size: 26px; font-weight: 900; margin-bottom: 20px; }
+        h3 { color: #4c0519; font-size: 18px; font-weight: 800; margin-bottom: 12px; }
+        .arbol {
+            border: 1px solid #fecdd3; padding: 16px; border-radius: 12px;
+            max-height: 260px; overflow-y: auto; background: #fff1f2; margin-bottom: 16px;
+        }
+        .arbol > div { margin-bottom: 10px; }
+        .arbol ul { list-style: none; padding-left: 20px; margin-top: 4px; }
+        .arbol li { margin: 5px 0; }
+        .arbol label { font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: #4c0519; }
+        .arbol input[type=checkbox] { accent-color: #831843; cursor: pointer; }
+        .modo {
+            margin: 14px 0 18px; font-size: 14px;
+            display: flex; gap: 24px; align-items: center; color: #4c0519;
+        }
+        .modo strong { color: #4c0519; }
+        .modo label { cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .modo input[type=radio] { accent-color: #831843; }
+        .btns { display: flex; gap: 10px; margin-bottom: 28px; }
+        .btn {
+            padding: 9px 22px; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 14px; font-weight: 800; transition: 0.3s;
+        }
+        .btn-buscar { background: #831843; color: white; }
+        .btn-buscar:hover { background: #4c0519; }
+        .btn-limpiar {
+            background: transparent; color: #831843;
+            border: 2px solid #831843; text-decoration: none; display: inline-block;
+        }
+        .btn-limpiar:hover { background: #831843; color: white; }
+        table {
+            width: 100%; border-collapse: collapse; background: white;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(76, 5, 25, 0.06);
+        }
+        th { background: #4c0519; color: #fff1f2; padding: 11px 14px; text-align: left; font-size: 13px; }
+        td { padding: 11px 14px; border-bottom: 1px solid #fff1f2; font-size: 13px; color: #2d0a0a; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fff1f2; }
+        .tipo-badge {
+            padding: 3px 10px; border-radius: 12px;
+            font-size: 11px; color: white; font-weight: 700;
+        }
+        .publico  { background: #831843; }
+        .privado  { background: #4c0519; }
+        .empty { color: #9f1239; font-style: italic; margin-top: 14px; font-size: 14px; }
+        footer {
+            background: #4c0519; color: #fecdd3;
+            padding: 30px 40px; margin-top: 60px;
+            display: flex; justify-content: space-between; font-size: 12px;
+        }
+        footer strong { color: white; }
+    </style>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/oferente/dashboard}">Dashboard</a>
+        <a th:href="@{/oferente/habilidades}">Mis habilidades</a>
+        <a th:href="@{/oferente/cv}">Mi CV</a>
+        <a th:href="@{/oferente/puestos}">Buscar puestos</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container">
+    <h2>Buscar Puestos Disponibles</h2>
+
+    <form method="get" th:action="@{/oferente/puestos}">
+        <div class="arbol">
+            <div th:each="raiz : ${raices}">
+                <label>
+                    <input type="checkbox" name="caracteristicas" th:value="${raiz.id}"
+                           th:checked="${seleccionadas != null && seleccionadas.contains(raiz.id)}"/>
+                    <strong th:text="${raiz.nombre}"></strong>
+                </label>
+                <ul th:if="${raiz.hijos != null && !raiz.hijos.isEmpty()}">
+                    <li th:each="hijo : ${raiz.hijos}">
+                        <label>
+                            <input type="checkbox" name="caracteristicas" th:value="${hijo.id}"
+                                   th:checked="${seleccionadas != null && seleccionadas.contains(hijo.id)}"/>
+                            <span th:text="${hijo.nombre}"></span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="modo">
+            <strong>Modo:</strong>
+            <label>
+                <input type="radio" name="modoTodos" value="true"
+                       th:checked="${modoTodos != null && modoTodos}"/>
+                Todos (AND)
+            </label>
+            <label>
+                <input type="radio" name="modoTodos" value="false"
+                       th:checked="${modoTodos == null || !modoTodos}"/>
+                Cualquiera (OR)
+            </label>
+        </div>
+
+        <div class="btns">
+            <button type="submit" class="btn btn-buscar">Buscar</button>
+            <a class="btn btn-limpiar" th:href="@{/oferente/puestos}">Limpiar</a>
+        </div>
+    </form>
+
+    <h3>Resultados</h3>
+
+    <table th:if="${resultados != null && !#lists.isEmpty(resultados)}">
+        <thead>
+        <tr>
+            <th>Empresa</th>
+            <th>Descripción</th>
+            <th>Salario</th>
+            <th>Moneda</th>
+            <th>Tipo</th>
+            <th>Características</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${resultados}">
+            <td th:text="${p.empresa.nombre}"></td>
+            <td th:text="${#strings.abbreviate(p.descripcion, 60)}"></td>
+            <td th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td th:text="${p.moneda.codigo}"></td>
+            <td>
+                    <span class="tipo-badge"
+                          th:classappend="${p.tipo.name() == 'PUBLICO'} ? 'publico' : 'privado'"
+                          th:text="${p.tipo}">
+                    </span>
+            </td>
+            <td>
+                    <span th:each="c, i : ${p.caracteristicas}"
+                          th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (i.last ? '' : ', ')}">
+                    </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p class="empty" th:if="${resultados == null || #lists.isEmpty(resultados)}">
+        No se encontraron puestos.
+    </p>
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>
