@@ -2,7 +2,7 @@ package org.example.progra4proyecto1.logic;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
-import com.una.bolsaempleo.data.PuestoRepository;
+import org.example.progra4proyecto1.data.PuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
