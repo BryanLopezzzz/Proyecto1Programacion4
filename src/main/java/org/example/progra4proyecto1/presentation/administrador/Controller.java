@@ -1,4 +1,4 @@
-package org.example.progra4proyecto1.presentation.admin;
+package org.example.progra4proyecto1.presentation.administrador;
 
 /**
  * import com.una.bolsaempleo.logic.*;

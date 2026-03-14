@@ -1,6 +1,6 @@
 package org.example.progra4proyecto1.logic;
 
-import com.una.bolsaempleo.data.*;
+import org.example.progra4proyecto1.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
