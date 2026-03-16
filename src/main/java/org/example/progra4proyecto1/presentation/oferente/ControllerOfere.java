@@ -32,7 +32,7 @@ public class ControllerOfere {
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         model.addAttribute("oferente", getOferente(principal));
-        return "/presentation/oferente/dashboard";
+        return "presentation/oferente/dashboard";
     }
 
     @GetMapping("/habilidades")
@@ -41,7 +41,7 @@ public class ControllerOfere {
         model.addAttribute("oferente", oferente);
         model.addAttribute("habilidades", oferenteService.getHabilidades(oferente));
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
-        return "/presentation/oferente/habilidades";
+        return "presentation/oferente/habilidades";
     }
 
     @PostMapping("/habilidades/agregar")
@@ -59,7 +59,7 @@ public class ControllerOfere {
     @GetMapping("/cv")
     public String cvForm(Model model, Principal principal) {
         model.addAttribute("oferente", getOferente(principal));
-        return "/presentation/oferente/cv";
+        return "presentation/oferente/cv";
     }
 
     @PostMapping("/cv/subir")
@@ -67,7 +67,7 @@ public class ControllerOfere {
         if (archivo.isEmpty() || !archivo.getOriginalFilename().endsWith(".pdf")) {
             model.addAttribute("error", "Solo se permiten archivos PDF");
             model.addAttribute("oferente", getOferente(principal));
-            return "/presentation/oferente/cv";
+            return "presentation/oferente/cv";
         }
         try {
             String nombre = UUID.randomUUID() + "_" + archivo.getOriginalFilename();
@@ -79,7 +79,7 @@ public class ControllerOfere {
             oferenteService.guardar(o);
         } catch (IOException e) {
             model.addAttribute("error", "Error al subir archivo");
-            return "/presentation/oferente/cv";
+            return "presentation/oferente/cv";
         }
         return "redirect:/oferente/dashboard";
     }
@@ -92,6 +92,6 @@ public class ControllerOfere {
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
         model.addAttribute("seleccionadas", caracteristicas);
         model.addAttribute("modoTodos", modoTodos);
-        return "/presentation/oferente/buscar-puestos";
+        return "presentation/oferente/buscar-puestos";
     }
 }

@@ -28,13 +28,13 @@ public class ControllerEmpre {
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         model.addAttribute("empresa", getEmpresa(principal));
-        return "/presentation/empresa/dashboard";
+        return "presentation/empresa/dashboard";
     }
 
     @GetMapping("/puestos")
     public String misPuestos(Model model, Principal principal) {
         model.addAttribute("puestos", puestoService.findByEmpresa(getEmpresa(principal)));
-        return "/presentation/empresa/puestos";
+        return "presentation/empresa/puestos";
     }
 
     @GetMapping("/puestos/nuevo")
@@ -42,7 +42,7 @@ public class ControllerEmpre {
         model.addAttribute("puesto", new Puesto());
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
         model.addAttribute("monedas", monedaRepository.findAll());
-        return "/presentation/empresa/publicar-puesto";
+        return "presentation/empresa/publicar-puesto";
     }
 
     @PostMapping("/puestos/nuevo")
@@ -57,7 +57,7 @@ public class ControllerEmpre {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
             model.addAttribute("monedas", monedaRepository.findAll());
-            return "/presentation/empresa/publicar-puesto";
+            return "presentation/empresa/publicar-puesto";
         }
         return "redirect:/empresa/puestos";
     }
@@ -78,7 +78,7 @@ public class ControllerEmpre {
         if (!puesto.getEmpresa().getId().equals(empresa.getId())) return "redirect:/empresa/puestos";
         model.addAttribute("puesto", puesto);
         model.addAttribute("candidatos", puestoService.buscarCandidatos(puesto));
-        return "/presentation/empresa/candidatos";
+        return "presentation/empresa/candidatos";
     }
 
     @GetMapping("/candidatos/{id}")
@@ -86,6 +86,6 @@ public class ControllerEmpre {
         Oferente oferente = oferenteService.findById(id).orElseThrow();
         model.addAttribute("oferente", oferente);
         model.addAttribute("habilidades", oferenteService.getHabilidades(oferente));
-        return "/presentation/empresa/detalle-candidato";
+        return "presentation/empresa/detalle-candidato";
     }
 }

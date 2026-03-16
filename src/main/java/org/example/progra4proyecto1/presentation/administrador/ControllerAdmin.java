@@ -17,12 +17,12 @@ public class ControllerAdmin {
     @Autowired private ReporteService reporteService;
 
     @GetMapping("/dashboard")
-    public String dashboard() { return "/presentation/admin/dashboard"; }
+    public String dashboard() { return "presentation/admin/dashboard"; }
 
     @GetMapping("/empresas/pendientes")
     public String empresasPendientes(Model model) {
         model.addAttribute("pendientes", adminService.empresasPendientes());
-        return "/presentation/admin/empresas-pendientes";
+        return "presentation/admin/empresas-pendientes";
     }
 
     @PostMapping("/empresas/aprobar/{id}")
@@ -40,7 +40,7 @@ public class ControllerAdmin {
     @GetMapping("/oferentes/pendientes")
     public String oferentesPendientes(Model model) {
         model.addAttribute("pendientes", adminService.oferentesPendientes());
-        return "/presentation/admin/oferentes-pendientes";
+        return "presentation/admin/oferentes-pendientes";
     }
 
     @PostMapping("/oferentes/aprobar/{id}")
@@ -64,7 +64,7 @@ public class ControllerAdmin {
                 model.addAttribute("hijos", adminService.hijosDe(actualId));
             });
         }
-        return "/presentation/admin/caracteristicas";
+        return "presentation/admin/caracteristicas";
     }
 
     @PostMapping("/caracteristicas/crear")
@@ -76,7 +76,7 @@ public class ControllerAdmin {
     @GetMapping("/reportes")
     public String reportesForm(Model model) {
         model.addAttribute("anioActual", java.time.LocalDate.now().getYear());
-        return "/presentation/admin/reportes";
+        return "presentation/admin/reportes";
     }
 
     @GetMapping("/reportes/puestos-mes")

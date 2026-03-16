@@ -31,14 +31,14 @@ public class ControllerPublic {
     @GetMapping("/")
     public String inicio(Model model) {
         model.addAttribute("puestos", puestoService.findTop5Publicos());
-        return "/presentation/publico/inicio";
+        return "presentation/publico/inicio";
     }
 
     @GetMapping("/buscar")
     public String buscarForm(Model model) {
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
         model.addAttribute("resultados", List.of());
-        return "/presentation/publico/buscar";
+        return "presentation/publico/buscar";
     }
 
     @PostMapping("/buscar")
@@ -50,20 +50,20 @@ public class ControllerPublic {
         model.addAttribute("resultados", puestoService.buscarPublicos(ids, modoTodos));
         model.addAttribute("seleccionadas", ids);
         model.addAttribute("modoTodos", modoTodos);
-        return "/presentation/publico/buscar";
+        return "presentation/publico/buscar";
     }
 
     @GetMapping("/login")
     public String loginForm(@RequestParam(required = false) String error, Model model) {
         if (error != null) model.addAttribute("error", "Credenciales incorrectas o cuenta no aprobada.");
-        return "/presentation/publico/login";
+        return "presentation/publico/login";
     }
 
     // ---- EMPRESA ----
 
     @GetMapping("/registro/empresa")
     public String regEmpresaForm() {
-        return "/presentation/publico/registro-empresa";
+        return "presentation/publico/registro-empresa";
     }
 
     @PostMapping("/registro/empresa")
@@ -79,11 +79,11 @@ public class ControllerPublic {
 
         if (!clave.equals(clave2)) {
             model.addAttribute("errorClave", "Las claves no coinciden");
-            return "/presentation/publico/registro-empresa";
+            return "presentation/publico/registro-empresa";
         }
         if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
             model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
-            return "/presentation/publico/registro-empresa";
+            return "presentation/publico/registro-empresa";
         }
 
         Empresa empresa = new Empresa();
@@ -96,7 +96,7 @@ public class ControllerPublic {
             empresaService.registrar(empresa, correo, clave);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorGeneral", e.getMessage());
-            return "/presentation/publico/registro-empresa";
+            return "presentation/publico/registro-empresa";
         }
         return "redirect:/login?registrado=true";
     }
@@ -105,7 +105,7 @@ public class ControllerPublic {
 
     @GetMapping("/registro/oferente")
     public String regOferenteForm() {
-        return "/presentation/publico/registro-oferente";
+        return "presentation/publico/registro-oferente";
     }
 
     @PostMapping("/registro/oferente")
@@ -123,11 +123,11 @@ public class ControllerPublic {
 
         if (!clave.equals(clave2)) {
             model.addAttribute("errorClave", "Las claves no coinciden");
-            return "/presentation/publico/registro-oferente";
+            return "presentation/publico/registro-oferente";
         }
         if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
             model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
-            return "/presentation/publico/registro-oferente";
+            return "presentation/publico/registro-oferente";
         }
 
         Oferente oferente = new Oferente();
@@ -142,7 +142,7 @@ public class ControllerPublic {
             oferenteService.registrar(oferente, correo, clave);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorGeneral", e.getMessage());
-            return "/presentation/publico/registro-oferente";
+            return "presentation/publico/registro-oferente";
         }
         return "redirect:/login?registrado=true";
     }
