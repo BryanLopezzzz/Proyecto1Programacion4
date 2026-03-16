@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/oferente")
-public class Controller {
+public class ControllerOfere {
 
     @Autowired private OferenteService oferenteService;
     @Autowired private PuestoService puestoService;

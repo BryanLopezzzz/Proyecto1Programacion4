@@ -4,13 +4,12 @@ import org.example.progra4proyecto1.data.CaracteristicaRepository;
 import org.example.progra4proyecto1.logic.EmpresaService;
 import org.example.progra4proyecto1.logic.OferenteService;
 import org.example.progra4proyecto1.logic.PuestoService;
-import org.example.progra4proyecto1.data.MonedaRepository;
-import jakarta.validation.Valid;
+import org.example.progra4proyecto1.logic.Empresa;
+import org.example.progra4proyecto1.logic.Oferente;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,7 +21,7 @@ import java.util.List;
 //validación del teléfono. El GET ya no necesita mandar objeto al model porque el HTML no tiene th:object.
 
 @Controller
-public class Controller {
+public class ControllerPublic {
 
     @Autowired private PuestoService puestoService;
     @Autowired private EmpresaService empresaService;
