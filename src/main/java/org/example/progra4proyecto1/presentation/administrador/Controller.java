@@ -1,5 +1,5 @@
 package org.example.progra4proyecto1.presentation.administrador;
-/*
+
 import org.example.progra4proyecto1.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -101,4 +101,4 @@ public class Controller {
                     .body(pdf);
         } catch (Exception e) { return ResponseEntity.internalServerError().build(); }
     }
-}*/
+}

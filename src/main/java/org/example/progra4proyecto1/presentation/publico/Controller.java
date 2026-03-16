@@ -1,6 +1,9 @@
-/*package org.example.progra4proyecto1.presentation.publico;
+package org.example.progra4proyecto1.presentation.publico;
 
-//import org.example.progra4proyecto1.data.CaracteristicaRepository;
+import org.example.progra4proyecto1.data.CaracteristicaRepository;
+import org.example.progra4proyecto1.logic.EmpresaService;
+import org.example.progra4proyecto1.logic.OferenteService;
+import org.example.progra4proyecto1.logic.PuestoService;
 import org.example.progra4proyecto1.data.MonedaRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,5 +147,5 @@ public class Controller {
         }
         return "redirect:/login?registrado=true";
     }
-} */
+}
 

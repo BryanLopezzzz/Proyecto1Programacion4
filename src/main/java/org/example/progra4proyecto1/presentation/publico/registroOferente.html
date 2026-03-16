@@ -11,8 +11,7 @@
 
     <div class="alert-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></div>
 
-    <form method="post" th:action="@{/registro/empresa}" th:object="${empresa}">
-
+    <form method="post" th:action="@{/registro/oferente}">
         <label>Nombre de la empresa *</label>
         <input type="text" name="nombre" required placeholder="Ej: TechCorp S.A."/>
 

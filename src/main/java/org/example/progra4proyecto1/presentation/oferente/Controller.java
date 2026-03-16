@@ -1,6 +1,6 @@
-/*package org.example.progra4proyecto1.presentation.oferente;
+package org.example.progra4proyecto1.presentation.oferente;
 
-import org.example.progra4proyecto1.CaracteristicaRepository;
+import org.example.progra4proyecto1.data.CaracteristicaRepository;
 import org.example.progra4proyecto1.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,4 +94,4 @@ public class Controller {
         model.addAttribute("modoTodos", modoTodos);
         return "/presentation/oferente/buscar-puestos";
     }
-} */
+}
