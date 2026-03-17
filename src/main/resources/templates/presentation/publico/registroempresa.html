@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Empresa - Bolsa de Empleo</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body class="centered">
+<div class="auth-box">
+    <h2 style="text-align:center;margin-bottom:22px">Registro de Empresa</h2>
+
+    <div class="alert-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></div>
+
+    <form method="post" th:action="@{/registro/empresa}">
+        <label>Nombre de la empresa *</label>
+        <input type="text" name="nombre" required placeholder="Ej: TechCorp S.A."/>
+
+        <label>Correo electrónico *</label>
+        <input type="email" name="correo" required placeholder="contacto@empresa.com"/>
+
+        <label>Contraseña *</label>
+        <input type="password" name="clave" required minlength="6" placeholder="Mínimo 6 caracteres"/>
+
+        <label>Confirmar contraseña *</label>
+        <input type="password" name="clave2" required minlength="6" placeholder="Repetir contraseña"/>
+        <span class="field-error" th:if="${errorClave}" th:text="${errorClave}"></span>
+
+        <label>Localización *</label>
+        <input type="text" name="localizacion" required placeholder="San José, Costa Rica"/>
+
+        <label>Teléfono * (+506 XXXX XXXX)</label>
+        <input type="text" name="telefono" required placeholder="+506 8888 8888"/>
+
+        <label>Descripción *</label>
+        <textarea name="descripcion" required placeholder="Descripción de la empresa..."></textarea>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:22px">Registrar Empresa</button>
+    </form>
+
+    <div class="auth-links">
+        <a th:href="@{/login}">Ya tengo cuenta → Iniciar sesión</a>
+    </div>
+</div>
+</body>
+</html>

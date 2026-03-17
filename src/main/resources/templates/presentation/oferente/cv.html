@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi CV</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/oferente/dashboard}">Dashboard</a>
+        <a th:href="@{/oferente/habilidades}">Mis habilidades</a>
+        <a th:href="@{/oferente/cv}">Mi CV</a>
+        <a th:href="@{/oferente/puestos}">Buscar puestos</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container-narrow">
+    <h2>Mi Currículum (CV)</h2>
+    <div class="card">
+        <div class="alert-error" th:if="${error}" th:text="${error}"></div>
+
+        <div class="cv-actual" th:if="${oferente.curriculumPdf != null}">
+            📄 CV actual: <strong th:text="${oferente.curriculumPdf}"></strong>
+            <br><br>
+            <a class="btn btn-outline"
+               th:href="@{/uploads/{f}(f=${oferente.curriculumPdf})}" target="_blank">
+                Ver CV actual
+            </a>
+        </div>
+
+        <form method="post" th:action="@{/oferente/cv/subir}" enctype="multipart/form-data">
+            <label>Subir nuevo CV (solo PDF, máx. 5MB)</label>
+            <input type="file" name="archivo" accept=".pdf" required/>
+            <button type="submit" class="btn btn-primary">Subir CV</button>
+        </form>
+    </div>
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>
