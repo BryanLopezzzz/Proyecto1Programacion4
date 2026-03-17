@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Oferentes Pendientes - Admin</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/empresas/pendientes}">Empresas</a>
+        <a th:href="@{/admin/oferentes/pendientes}">Oferentes</a>
+        <a th:href="@{/admin/caracteristicas}">Características</a>
+        <a th:href="@{/admin/reportes}">Reportes</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container">
+    <div class="top-bar">
+        <h2>Oferentes Pendientes de Aprobación</h2>
+    </div>
+
+    <table th:if="${pendientes != null && !#lists.isEmpty(#lists.toList(pendientes))}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="u : ${pendientes}">
+            <td th:text="${u.id}"></td>
+            <td th:text="${u.correo}"></td>
+            <td>
+                <span class="badge badge-pendiente" th:text="${u.estado}"></span>
+            </td>
+            <td>
+                <form method="post"
+                      th:action="@{/admin/oferentes/aprobar/{id}(id=${u.id})}"
+                      style="display:inline">
+                    <button type="submit" class="btn btn-primary btn-sm">✔ Aprobar</button>
+                </form>
+                <form method="post"
+                      th:action="@{/admin/oferentes/rechazar/{id}(id=${u.id})}"
+                      style="display:inline">
+                    <button type="submit" class="btn btn-secondary btn-sm">✘ Rechazar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p class="empty" th:if="${pendientes == null || #lists.isEmpty(#lists.toList(pendientes))}">
+        No hay oferentes pendientes de aprobación.
+    </p>
+
+    <br/>
+    <a class="btn btn-outline" th:href="@{/admin/dashboard}">← Volver al dashboard</a>
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>

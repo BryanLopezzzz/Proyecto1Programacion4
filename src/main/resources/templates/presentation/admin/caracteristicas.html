@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Características - Admin</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/empresas/pendientes}">Empresas</a>
+        <a th:href="@{/admin/oferentes/pendientes}">Oferentes</a>
+        <a th:href="@{/admin/caracteristicas}">Características</a>
+        <a th:href="@{/admin/reportes}">Reportes</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container panels">
+
+    <!-- Panel izquierdo: árbol de características -->
+    <div class="panel-left">
+        <h2>Árbol de Características</h2>
+
+        <div class="arbol" style="max-height: none;">
+            <div th:each="raiz : ${raices}" class="grupo">
+                <a th:href="@{/admin/caracteristicas(actualId=${raiz.id})}"
+                   style="text-decoration:none">
+                    <strong th:text="${raiz.nombre}"
+                            style="color:#4c0519;cursor:pointer;font-size:14px"></strong>
+                </a>
+                <ul th:if="${actual != null && actual.id == raiz.id && hijos != null && !hijos.isEmpty()}">
+                    <li th:each="hijo : ${hijos}">
+                        <span th:text="${hijo.nombre}" style="font-size:13px;color:#831843"></span>
+                    </li>
+                </ul>
+            </div>
+            <p class="empty" th:if="${raices == null || raices.isEmpty()}">
+                No hay características registradas aún.
+            </p>
+        </div>
+
+        <!-- Detalle del nodo seleccionado -->
+        <div th:if="${actual != null}" class="card" style="margin-top:20px">
+            <h3>Hijos de: <span th:text="${actual.nombre}"></span></h3>
+            <ul style="list-style:none;padding:0">
+                <li th:each="h : ${hijos}" style="padding:6px 0;border-bottom:1px solid #fff1f2;font-size:13px;color:#2d0a0a">
+                    <span th:text="${h.nombre}"></span>
+                </li>
+            </ul>
+            <p class="empty" th:if="${hijos == null || hijos.isEmpty()}">Sin hijos.</p>
+        </div>
+    </div>
+
+    <!-- Panel derecho: crear nueva característica -->
+    <div class="panel-right">
+        <div class="card">
+            <h3>Nueva Característica</h3>
+            <form method="post" th:action="@{/admin/caracteristicas/crear}">
+                <label>Nombre *</label>
+                <input type="text" name="nombre" required placeholder="Ej: Java"/>
+
+                <label>Categoría padre (opcional)</label>
+                <select name="padreId">
+                    <option value="">-- Raíz (sin padre) --</option>
+                    <option th:each="r : ${raices}"
+                            th:value="${r.id}"
+                            th:text="${r.nombre}"
+                            th:selected="${actual != null && actual.id == r.id}">
+                    </option>
+                </select>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:16px;width:100%">
+                    + Agregar
+                </button>
+            </form>
+        </div>
+
+        <a class="btn btn-outline" th:href="@{/admin/dashboard}" style="width:100%;text-align:center;margin-top:8px">
+            ← Volver al dashboard
+        </a>
+    </div>
+
+</div>
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>

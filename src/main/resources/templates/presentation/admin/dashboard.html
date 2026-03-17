@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Oferente - Dashboard</title>
-    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+  <meta charset="UTF-8">
+  <title>Admin - Dashboard</title>
+  <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
 </head>
 <body>
 <nav>
-    <div>
-        <span class="brand">BolsaEmpleo</span>
-        <a th:href="@{/oferente/dashboard}">Dashboard</a>
-        <a th:href="@{/oferente/habilidades}">Mis habilidades</a>
-        <a th:href="@{/oferente/cv}">Mi CV</a>
-        <a th:href="@{/oferente/puestos}">Buscar puestos</a>
-    </div>
-    <div>
-        <span class="user-info" th:text="${oferente.usuario.correo}"></span>
-        <a th:href="@{/logout}" style="margin-left:16px">Salir</a>
-    </div>
+  <div>
+    <span class="brand">BolsaEmpleo</span>
+    <a th:href="@{/admin/dashboard}">Dashboard</a>
+    <a th:href="@{/admin/empresas/pendientes}">Empresas</a>
+    <a th:href="@{/admin/oferentes/pendientes}">Oferentes</a>
+    <a th:href="@{/admin/caracteristicas}">Características</a>
+    <a th:href="@{/admin/reportes}">Reportes</a>
+  </div>
+  <div>
+    <a th:href="@{/logout}">Salir</a>
+  </div>
 </nav>
 <div class="container">
-    <h1>Bienvenido</h1>
-    <p th:text="'Hola, ' + ${oferente.nombre} + ' ' + ${oferente.primerApellido} + '. Administrá tus habilidades y tu CV.'"></p>
-    <div class="card-grid">
-        <a class="card-btn c1" th:href="@{/oferente/habilidades}">Mis habilidades</a>
-        <a class="card-btn c2" th:href="@{/oferente/cv}">Mi CV</a>
-        <a class="card-btn c3" th:href="@{/oferente/puestos}">Buscar puestos</a>
-    </div>
+  <h1>Panel de Administración</h1>
+  <p>Bienvenido al panel de control. Desde aquí podés gestionar empresas, oferentes, características y reportes.</p>
+
+  <div class="card-grid">
+    <a class="card-btn c1" th:href="@{/admin/empresas/pendientes}">Empresas pendientes</a>
+    <a class="card-btn c2" th:href="@{/admin/oferentes/pendientes}">Oferentes pendientes</a>
+    <a class="card-btn c3" th:href="@{/admin/caracteristicas}">Características</a>
+    <a class="card-btn c1" th:href="@{/admin/reportes}" style="background:#4c0519">Reportes</a>
+  </div>
 </div>
 <footer>
-    <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+  <strong>Bolsa de Empleo</strong>
+  <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>

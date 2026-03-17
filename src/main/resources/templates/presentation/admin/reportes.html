@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Reportes - Admin</title>
+  <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+  <div>
+    <span class="brand">BolsaEmpleo</span>
+    <a th:href="@{/admin/dashboard}">Dashboard</a>
+    <a th:href="@{/admin/empresas/pendientes}">Empresas</a>
+    <a th:href="@{/admin/oferentes/pendientes}">Oferentes</a>
+    <a th:href="@{/admin/caracteristicas}">Características</a>
+    <a th:href="@{/admin/reportes}">Reportes</a>
+  </div>
+  <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+<div class="container">
+  <h2>Reportes</h2>
+  <p>Generá reportes en PDF por mes y año.</p>
+
+  <!-- Reporte 1: Puestos por mes -->
+  <div class="card">
+    <h3>Reporte de Puestos Publicados por Mes</h3>
+    <form method="get" th:action="@{/admin/reportes/puestos-mes}" target="_blank">
+      <div class="row2">
+        <div>
+          <label>Mes *</label>
+          <select name="mes" required>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div>
+          <label>Año *</label>
+          <input type="number" name="anio" required
+                 th:value="${anioActual}"
+                 min="2020" max="2030"/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:16px">
+        📄 Generar PDF — Puestos
+      </button>
+    </form>
+  </div>
+
+  <!-- Reporte 2: Coincidencias candidatos/puestos -->
+  <div class="card">
+    <h3>Reporte de Coincidencias Candidatos / Puestos</h3>
+    <form method="get" th:action="@{/admin/reportes/coincidencias}" target="_blank">
+      <div class="row2">
+        <div>
+          <label>Mes *</label>
+          <select name="mes" required>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div>
+          <label>Año *</label>
+          <input type="number" name="anio" required
+                 th:value="${anioActual}"
+                 min="2020" max="2030"/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:16px">
+        📄 Generar PDF — Coincidencias
+      </button>
+    </form>
+  </div>
+
+  <a class="btn btn-outline" th:href="@{/admin/dashboard}">← Volver al dashboard</a>
+</div>
+<footer>
+  <strong>Bolsa de Empleo</strong>
+  <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>
