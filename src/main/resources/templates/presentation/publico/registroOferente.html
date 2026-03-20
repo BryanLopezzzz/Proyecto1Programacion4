@@ -12,11 +12,27 @@
     <div class="alert-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></div>
 
     <form method="post" th:action="@{/registro/oferente}">
-        <label>Nombre de la empresa *</label>
-        <input type="text" name="nombre" required placeholder="Ej: TechCorp S.A."/>
+
+        <label>Identificación *</label>
+        <input type="text" name="identificacion" required placeholder="Ej: 1-1234-5678"/>
+
+        <label>Nombre *</label>
+        <input type="text" name="nombre" required placeholder="Ej: Juan"/>
+
+        <label>Primer apellido *</label>
+        <input type="text" name="primerApellido" required placeholder="Ej: Pérez"/>
+
+        <label>Nacionalidad *</label>
+        <input type="text" name="nacionalidad" required placeholder="Ej: Costarricense"/>
+
+        <label>Lugar de residencia *</label>
+        <input type="text" name="residencia" required placeholder="Ej: San José, Costa Rica"/>
+
+        <label>Teléfono * (+506 XXXX XXXX)</label>
+        <input type="text" name="telefono" required placeholder="+506 8888 8888"/>
 
         <label>Correo electrónico *</label>
-        <input type="email" name="correo" required placeholder="contacto@empresa.com"/>
+        <input type="email" name="correo" required placeholder="correo@ejemplo.com"/>
 
         <label>Contraseña *</label>
         <input type="password" name="clave" required minlength="6" placeholder="Mínimo 6 caracteres"/>
@@ -25,17 +41,7 @@
         <input type="password" name="clave2" required minlength="6" placeholder="Repetir contraseña"/>
         <span class="field-error" th:if="${errorClave}" th:text="${errorClave}"></span>
 
-        <label>Localización *</label>
-        <input type="text" name="localizacion" required placeholder="San José, Costa Rica"/>
-
-        <label>Teléfono * (+506 XXXX XXXX)</label>
-        <input type="text" name="telefono" required placeholder="+506 8888 8888"/>
-        <span class="field-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></span>
-
-        <label>Descripción *</label>
-        <textarea name="descripcion" required placeholder="Descripción de la empresa..."></textarea>
-
-        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:22px">Registrar Empresa</button>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:22px">Registrar Oferente</button>
     </form>
 
     <div class="auth-links">

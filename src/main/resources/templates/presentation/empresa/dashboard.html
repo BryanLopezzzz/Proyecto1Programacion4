@@ -2,30 +2,44 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Oferente - Dashboard</title>
+    <title>Empresa - Dashboard</title>
     <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
 </head>
 <body>
 <nav>
     <div>
         <span class="brand">BolsaEmpleo</span>
-        <a th:href="@{/oferente/dashboard}">Dashboard</a>
-        <a th:href="@{/oferente/habilidades}">Mis habilidades</a>
-        <a th:href="@{/oferente/cv}">Mi CV</a>
-        <a th:href="@{/oferente/puestos}">Buscar puestos</a>
+        <a th:href="@{/empresa/dashboard}">Dashboard</a>
+        <a th:href="@{/empresa/puestos}">Mis puestos</a>
+        <a th:href="@{/empresa/puestos/nuevo}">Publicar puesto</a>
     </div>
     <div>
-        <span class="user-info" th:text="${oferente.usuario.correo}"></span>
-        <a th:href="@{/logout}" style="margin-left:16px">Salir</a>
+        <span class="user-info" th:text="${empresa.usuario.correo}"></span>
+        <a th:href="@{/logout}" style="margin-left:14px">Salir</a>
     </div>
 </nav>
 <div class="container">
-    <h1>Bienvenido</h1>
-    <p th:text="'Hola, ' + ${oferente.nombre} + ' ' + ${oferente.primerApellido} + '. Administrá tus habilidades y tu CV.'"></p>
+    <h1>Empresa - Dashboard</h1>
+    <p th:text="'Bienvenido, ' + ${empresa.nombre} + '. Desde aquí administrás tus puestos y buscás candidatos.'"></p>
+
     <div class="card-grid">
-        <a class="card-btn c1" th:href="@{/oferente/habilidades}">Mis habilidades</a>
-        <a class="card-btn c2" th:href="@{/oferente/cv}">Mi CV</a>
-        <a class="card-btn c3" th:href="@{/oferente/puestos}">Buscar puestos</a>
+        <a class="card-btn c1" th:href="@{/empresa/puestos}">Mis puestos</a>
+        <a class="card-btn c2" th:href="@{/empresa/puestos/nuevo}">Publicar puesto</a>
+    </div>
+
+    <div class="card" style="margin-top:28px">
+        <h3>Datos de la empresa</h3>
+        <div class="info-row"><span class="lbl">Nombre:</span><span class="val" th:text="${empresa.nombre}"></span></div>
+        <div class="info-row"><span class="lbl">Correo:</span><span class="val" th:text="${empresa.usuario.correo}"></span></div>
+        <div class="info-row"><span class="lbl">Teléfono:</span><span class="val" th:text="${empresa.telefono}"></span></div>
+        <div class="info-row"><span class="lbl">Localización:</span><span class="val" th:text="${empresa.localizacion}"></span></div>
+        <div class="info-row"><span class="lbl">Descripción:</span><span class="val" th:text="${empresa.descripcion}"></span></div>
+        <div class="info-row">
+            <span class="lbl">Estado:</span>
+            <span class="badge"
+                  th:classappend="${empresa.usuario.estado.name() == 'APROBADO'} ? 'badge-aprobado' : (${empresa.usuario.estado.name() == 'PENDIENTE'} ? 'badge-pendiente' : 'badge-rechazado')"
+                  th:text="${empresa.usuario.estado}"></span>
+        </div>
     </div>
 </div>
 <footer>
