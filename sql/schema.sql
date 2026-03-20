@@ -120,12 +120,12 @@ INSERT INTO moneda (codigo, nombre) VALUES
 -- Administrador por defecto
 -- Identificación: admin | Clave: admin123 (hash BCrypt)
 INSERT INTO administrador (identificacion, clave) VALUES
-    ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
+    ('admin', '$2a$10$tKsAdRe8SXxBjnOUM2t4..tVK.b6TV823bGvk9z/qNKPk6ro6b3ie');
 
 -- Usuario del administrador para login via Spring Security
 INSERT INTO usuario (correo, clave, rol, estado) VALUES
     ('admin@bolsaempleo.com',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+     '$2a$10$tKsAdRe8SXxBjnOUM2t4..tVK.b6TV823bGvk9z/qNKPk6ro6b3ie',
      'ADMIN', 'APROBADO');
 
 -- Características de ejemplo (árbol jerárquico)
