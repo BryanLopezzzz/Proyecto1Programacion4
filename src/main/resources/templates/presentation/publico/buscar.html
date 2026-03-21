@@ -87,7 +87,7 @@
 <nav>
     <div>
         <span class="brand">BolsaEmpleo</span>
-        <a th:href="@{/static}">Inicio</a>
+        <a th:href="@{/}">Inicio</a>
         <a th:href="@{/buscar}">Buscar puestos</a>
         <a th:href="@{/registro/empresa}">Registro Empresa</a>
         <a th:href="@{/registro/oferente}">Registro Oferente</a>
@@ -132,12 +132,12 @@
             <label>
                 <input type="radio" name="modoTodos" value="true"
                        th:checked="${modoTodos != null && modoTodos}"/>
-                Todos los seleccionados (AND)
+                Todos los seleccionados
             </label>
             <label>
                 <input type="radio" name="modoTodos" value="false"
                        th:checked="${modoTodos == null || !modoTodos}"/>
-                Cualquiera (OR)
+                Cualquiera
             </label>
         </div>
 

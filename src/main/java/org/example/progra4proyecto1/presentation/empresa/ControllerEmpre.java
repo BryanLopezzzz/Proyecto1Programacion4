@@ -47,11 +47,19 @@ public class ControllerEmpre {
 
     @PostMapping("/puestos/nuevo")
     public String nuevoPuestoGuardar(
-            @ModelAttribute Puesto puesto,
+            @RequestParam String descripcion,
+            @RequestParam java.math.BigDecimal salario,
+            @RequestParam String tipo,
             @RequestParam(value = "caracteristicas", required = false) List<Integer> caracIds,
             @RequestParam(value = "niveles", required = false) List<Integer> niveles,
-            @RequestParam Integer monedaId, Principal principal, Model model) {
+            @RequestParam Integer monedaId,
+            Principal principal, Model model) {
         try {
+            Puesto puesto = new Puesto();
+            puesto.setDescripcion(descripcion);
+            puesto.setSalario(salario);
+            puesto.setTipo(Puesto.TipoPuesto.valueOf(tipo));
+
             puestoService.publicar(puesto, getEmpresa(principal), caracIds, niveles, monedaId);
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

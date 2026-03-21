@@ -14,7 +14,7 @@ public class OferenteService {
     @Autowired private OferenteRepository oferenteRepository;
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private OferenteHabilidadRepository habilidadRepository;
-    //@Autowired private CaracteristicaRepository caracteristicaRepository;
+    @Autowired private CaracteristicaRepository caracteristicaRepository;
     @Autowired private PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -45,23 +45,26 @@ public class OferenteService {
 
     @Transactional
     public void agregarHabilidad(Oferente oferente, Integer caracteristicaId, Integer nivel) {
-       // Caracteristica c = caracteristicaRepository.findById(caracteristicaId)
-               // .orElseThrow(() -> new IllegalArgumentException("Característica no encontrada"));
+        Caracteristica c = caracteristicaRepository.findById(caracteristicaId)
+                .orElseThrow(() -> new IllegalArgumentException("Característica no encontrada"));
 
+        // Primero setear la caracteristica y el oferente ANTES del ID
         OferenteHabilidad h = habilidadRepository
                 .findByOferenteAndCaracteristica_Id(oferente, caracteristicaId)
                 .orElse(new OferenteHabilidad());
 
+        h.setOferente(oferente);
+        h.setCaracteristica(c);
+        h.setNivel(nivel);
+
+        // Construir el ID DESPUÉS de setear las entidades
         OferenteHabilidad.OferenteHabilidadId hId = new OferenteHabilidad.OferenteHabilidadId();
         hId.setOferenteId(oferente.getId());
-        hId.setCaracteristicaId(caracteristicaId);
+        hId.setCaracteristicaId(c.getId()); // usar c.getId() no caracteristicaId directo
         h.setId(hId);
-        h.setOferente(oferente);
-        //h.setCaracteristica(c);
-        h.setNivel(nivel);
+
         habilidadRepository.save(h);
     }
-
     @Transactional
     public void eliminarHabilidad(Oferente oferente, Integer caracteristicaId) {
         habilidadRepository.deleteByOferenteAndCaracteristica_Id(oferente, caracteristicaId);

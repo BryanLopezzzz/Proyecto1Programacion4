@@ -1,6 +1,7 @@
 package org.example.progra4proyecto1.presentation.publico;
 
 import org.example.progra4proyecto1.data.CaracteristicaRepository;
+import org.example.progra4proyecto1.data.MonedaRepository;
 import org.example.progra4proyecto1.logic.EmpresaService;
 import org.example.progra4proyecto1.logic.OferenteService;
 import org.example.progra4proyecto1.logic.PuestoService;
@@ -27,6 +28,7 @@ public class ControllerPublic {
     @Autowired private EmpresaService empresaService;
     @Autowired private OferenteService oferenteService;
     @Autowired private CaracteristicaRepository caracteristicaRepository;
+    @Autowired private MonedaRepository monedaRepository;
 
     @GetMapping("/")
     public String inicio(Model model) {
@@ -38,6 +40,7 @@ public class ControllerPublic {
     public String buscarForm(Model model) {
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
         model.addAttribute("resultados", List.of());
+        model.addAttribute("monedas", monedaRepository.findAll());
         return "presentation/publico/buscar";
     }
 
@@ -50,6 +53,7 @@ public class ControllerPublic {
         model.addAttribute("resultados", puestoService.buscarPublicos(ids, modoTodos));
         model.addAttribute("seleccionadas", ids);
         model.addAttribute("modoTodos", modoTodos);
+        model.addAttribute("monedas", monedaRepository.findAll());
         return "presentation/publico/buscar";
     }
 

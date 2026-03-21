@@ -64,21 +64,29 @@ public class ControllerOfere {
 
     @PostMapping("/cv/subir")
     public String subirCv(@RequestParam MultipartFile archivo, Principal principal, Model model) {
+        Oferente oferente = getOferente(principal);
+
         if (archivo.isEmpty() || !archivo.getOriginalFilename().endsWith(".pdf")) {
             model.addAttribute("error", "Solo se permiten archivos PDF");
-            model.addAttribute("oferente", getOferente(principal));
+            model.addAttribute("oferente", oferente);
             return "presentation/oferente/cv";
         }
         try {
-            String nombre = UUID.randomUUID() + "_" + archivo.getOriginalFilename();
-            File dir = new File(uploadDir);
+            // Ruta absoluta en el proyecto
+            String dirAbsoluto = System.getProperty("user.dir") + "/uploads/cv";
+            File dir = new File(dirAbsoluto);
             if (!dir.exists()) dir.mkdirs();
-            archivo.transferTo(new File(dir, nombre));
-            Oferente o = getOferente(principal);
-            o.setCurriculumPdf(nombre);
-            oferenteService.guardar(o);
+
+            String nombre = UUID.randomUUID() + "_" + archivo.getOriginalFilename();
+            File destino = new File(dir, nombre);
+            archivo.transferTo(destino.getAbsoluteFile());
+
+            oferente.setCurriculumPdf(nombre);
+            oferenteService.guardar(oferente);
+
         } catch (IOException e) {
-            model.addAttribute("error", "Error al subir archivo");
+            model.addAttribute("error", "Error al subir archivo: " + e.getMessage());
+            model.addAttribute("oferente", oferente);
             return "presentation/oferente/cv";
         }
         return "redirect:/oferente/dashboard";
