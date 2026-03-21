@@ -94,33 +94,31 @@ public class ControllerAdmin {
     }
 
     @GetMapping("/reportes/puestos-mes")
-    public ResponseEntity<byte[]> reportePuestosMes(@RequestParam int mes, @RequestParam int anio) {
-        try {
-            byte[] pdf = reporteService.reportePuestosPorMes(mes, anio);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=puestos_" + mes + "_" + anio + ".pdf")
-                    .body(pdf);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public String reportePuestosMes(@RequestParam int mes, @RequestParam int anio, Model model) {
+        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+        List<Puesto> puestos = puestoService.findByMesYAnio(mes, anio);
+        model.addAttribute("puestos", puestos);
+        model.addAttribute("mes", mes);
+        model.addAttribute("anio", anio);
+        model.addAttribute("nombreMes", meses[mes - 1]);
+        return "presentation/admin/reporte-puestos";
     }
 
     @GetMapping("/reportes/coincidencias")
-    public ResponseEntity<byte[]> reporteCoincidencias(@RequestParam int mes, @RequestParam int anio) {
-        try {
-            List<Puesto> puestos = puestoService.findByMesYAnio(mes, anio);
-            List<List<CandidatoResult>> cands = new ArrayList<>();
-            for (Puesto p : puestos) cands.add(puestoService.buscarCandidatos(p));
-            byte[] pdf = reporteService.reporteCoincidencias(puestos, cands);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=coincidencias_" + mes + "_" + anio + ".pdf")
-                    .body(pdf);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+    public String reporteCoincidencias(@RequestParam int mes, @RequestParam int anio, Model model) {
+        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+        List<Puesto> puestos = puestoService.findByMesYAnio(mes, anio);
+        List<List<CandidatoResult>> candidatosPorPuesto = new ArrayList<>();
+        for (Puesto p : puestos) {
+            candidatosPorPuesto.add(puestoService.buscarCandidatos(p));
         }
+        model.addAttribute("puestos", puestos);
+        model.addAttribute("candidatosPorPuesto", candidatosPorPuesto);
+        model.addAttribute("mes", mes);
+        model.addAttribute("anio", anio);
+        model.addAttribute("nombreMes", meses[mes - 1]);
+        return "presentation/admin/reporte-coincidencias";
     }
 }

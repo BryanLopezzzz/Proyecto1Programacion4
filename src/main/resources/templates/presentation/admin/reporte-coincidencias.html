@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Coincidencias</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/empresas/pendientes}">Empresas</a>
+        <a th:href="@{/admin/oferentes/pendientes}">Oferentes</a>
+        <a th:href="@{/admin/caracteristicas}">Características</a>
+        <a th:href="@{/admin/reportes}">Reportes</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+
+<div class="container">
+
+    <!-- Botones (se ocultan al imprimir) -->
+    <div class="no-print">
+        <a class="btn btn-outline" th:href="@{/admin/reportes}">← Volver</a>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+
+    <!-- Encabezado del reporte -->
+    <div class="reporte-header">
+        <div class="reporte-meta">
+            <span class="print-logo">Sistema Bolsa de Empleo — Universidad Nacional</span>
+            <strong>Reporte de Coincidencias Candidatos / Puestos</strong>
+            <span th:text="'Período: ' + ${nombreMes} + ' ' + ${anio}">Período</span>
+            <span th:text="'Generado: ' + ${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">Fecha</span>
+        </div>
+        <div class="total-badge">
+            <span th:text="${#lists.size(puestos)}">0</span>
+            <small>puestos analizados</small>
+        </div>
+    </div>
+
+    <!-- Sin datos -->
+    <div class="empty-reporte" th:if="${puestos == null || #lists.isEmpty(puestos)}">
+        <div class="icono">📭</div>
+        No hay puestos publicados en este período.
+    </div>
+
+    <!-- Sección por cada puesto -->
+    <div th:each="p, iter : ${puestos}" class="puesto-seccion">
+
+        <!-- Título del puesto -->
+        <div class="puesto-titulo">
+      <span>
+        Puesto #<span th:text="${p.id}"></span> —
+        <span th:text="${p.empresa.nombre}"></span>:
+        <span th:text="${#strings.abbreviate(p.descripcion, 60)}"></span>
+      </span>
+            <span class="tipo-badge" th:text="${p.tipo}"></span>
+        </div>
+
+        <!-- Info del puesto -->
+        <div class="puesto-info">
+            <span>💰 Salario: <strong th:text="${p.moneda.codigo + ' ' + #numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></strong></span>
+            <span>📅 Publicado: <strong th:text="${#temporals.format(p.fechaRegistro, 'dd/MM/yyyy')}"></strong></span>
+            <span>🔧 Características requeridas:
+        <strong>
+          <span th:each="c, ci : ${p.caracteristicas}"
+                th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (ci.last ? '' : ', ')}"></span>
+          <em th:if="${p.caracteristicas == null || #lists.isEmpty(p.caracteristicas)}">Ninguna</em>
+        </strong>
+      </span>
+        </div>
+
+        <!-- Tabla de candidatos para ese puesto -->
+        <table th:with="cands=${candidatosPorPuesto[iter.index]}"
+               th:if="${cands != null && !#lists.isEmpty(cands)}">
+            <thead>
+            <tr>
+                <th>Oferente</th>
+                <th>Identificación</th>
+                <th>Correo</th>
+                <th>Req. Cumplidos</th>
+                <th>Total Req.</th>
+                <th>% Coincidencia</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${candidatosPorPuesto[iter.index]}">
+                <td th:text="${c.oferente.nombre + ' ' + c.oferente.primerApellido}"></td>
+                <td th:text="${c.oferente.identificacion}"></td>
+                <td th:text="${c.oferente.usuario.correo}"></td>
+                <td th:text="${c.requisitosCumplidos}"></td>
+                <td th:text="${c.requisitosTotal}"></td>
+                <td>
+                    <div class="bar-wrap">
+                        <div class="bar-outer">
+                            <div class="bar-inner"
+                                 th:style="'width:' + ${c.porcentajeCoincidencia} + '%'"></div>
+                        </div>
+                        <span class="bar-label"
+                              th:text="${#numbers.formatDecimal(c.porcentajeCoincidencia, 1, 2) + '%'}"></span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="sin-candidatos"
+             th:if="${candidatosPorPuesto[iter.index] == null || #lists.isEmpty(candidatosPorPuesto[iter.index])}">
+            Sin candidatos con habilidades coincidentes para este puesto.
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>

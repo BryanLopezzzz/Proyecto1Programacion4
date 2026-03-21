@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Puestos</title>
+    <link rel="stylesheet" href="/css/estilos.css" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<nav>
+    <div>
+        <span class="brand">BolsaEmpleo</span>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/empresas/pendientes}">Empresas</a>
+        <a th:href="@{/admin/oferentes/pendientes}">Oferentes</a>
+        <a th:href="@{/admin/caracteristicas}">Características</a>
+        <a th:href="@{/admin/reportes}">Reportes</a>
+    </div>
+    <div><a th:href="@{/logout}">Salir</a></div>
+</nav>
+
+<div class="container">
+
+    <!-- Botones de acción (se ocultan al imprimir) -->
+    <div class="no-print">
+        <a class="btn btn-outline" th:href="@{/admin/reportes}">← Volver</a>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+
+    <!-- Encabezado del reporte -->
+    <div class="reporte-header">
+        <div class="reporte-meta">
+            <span class="print-logo">Sistema Bolsa de Empleo — Universidad Nacional</span>
+            <strong>Reporte de Puestos Publicados</strong>
+            <span th:text="'Período: ' + ${nombreMes} + ' ' + ${anio}">Período</span>
+            <span th:text="'Generado: ' + ${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">Fecha</span>
+        </div>
+        <div class="total-badge">
+            <span th:text="${#lists.size(puestos)}">0</span>
+            <small>puestos</small>
+        </div>
+    </div>
+
+    <!-- Tabla de puestos -->
+    <table th:if="${puestos != null && !#lists.isEmpty(puestos)}">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Empresa</th>
+            <th>Descripción</th>
+            <th>Salario</th>
+            <th>Tipo</th>
+            <th>Características requeridas</th>
+            <th>Fecha</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p, iter : ${puestos}">
+            <td th:text="${iter.count}"></td>
+            <td th:text="${p.empresa.nombre}"></td>
+            <td th:text="${p.descripcion}"></td>
+            <td th:text="${p.moneda.codigo + ' ' + #numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></td>
+            <td>
+        <span class="badge"
+              th:classappend="${p.tipo.name() == 'PUBLICO'} ? 'badge-publico' : 'badge-privado'"
+              th:text="${p.tipo}"></span>
+            </td>
+            <td>
+        <span th:each="c, i : ${p.caracteristicas}"
+              th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (i.last ? '' : ', ')}">
+        </span>
+                <em th:if="${p.caracteristicas == null || #lists.isEmpty(p.caracteristicas)}"
+                    style="color:#9f1239;font-size:12px">Sin características</em>
+            </td>
+            <td th:text="${#temporals.format(p.fechaRegistro, 'dd/MM/yyyy')}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Sin datos -->
+    <div class="empty-reporte" th:if="${puestos == null || #lists.isEmpty(puestos)}">
+        <div class="icono">📭</div>
+        No hay puestos publicados en este período.
+    </div>
+
+</div>
+
+<footer>
+    <strong>Bolsa de Empleo</strong>
+    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+</footer>
+</body>
+</html>
