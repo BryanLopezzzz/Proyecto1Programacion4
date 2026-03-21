@@ -17,7 +17,9 @@ public class ControllerAdmin {
     @Autowired private ReporteService reporteService;
 
     @GetMapping("/dashboard")
-    public String dashboard() { return "presentation/admin/dashboard"; }
+    public String dashboard() {
+        return "presentation/admin/dashboard";
+    }
 
     @GetMapping("/empresas/pendientes")
     public String empresasPendientes(Model model) {
@@ -58,6 +60,14 @@ public class ControllerAdmin {
     @GetMapping("/caracteristicas")
     public String caracteristicas(@RequestParam(required = false) Integer actualId, Model model) {
         model.addAttribute("raices", adminService.raices());
+
+        /*
+         * CORRECCIÓN: se pasa la lista completa de nodos al modelo.
+         * El template la usa para el select de "padre al crear",
+         * permitiendo elegir cualquier nodo (no solo raíces) como padre.
+         */
+        model.addAttribute("todosNodos", adminService.todosLosNodos());
+
         if (actualId != null) {
             adminService.findCaracteristica(actualId).ifPresent(c -> {
                 model.addAttribute("actual", c);
@@ -68,9 +78,13 @@ public class ControllerAdmin {
     }
 
     @PostMapping("/caracteristicas/crear")
-    public String crearCaracteristica(@RequestParam String nombre, @RequestParam(required = false) Integer padreId) {
+    public String crearCaracteristica(
+            @RequestParam String nombre,
+            @RequestParam(required = false) Integer padreId) {
         adminService.crearCaracteristica(nombre, padreId);
-        return padreId != null ? "redirect:/admin/caracteristicas?actualId=" + padreId : "redirect:/admin/caracteristicas";
+        return padreId != null
+                ? "redirect:/admin/caracteristicas?actualId=" + padreId
+                : "redirect:/admin/caracteristicas";
     }
 
     @GetMapping("/reportes")
@@ -83,10 +97,14 @@ public class ControllerAdmin {
     public ResponseEntity<byte[]> reportePuestosMes(@RequestParam int mes, @RequestParam int anio) {
         try {
             byte[] pdf = reporteService.reportePuestosPorMes(mes, anio);
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=puestos_" + mes + "_" + anio + ".pdf")
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=puestos_" + mes + "_" + anio + ".pdf")
                     .body(pdf);
-        } catch (Exception e) { return ResponseEntity.internalServerError().build(); }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/reportes/coincidencias")
@@ -96,9 +114,13 @@ public class ControllerAdmin {
             List<List<CandidatoResult>> cands = new ArrayList<>();
             for (Puesto p : puestos) cands.add(puestoService.buscarCandidatos(p));
             byte[] pdf = reporteService.reporteCoincidencias(puestos, cands);
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=coincidencias_" + mes + "_" + anio + ".pdf")
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=coincidencias_" + mes + "_" + anio + ".pdf")
                     .body(pdf);
-        } catch (Exception e) { return ResponseEntity.internalServerError().build(); }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

@@ -18,6 +18,7 @@
 </nav>
 <div class="container panels">
 
+    <!-- Panel izquierdo: tabla de habilidades actuales -->
     <div class="card panel-left">
         <h2>Mis Habilidades</h2>
         <table th:if="${!#lists.isEmpty(habilidades)}">
@@ -40,22 +41,66 @@
         <p class="empty" th:if="${#lists.isEmpty(habilidades)}">No has registrado habilidades aún.</p>
     </div>
 
+    <!-- Panel derecho: agregar habilidad -->
     <div class="card panel-right">
         <h3>Agregar Habilidad</h3>
         <form method="post" th:action="@{/oferente/habilidades/agregar}">
             <label>Característica</label>
+            <!--
+                CORRECCIÓN: el select ahora itera sobre raíces → hijos → nietos,
+                mostrando los 3 niveles del árbol jerárquico.
+                Solo los nodos hoja (los que no tienen hijos o que el usuario
+                puede seleccionar) aparecen como opciones seleccionables.
+                Los grupos (optgroup) agrupan visualmente la jerarquía.
+            -->
             <select name="caracteristicaId" required>
                 <option value="">-- Seleccione --</option>
-                <optgroup th:each="raiz : ${raices}" th:label="${raiz.nombre}">
-                    <option th:each="hijo : ${raiz.hijos}"
-                            th:value="${hijo.id}"
-                            th:text="${hijo.nombre}">
+                <th:block th:each="raiz : ${raices}">
+                    <!--
+                        Si la raíz tiene hijos, la usamos como optgroup.
+                        Si no tiene hijos (es hoja), la incluimos como opción directa.
+                    -->
+                    <th:block th:if="${raiz.hijos != null && !raiz.hijos.isEmpty()}">
+                        <optgroup th:label="${raiz.nombre}">
+                            <th:block th:each="hijo : ${raiz.hijos}">
+                                <!--
+                                    Si el hijo también tiene hijos, creamos un sub-grupo
+                                    prefijando el nombre para indicar la jerarquía.
+                                    HTML no soporta optgroup anidados, así que usamos
+                                    un prefijo "↳" para mostrar el nivel visualmente.
+                                -->
+                                <th:block th:if="${hijo.hijos != null && !hijo.hijos.isEmpty()}">
+                                    <!-- El hijo intermedio como opción propia -->
+                                    <option th:value="${hijo.id}"
+                                            th:text="${hijo.nombre}">
+                                    </option>
+                                    <!-- Sus hijos (nietos de la raíz) con sangría visual -->
+                                    <option th:each="nieto : ${hijo.hijos}"
+                                            th:value="${nieto.id}"
+                                            th:text="${'↳ ' + nieto.nombre}">
+                                    </option>
+                                </th:block>
+                                <!-- Hijo sin hijos: opción directa -->
+                                <option th:if="${hijo.hijos == null || hijo.hijos.isEmpty()}"
+                                        th:value="${hijo.id}"
+                                        th:text="${hijo.nombre}">
+                                </option>
+                            </th:block>
+                        </optgroup>
+                    </th:block>
+                    <!-- Raíz sin hijos: opción directa -->
+                    <option th:if="${raiz.hijos == null || raiz.hijos.isEmpty()}"
+                            th:value="${raiz.id}"
+                            th:text="${raiz.nombre}">
                     </option>
-                </optgroup>
+                </th:block>
             </select>
+
             <label>Nivel (1-5)</label>
             <input type="number" name="nivel" min="1" max="5" value="3"/>
-            <button type="submit" class="btn btn-primary" style="margin-top:16px">Agregar habilidad</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:16px">
+                Agregar habilidad
+            </button>
         </form>
     </div>
 

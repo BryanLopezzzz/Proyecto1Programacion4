@@ -50,31 +50,50 @@
 
         <label>Características requeridas (marque y asigne nivel 1-5)</label>
         <div class="arbol">
+            <!-- Nivel 1: raíces -->
             <div class="grupo" th:each="raiz : ${raices}">
                 <strong th:text="${raiz.nombre}"></strong>
+
+                <!-- Nivel 2: hijos de raíz -->
                 <ul th:if="${raiz.hijos != null && !raiz.hijos.isEmpty()}">
                     <li th:each="hijo : ${raiz.hijos}">
                         <label>
-                            <input type="checkbox" name="caracteristicas" th:value="${hijo.id}"/>
+                            <input type="checkbox"
+                                   th:name="'sel_' + ${hijo.id}"
+                                   th:value="true"/>
                             <span th:text="${hijo.nombre}"></span>
                         </label>
-                        <select name="niveles" class="nivel-sel">
+                        <!--
+                            CORRECCIÓN CRÍTICA: el nivel va en un campo cuyo nombre
+                            incluye el ID de la característica, así el controller
+                            puede emparejar checkbox con su nivel sin importar
+                            cuáles checkboxes estén marcados.
+                            Nombre: nivel_<id>
+                        -->
+                        <select th:name="'nivel_' + ${hijo.id}" class="nivel-sel">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3" selected>3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
                         </select>
-                        <ul th:if="${hijo.hijos != null && !hijo.hijos.isEmpty()}" style="padding-left:14px;margin-top:4px">
+
+                        <!-- Nivel 3: nietos -->
+                        <ul th:if="${hijo.hijos != null && !hijo.hijos.isEmpty()}"
+                            style="padding-left:14px;margin-top:4px">
                             <li th:each="nieto : ${hijo.hijos}">
                                 <label>
-                                    <input type="checkbox" name="caracteristicas" th:value="${nieto.id}"/>
+                                    <input type="checkbox"
+                                           th:name="'sel_' + ${nieto.id}"
+                                           th:value="true"/>
                                     <span th:text="${nieto.nombre}"></span>
                                 </label>
-                                <select name="niveles" class="nivel-sel">
-                                    <option value="1">1</option><option value="2">2</option>
+                                <select th:name="'nivel_' + ${nieto.id}" class="nivel-sel">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
                                     <option value="3" selected>3</option>
-                                    <option value="4">4</option><option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
                                 </select>
                             </li>
                         </ul>

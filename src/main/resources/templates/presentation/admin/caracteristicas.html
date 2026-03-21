@@ -30,9 +30,13 @@
                     <strong th:text="${raiz.nombre}"
                             style="color:#4c0519;cursor:pointer;font-size:14px"></strong>
                 </a>
+                <!-- Hijos del nodo seleccionado -->
                 <ul th:if="${actual != null && actual.id == raiz.id && hijos != null && !hijos.isEmpty()}">
                     <li th:each="hijo : ${hijos}">
-                        <span th:text="${hijo.nombre}" style="font-size:13px;color:#831843"></span>
+                        <!-- Hijo también es clickeable para navegar a su nivel -->
+                        <a th:href="@{/admin/caracteristicas(actualId=${hijo.id})}"
+                           style="text-decoration:none;color:#831843;font-size:13px"
+                           th:text="${hijo.nombre}"></a>
                     </li>
                 </ul>
             </div>
@@ -45,8 +49,11 @@
         <div th:if="${actual != null}" class="card" style="margin-top:20px">
             <h3>Hijos de: <span th:text="${actual.nombre}"></span></h3>
             <ul style="list-style:none;padding:0">
-                <li th:each="h : ${hijos}" style="padding:6px 0;border-bottom:1px solid #fff1f2;font-size:13px;color:#2d0a0a">
-                    <span th:text="${h.nombre}"></span>
+                <li th:each="h : ${hijos}"
+                    style="padding:6px 0;border-bottom:1px solid #fff1f2;font-size:13px;color:#2d0a0a">
+                    <a th:href="@{/admin/caracteristicas(actualId=${h.id})}"
+                       style="text-decoration:none;color:#2d0a0a"
+                       th:text="${h.nombre}"></a>
                 </li>
             </ul>
             <p class="empty" th:if="${hijos == null || hijos.isEmpty()}">Sin hijos.</p>
@@ -61,13 +68,18 @@
                 <label>Nombre *</label>
                 <input type="text" name="nombre" required placeholder="Ej: Java"/>
 
-                <label>Categoría padre (opcional)</label>
+                <!--
+                    CORRECCIÓN: el select ahora muestra TODOS los nodos (no solo raíces),
+                    permitiendo crear características en cualquier nivel del árbol.
+                    todosNodos viene ordenado alfabéticamente desde AdminService.
+                -->
+                <label>Nodo padre (opcional)</label>
                 <select name="padreId">
                     <option value="">-- Raíz (sin padre) --</option>
-                    <option th:each="r : ${raices}"
-                            th:value="${r.id}"
-                            th:text="${r.nombre}"
-                            th:selected="${actual != null && actual.id == r.id}">
+                    <option th:each="nodo : ${todosNodos}"
+                            th:value="${nodo.id}"
+                            th:text="${(nodo.padre != null ? '↳ ' : '') + nodo.nombre}"
+                            th:selected="${actual != null && actual.id == nodo.id}">
                     </option>
                 </select>
 
@@ -77,7 +89,8 @@
             </form>
         </div>
 
-        <a class="btn btn-outline" th:href="@{/admin/dashboard}" style="width:100%;text-align:center;margin-top:8px">
+        <a class="btn btn-outline" th:href="@{/admin/dashboard}"
+           style="width:100%;text-align:center;margin-top:8px">
             ← Volver al dashboard
         </a>
     </div>

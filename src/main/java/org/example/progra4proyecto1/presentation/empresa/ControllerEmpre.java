@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/empresa")
@@ -50,17 +53,45 @@ public class ControllerEmpre {
             @RequestParam String descripcion,
             @RequestParam java.math.BigDecimal salario,
             @RequestParam String tipo,
-            @RequestParam(value = "caracteristicas", required = false) List<Integer> caracIds,
-            @RequestParam(value = "niveles", required = false) List<Integer> niveles,
             @RequestParam Integer monedaId,
-            Principal principal, Model model) {
+            @RequestParam Map<String, String> todosLosParams,
+            Principal principal,
+            Model model) {
         try {
+            /*
+             * CORRECCIÓN CRÍTICA:
+             * El formulario ya no envía dos arrays paralelos (caracteristicas[] y niveles[])
+             * que se desacoplan cuando no todos los checkboxes están marcados.
+             *
+             * Ahora envía:
+             *   sel_<id> = "true"   → checkbox marcado
+             *   nivel_<id> = "1..5" → nivel correspondiente a ese ID
+             *
+             * Aquí recorremos todos los parámetros buscando los que empiezan con "sel_",
+             * extraemos el ID y buscamos su nivel en nivel_<id>.
+             * Así el emparejamiento es siempre correcto.
+             */
+            List<Integer> caracIds = new ArrayList<>();
+            List<Integer> niveles  = new ArrayList<>();
+
+            for (Map.Entry<String, String> entry : todosLosParams.entrySet()) {
+                if (entry.getKey().startsWith("sel_")) {
+                    String idStr = entry.getKey().substring(4); // quita "sel_"
+                    Integer caracteristicaId = Integer.parseInt(idStr);
+                    String nivelStr = todosLosParams.get("nivel_" + idStr);
+                    int nivel = (nivelStr != null) ? Integer.parseInt(nivelStr) : 3;
+                    caracIds.add(caracteristicaId);
+                    niveles.add(nivel);
+                }
+            }
+
             Puesto puesto = new Puesto();
             puesto.setDescripcion(descripcion);
             puesto.setSalario(salario);
             puesto.setTipo(Puesto.TipoPuesto.valueOf(tipo));
 
             puestoService.publicar(puesto, getEmpresa(principal), caracIds, niveles, monedaId);
+
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
@@ -74,7 +105,8 @@ public class ControllerEmpre {
     public String desactivar(@PathVariable Integer id, Principal principal) {
         Empresa empresa = getEmpresa(principal);
         puestoService.findById(id).ifPresent(p -> {
-            if (p.getEmpresa().getId().equals(empresa.getId())) puestoService.desactivar(id);
+            if (p.getEmpresa().getId().equals(empresa.getId()))
+                puestoService.desactivar(id);
         });
         return "redirect:/empresa/puestos";
     }
@@ -83,7 +115,8 @@ public class ControllerEmpre {
     public String buscarCandidatos(@RequestParam Integer puestoId, Model model, Principal principal) {
         Empresa empresa = getEmpresa(principal);
         Puesto puesto = puestoService.findById(puestoId).orElseThrow();
-        if (!puesto.getEmpresa().getId().equals(empresa.getId())) return "redirect:/empresa/puestos";
+        if (!puesto.getEmpresa().getId().equals(empresa.getId()))
+            return "redirect:/empresa/puestos";
         model.addAttribute("puesto", puesto);
         model.addAttribute("candidatos", puestoService.buscarCandidatos(puesto));
         return "presentation/empresa/candidatos";
