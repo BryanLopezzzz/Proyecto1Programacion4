@@ -30,12 +30,12 @@ public class AdminService {
         });
     }
 
-    public Iterable<Usuario> empresasPendientes() {
-        return usuarioRepository.findByRolAndEstado(Usuario.Rol.EMPRESA, Usuario.Estado.PENDIENTE);
+    public Iterable<Empresa> empresasPendientes() {
+        return empresaRepository.findByUsuario_Estado(Usuario.Estado.PENDIENTE);
     }
 
-    public Iterable<Usuario> oferentesPendientes() {
-        return usuarioRepository.findByRolAndEstado(Usuario.Rol.OFERENTE, Usuario.Estado.PENDIENTE);
+    public Iterable<Oferente> oferentesPendientes() {
+        return oferenteRepository.findByUsuario_Estado(Usuario.Estado.PENDIENTE);
     }
 
     public List<Caracteristica> raices() { return caracteristicaRepository.findByPadreIsNull(); }

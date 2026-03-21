@@ -14,31 +14,42 @@
     <form method="post" th:action="@{/registro/oferente}">
 
         <label>Identificación *</label>
-        <input type="text" name="identificacion" required placeholder="Ej: 1-1234-5678"/>
+        <input type="text" name="identificacion" placeholder="Ej: 1-1234-5678"
+               th:value="${v_identificacion}"/>
+        <span class="field-error" th:if="${errorIdentificacion}" th:text="${errorIdentificacion}"></span>
 
         <label>Nombre *</label>
-        <input type="text" name="nombre" required placeholder="Ej: Juan"/>
+        <input type="text" name="nombre" placeholder="Ej: Juan"
+               th:value="${v_nombre}"/>
+        <span class="field-error" th:if="${errorNombre}" th:text="${errorNombre}"></span>
 
         <label>Primer apellido *</label>
-        <input type="text" name="primerApellido" required placeholder="Ej: Pérez"/>
+        <input type="text" name="primerApellido" placeholder="Ej: Pérez"
+               th:value="${v_primerApellido}"/>
+        <span class="field-error" th:if="${errorApellido}" th:text="${errorApellido}"></span>
 
         <label>Nacionalidad *</label>
-        <input type="text" name="nacionalidad" required placeholder="Ej: Costarricense"/>
+        <input type="text" name="nacionalidad" placeholder="Ej: Costarricense"
+               th:value="${v_nacionalidad}"/>
 
         <label>Lugar de residencia *</label>
-        <input type="text" name="residencia" required placeholder="Ej: San José, Costa Rica"/>
+        <input type="text" name="residencia" placeholder="Ej: San José, Costa Rica"
+               th:value="${v_residencia}"/>
 
         <label>Teléfono * (+506 XXXX XXXX)</label>
-        <input type="text" name="telefono" required placeholder="+506 8888 8888"/>
+        <input type="text" name="telefono" placeholder="+506 8888 8888"
+               th:value="${v_telefono}"/>
+        <span class="field-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></span>
 
         <label>Correo electrónico *</label>
-        <input type="email" name="correo" required placeholder="correo@ejemplo.com"/>
+        <input type="email" name="correo" placeholder="correo@ejemplo.com"
+               th:value="${v_correo}"/>
 
         <label>Contraseña *</label>
-        <input type="password" name="clave" required minlength="6" placeholder="Mínimo 6 caracteres"/>
+        <input type="password" name="clave" placeholder="Mínimo 6 caracteres"/>
 
         <label>Confirmar contraseña *</label>
-        <input type="password" name="clave2" required minlength="6" placeholder="Repetir contraseña"/>
+        <input type="password" name="clave2" placeholder="Repetir contraseña"/>
         <span class="field-error" th:if="${errorClave}" th:text="${errorClave}"></span>
 
         <button type="submit" class="btn btn-primary" style="width:100%;margin-top:22px">Registrar Oferente</button>

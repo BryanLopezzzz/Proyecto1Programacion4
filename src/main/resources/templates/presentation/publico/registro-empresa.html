@@ -13,27 +13,33 @@
 
     <form method="post" th:action="@{/registro/empresa}">
         <label>Nombre de la empresa *</label>
-        <input type="text" name="nombre" required placeholder="Ej: TechCorp S.A."/>
+        <input type="text" name="nombre" placeholder="Ej: TechCorp S.A."
+               th:value="${v_nombre}"/>
+        <span class="field-error" th:if="${errorNombre}" th:text="${errorNombre}"></span>
 
         <label>Correo electrónico *</label>
-        <input type="email" name="correo" required placeholder="contacto@empresa.com"/>
+        <input type="email" name="correo" placeholder="contacto@empresa.com"
+               th:value="${v_correo}"/>
 
         <label>Contraseña *</label>
-        <input type="password" name="clave" required minlength="6" placeholder="Mínimo 6 caracteres"/>
+        <input type="password" name="clave" placeholder="Mínimo 6 caracteres"/>
 
         <label>Confirmar contraseña *</label>
-        <input type="password" name="clave2" required minlength="6" placeholder="Repetir contraseña"/>
+        <input type="password" name="clave2" placeholder="Repetir contraseña"/>
         <span class="field-error" th:if="${errorClave}" th:text="${errorClave}"></span>
 
         <label>Localización *</label>
-        <input type="text" name="localizacion" required placeholder="San José, Costa Rica"/>
+        <input type="text" name="localizacion" placeholder="San José, Costa Rica"
+               th:value="${v_localizacion}"/>
 
         <label>Teléfono * (+506 XXXX XXXX)</label>
-        <input type="text" name="telefono" required placeholder="+506 8888 8888"/>
+        <input type="text" name="telefono" placeholder="+506 8888 8888"
+               th:value="${v_telefono}"/>
+        <span class="field-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></span>
 
         <label>Descripción *</label>
-        <textarea name="descripcion" required placeholder="Descripción de la empresa..."></textarea>
-
+        <textarea name="descripcion" placeholder="Descripción de la empresa..."
+                  th:text="${v_descripcion}"></textarea>
         <button type="submit" class="btn btn-primary" style="width:100%;margin-top:22px">Registrar Empresa</button>
     </form>
 

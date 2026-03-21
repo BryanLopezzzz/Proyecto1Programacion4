@@ -16,8 +16,13 @@ public class EmpresaService {
 
     @Transactional
     public void registrar(Empresa empresa, String correo, String clave) {
-        if (usuarioRepository.findByCorreo(correo).isPresent())
+        Optional<Usuario> existente = usuarioRepository.findByCorreo(correo);
+        if (existente.isPresent()) {
+            if (existente.get().getEstado() == Usuario.Estado.RECHAZADO) {
+                throw new IllegalArgumentException("Este correo fue rechazado previamente. Contacte al administrador.");
+            }
             throw new IllegalArgumentException("El correo ya está registrado");
+        }
 
         Usuario usuario = new Usuario();
         usuario.setCorreo(correo);

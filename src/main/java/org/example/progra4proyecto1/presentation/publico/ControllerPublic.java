@@ -81,7 +81,36 @@ public class ControllerPublic {
             @RequestParam String descripcion,
             Model model) {
 
+        model.addAttribute("v_correo", correo);
+        model.addAttribute("v_localizacion", localizacion);
+        model.addAttribute("v_descripcion", descripcion);
+
+
+        if (nombre == null || nombre.isBlank()) {
+            model.addAttribute("errorNombre", "El nombre es requerido");
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-empresa";
+        }
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")) {
+            model.addAttribute("errorNombre", "El nombre solo puede contener letras y espacios");
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-empresa";
+        }
+        if (nombre.isBlank()) {
+            model.addAttribute("errorNombre", "El nombre no puede ser solo espacios");
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-empresa";
+        }
+        if (nombre.matches(".*\\d.*")) {
+            model.addAttribute("errorNombre", "El nombre no puede contener números");
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-empresa";
+        }
+
+        model.addAttribute("v_nombre", nombre);
+
         if (!clave.equals(clave2)) {
+            model.addAttribute("v_telefono", telefono);
             model.addAttribute("errorClave", "Las claves no coinciden");
             return "presentation/publico/registro-empresa";
         }
@@ -125,6 +154,63 @@ public class ControllerPublic {
             @RequestParam String residencia,
             Model model) {
 
+        model.addAttribute("v_identificacion", identificacion);
+        model.addAttribute("v_correo", correo);
+        model.addAttribute("v_nacionalidad", nacionalidad);
+        model.addAttribute("v_residencia", residencia);
+
+        // Validar identificación
+        if (identificacion == null || identificacion.isBlank()) {
+            model.addAttribute("errorIdentificacion", "La identificación es requerida");
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_primerApellido", primerApellido);
+            return "presentation/publico/registro-oferente";
+        }
+        // Formato cédula costarricense: X-XXXX-XXXX
+        if (!identificacion.matches("^\\d{1}-\\d{4}-\\d{4}$")) {
+            model.addAttribute("errorIdentificacion", "La identificación debe tener el formato X-XXXX-XXXX");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_primerApellido", primerApellido);
+            return "presentation/publico/registro-oferente";
+        }
+
+        model.addAttribute("v_identificacion", identificacion);
+        // Validar nombre
+        if (nombre == null || nombre.isBlank()) {
+            model.addAttribute("errorNombre", "El nombre es requerido");
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_primerApellido", primerApellido);
+            return "presentation/publico/registro-oferente";
+        }
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")) {
+            model.addAttribute("errorNombre", "El nombre solo puede contener letras y espacios");
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_primerApellido", primerApellido);
+            return "presentation/publico/registro-oferente";
+        }
+        model.addAttribute("v_nombre", nombre);
+
+        // Validar primer apellido
+        if (primerApellido == null || primerApellido.isBlank()) {
+            model.addAttribute("errorApellido", "El primer apellido es requerido");
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_primerApellido", primerApellido);
+            return "presentation/publico/registro-oferente";
+        }
+        if (!primerApellido.matches("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")) {
+            model.addAttribute("errorApellido", "El apellido solo puede contener letras y espacios");
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-oferente";
+        }
+        model.addAttribute("v_primerApellido", primerApellido);
+
+        if (clave == null || clave.isBlank() || clave.length() < 6) {
+            model.addAttribute("errorClave", "La contraseña debe tener mínimo 6 caracteres");
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-oferente";
+        }
+
         if (!clave.equals(clave2)) {
             model.addAttribute("errorClave", "Las claves no coinciden");
             return "presentation/publico/registro-oferente";
@@ -146,6 +232,7 @@ public class ControllerPublic {
             oferenteService.registrar(oferente, correo, clave);
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorGeneral", e.getMessage());
+            model.addAttribute("v_telefono", telefono);
             return "presentation/publico/registro-oferente";
         }
         return "redirect:/login?registrado=true";

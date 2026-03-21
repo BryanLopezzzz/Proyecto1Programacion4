@@ -19,8 +19,13 @@ public class OferenteService {
 
     @Transactional
     public void registrar(Oferente oferente, String correo, String clave) {
-        if (usuarioRepository.findByCorreo(correo).isPresent())
+        Optional<Usuario> existente = usuarioRepository.findByCorreo(correo);
+        if (existente.isPresent()) {
+            if (existente.get().getEstado() == Usuario.Estado.RECHAZADO) {
+                throw new IllegalArgumentException("Este correo fue rechazado previamente. Contacte al administrador.");
+            }
             throw new IllegalArgumentException("El correo ya está registrado");
+        }
         if (oferenteRepository.existsByIdentificacion(oferente.getIdentificacion()))
             throw new IllegalArgumentException("La identificación ya está registrada");
 

@@ -25,27 +25,31 @@
   <table th:if="${pendientes != null && !#lists.isEmpty(#lists.toList(pendientes))}">
     <thead>
     <tr>
-      <th>ID</th>
+      <th>Nombre</th>
       <th>Correo</th>
+      <th>Teléfono</th>
+      <th>Localización</th>
+      <th>Descripción</th>
       <th>Estado</th>
       <th>Acciones</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="u : ${pendientes}">
-      <td th:text="${u.id}"></td>
-      <td th:text="${u.correo}"></td>
-      <td>
-        <span class="badge badge-pendiente" th:text="${u.estado}"></span>
-      </td>
+    <tr th:each="e : ${pendientes}">
+      <td th:text="${e.nombre}"></td>
+      <td th:text="${e.usuario.correo}"></td>
+      <td th:text="${e.telefono}"></td>
+      <td th:text="${e.localizacion}"></td>
+      <td th:text="${#strings.abbreviate(e.descripcion, 60)}"></td>
+      <td><span class="badge badge-pendiente" th:text="${e.usuario.estado}"></span></td>
       <td>
         <form method="post"
-              th:action="@{/admin/empresas/aprobar/{id}(id=${u.id})}"
+              th:action="@{/admin/empresas/aprobar/{id}(id=${e.usuario.id})}"
               style="display:inline">
           <button type="submit" class="btn btn-primary btn-sm">✔ Aprobar</button>
         </form>
         <form method="post"
-              th:action="@{/admin/empresas/rechazar/{id}(id=${u.id})}"
+              th:action="@{/admin/empresas/rechazar/{id}(id=${e.usuario.id})}"
               style="display:inline">
           <button type="submit" class="btn btn-secondary btn-sm">✘ Rechazar</button>
         </form>
