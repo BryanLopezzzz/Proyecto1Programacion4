@@ -48,7 +48,7 @@
             <option value="PRIVADO">Privado (solo para oferentes registrados)</option>
         </select>
 
-        <label>Características requeridas (marque y asigne nivel 1-5)</label>
+        <label>Características requeridas (marque y asigne nivel)</label>
         <div class="arbol">
             <!-- Nivel 1: raíces -->
             <div class="grupo" th:each="raiz : ${raices}">
@@ -63,19 +63,10 @@
                                    th:value="true"/>
                             <span th:text="${hijo.nombre}"></span>
                         </label>
-                        <!--
-                            CORRECCIÓN CRÍTICA: el nivel va en un campo cuyo nombre
-                            incluye el ID de la característica, así el controller
-                            puede emparejar checkbox con su nivel sin importar
-                            cuáles checkboxes estén marcados.
-                            Nombre: nivel_<id>
-                        -->
                         <select th:name="'nivel_' + ${hijo.id}" class="nivel-sel">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3" selected>3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
+                            <option value="1">Básico</option>
+                            <option value="2" selected>Intermedio</option>
+                            <option value="3">Avanzado</option>
                         </select>
 
                         <!-- Nivel 3: nietos -->
@@ -89,11 +80,9 @@
                                     <span th:text="${nieto.nombre}"></span>
                                 </label>
                                 <select th:name="'nivel_' + ${nieto.id}" class="nivel-sel">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3" selected>3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
+                                    <option value="1">Básico</option>
+                                    <option value="2" selected>Intermedio</option>
+                                    <option value="3">Avanzado</option>
                                 </select>
                             </li>
                         </ul>

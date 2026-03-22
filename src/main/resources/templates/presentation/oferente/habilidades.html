@@ -18,7 +18,7 @@
 </nav>
 <div class="container panels">
 
-    <!-- Panel izquierdo: tabla de habilidades actuales -->
+    <!-- Panel izquierdo: tabla de habilidades -->
     <div class="card panel-left">
         <h2>Mis Habilidades</h2>
         <table th:if="${!#lists.isEmpty(habilidades)}">
@@ -28,7 +28,11 @@
             <tbody>
             <tr th:each="h : ${habilidades}">
                 <td th:text="${h.caracteristica.nombre}"></td>
-                <td><span class="nivel-badge" th:text="${h.nivel}"></span></td>
+                <td>
+                    <span class="badge badge-activo"
+                          th:text="${h.nivel == 1 ? 'Básico' : (h.nivel == 2 ? 'Intermedio' : 'Avanzado')}">
+                    </span>
+                </td>
                 <td>
                     <form method="post"
                           th:action="@{/oferente/habilidades/eliminar/{id}(id=${h.caracteristica.id})}">
@@ -46,41 +50,21 @@
         <h3>Agregar Habilidad</h3>
         <form method="post" th:action="@{/oferente/habilidades/agregar}">
             <label>Característica</label>
-            <!--
-                CORRECCIÓN: el select ahora itera sobre raíces → hijos → nietos,
-                mostrando los 3 niveles del árbol jerárquico.
-                Solo los nodos hoja (los que no tienen hijos o que el usuario
-                puede seleccionar) aparecen como opciones seleccionables.
-                Los grupos (optgroup) agrupan visualmente la jerarquía.
-            -->
             <select name="caracteristicaId" required>
                 <option value="">-- Seleccione --</option>
                 <th:block th:each="raiz : ${raices}">
-                    <!--
-                        Si la raíz tiene hijos, la usamos como optgroup.
-                        Si no tiene hijos (es hoja), la incluimos como opción directa.
-                    -->
                     <th:block th:if="${raiz.hijos != null && !raiz.hijos.isEmpty()}">
                         <optgroup th:label="${raiz.nombre}">
                             <th:block th:each="hijo : ${raiz.hijos}">
-                                <!--
-                                    Si el hijo también tiene hijos, creamos un sub-grupo
-                                    prefijando el nombre para indicar la jerarquía.
-                                    HTML no soporta optgroup anidados, así que usamos
-                                    un prefijo "↳" para mostrar el nivel visualmente.
-                                -->
                                 <th:block th:if="${hijo.hijos != null && !hijo.hijos.isEmpty()}">
-                                    <!-- El hijo intermedio como opción propia -->
                                     <option th:value="${hijo.id}"
                                             th:text="${hijo.nombre}">
                                     </option>
-                                    <!-- Sus hijos (nietos de la raíz) con sangría visual -->
                                     <option th:each="nieto : ${hijo.hijos}"
                                             th:value="${nieto.id}"
                                             th:text="${'↳ ' + nieto.nombre}">
                                     </option>
                                 </th:block>
-                                <!-- Hijo sin hijos: opción directa -->
                                 <option th:if="${hijo.hijos == null || hijo.hijos.isEmpty()}"
                                         th:value="${hijo.id}"
                                         th:text="${hijo.nombre}">
@@ -88,7 +72,6 @@
                             </th:block>
                         </optgroup>
                     </th:block>
-                    <!-- Raíz sin hijos: opción directa -->
                     <option th:if="${raiz.hijos == null || raiz.hijos.isEmpty()}"
                             th:value="${raiz.id}"
                             th:text="${raiz.nombre}">
@@ -96,8 +79,13 @@
                 </th:block>
             </select>
 
-            <label>Nivel (1-5)</label>
-            <input type="number" name="nivel" min="1" max="5" value="3"/>
+            <label>Nivel</label>
+            <select name="nivel" required>
+                <option value="1">Básico</option>
+                <option value="2" selected>Intermedio</option>
+                <option value="3">Avanzado</option>
+            </select>
+
             <button type="submit" class="btn btn-primary" style="margin-top:16px">
                 Agregar habilidad
             </button>

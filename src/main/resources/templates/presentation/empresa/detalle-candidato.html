@@ -35,7 +35,11 @@
             <tbody>
             <tr th:each="h : ${habilidades}">
                 <td th:text="${h.caracteristica.nombre}"></td>
-                <td><span class="nivel-badge" th:text="${h.nivel}"></span></td>
+                <td>
+                    <span class="badge badge-activo"
+                          th:text="${h.nivel == 1 ? 'Básico' : (h.nivel == 2 ? 'Intermedio' : 'Avanzado')}">
+                    </span>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -44,7 +48,7 @@
 
     <div th:if="${oferente.curriculumPdf != null}" style="margin-bottom:16px">
         <a class="btn btn-primary" th:href="@{/uploads/{f}(f=${oferente.curriculumPdf})}" target="_blank">
-             Ver Currículo PDF
+            Ver Currículo PDF
         </a>
     </div>
 

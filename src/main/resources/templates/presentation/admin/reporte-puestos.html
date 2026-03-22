@@ -20,13 +20,11 @@
 
 <div class="container">
 
-    <!-- Botones de acción (se ocultan al imprimir) -->
     <div class="no-print">
         <a class="btn btn-outline" th:href="@{/admin/reportes}">← Volver</a>
         <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
     </div>
 
-    <!-- Encabezado del reporte -->
     <div class="reporte-header">
         <div class="reporte-meta">
             <span class="print-logo">Sistema Bolsa de Empleo — Universidad Nacional</span>
@@ -40,7 +38,6 @@
         </div>
     </div>
 
-    <!-- Tabla de puestos -->
     <table th:if="${puestos != null && !#lists.isEmpty(puestos)}">
         <thead>
         <tr>
@@ -60,14 +57,18 @@
             <td th:text="${p.descripcion}"></td>
             <td th:text="${p.moneda.codigo + ' ' + #numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></td>
             <td>
-        <span class="badge"
-              th:classappend="${p.tipo.name() == 'PUBLICO'} ? 'badge-publico' : 'badge-privado'"
-              th:text="${p.tipo}"></span>
+                <span class="badge"
+                      th:classappend="${p.tipo.name() == 'PUBLICO'} ? 'badge-publico' : 'badge-privado'"
+                      th:text="${p.tipo}"></span>
             </td>
             <td>
-        <span th:each="c, i : ${p.caracteristicas}"
-              th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (i.last ? '' : ', ')}">
-        </span>
+                <span th:each="c, i : ${p.caracteristicas}"
+                      th:text="${c.caracteristica.nombre
+                                 + ' ('
+                                 + (c.nivelRequerido == 1 ? 'Básico' : (c.nivelRequerido == 2 ? 'Intermedio' : 'Avanzado'))
+                                 + ')'
+                                 + (i.last ? '' : ', ')}">
+                </span>
                 <em th:if="${p.caracteristicas == null || #lists.isEmpty(p.caracteristicas)}"
                     style="color:#9f1239;font-size:12px">Sin características</em>
             </td>
@@ -76,7 +77,6 @@
         </tbody>
     </table>
 
-    <!-- Sin datos -->
     <div class="empty-reporte" th:if="${puestos == null || #lists.isEmpty(puestos)}">
         <div class="icono">📭</div>
         No hay puestos publicados en este período.

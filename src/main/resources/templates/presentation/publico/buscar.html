@@ -166,9 +166,13 @@
             <td th:text="${#numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></td>
             <td th:text="${p.moneda.codigo}"></td>
             <td>
-                    <span th:each="c, iter : ${p.caracteristicas}"
-                          th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (iter.last ? '' : ', ')}">
-                    </span>
+                <span th:each="c, iter : ${p.caracteristicas}"
+                      th:text="${c.caracteristica.nombre
+                                 + ' ('
+                                 + (c.nivelRequerido == 1 ? 'Básico' : (c.nivelRequerido == 2 ? 'Intermedio' : 'Avanzado'))
+                                 + ')'
+                                 + (iter.last ? '' : ', ')}">
+                </span>
             </td>
         </tr>
         </tbody>

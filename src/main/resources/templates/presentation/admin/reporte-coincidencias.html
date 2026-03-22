@@ -20,13 +20,11 @@
 
 <div class="container">
 
-    <!-- Botones (se ocultan al imprimir) -->
     <div class="no-print">
         <a class="btn btn-outline" th:href="@{/admin/reportes}">← Volver</a>
         <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
     </div>
 
-    <!-- Encabezado del reporte -->
     <div class="reporte-header">
         <div class="reporte-meta">
             <span class="print-logo">Sistema Bolsa de Empleo — Universidad Nacional</span>
@@ -40,39 +38,38 @@
         </div>
     </div>
 
-    <!-- Sin datos -->
     <div class="empty-reporte" th:if="${puestos == null || #lists.isEmpty(puestos)}">
-        <div class="icono">📭</div>
+        <div class="icono"></div>
         No hay puestos publicados en este período.
     </div>
 
-    <!-- Sección por cada puesto -->
     <div th:each="p, iter : ${puestos}" class="puesto-seccion">
 
-        <!-- Título del puesto -->
         <div class="puesto-titulo">
-      <span>
-        Puesto #<span th:text="${p.id}"></span> —
-        <span th:text="${p.empresa.nombre}"></span>:
-        <span th:text="${#strings.abbreviate(p.descripcion, 60)}"></span>
-      </span>
+            <span>
+                Puesto #<span th:text="${p.id}"></span> —
+                <span th:text="${p.empresa.nombre}"></span>:
+                <span th:text="${#strings.abbreviate(p.descripcion, 60)}"></span>
+            </span>
             <span class="tipo-badge" th:text="${p.tipo}"></span>
         </div>
 
-        <!-- Info del puesto -->
         <div class="puesto-info">
-            <span>💰 Salario: <strong th:text="${p.moneda.codigo + ' ' + #numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></strong></span>
-            <span>📅 Publicado: <strong th:text="${#temporals.format(p.fechaRegistro, 'dd/MM/yyyy')}"></strong></span>
-            <span>🔧 Características requeridas:
-        <strong>
-          <span th:each="c, ci : ${p.caracteristicas}"
-                th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (ci.last ? '' : ', ')}"></span>
-          <em th:if="${p.caracteristicas == null || #lists.isEmpty(p.caracteristicas)}">Ninguna</em>
-        </strong>
-      </span>
+            <span> Salario: <strong th:text="${p.moneda.codigo + ' ' + #numbers.formatDecimal(p.salario, 1, 'COMMA', 2, 'POINT')}"></strong></span>
+            <span> Publicado: <strong th:text="${#temporals.format(p.fechaRegistro, 'dd/MM/yyyy')}"></strong></span>
+            <span> Características requeridas:
+                <strong>
+                    <span th:each="c, ci : ${p.caracteristicas}"
+                          th:text="${c.caracteristica.nombre
+                                     + ' ('
+                                     + (c.nivelRequerido == 1 ? 'Básico' : (c.nivelRequerido == 2 ? 'Intermedio' : 'Avanzado'))
+                                     + ')'
+                                     + (ci.last ? '' : ', ')}"></span>
+                    <em th:if="${p.caracteristicas == null || #lists.isEmpty(p.caracteristicas)}">Ninguna</em>
+                </strong>
+            </span>
         </div>
 
-        <!-- Tabla de candidatos para ese puesto -->
         <table th:with="cands=${candidatosPorPuesto[iter.index]}"
                th:if="${cands != null && !#lists.isEmpty(cands)}">
             <thead>

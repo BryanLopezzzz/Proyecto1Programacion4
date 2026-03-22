@@ -80,7 +80,11 @@
             </td>
             <td>
                 <span th:each="c, i : ${p.caracteristicas}"
-                      th:text="${c.caracteristica.nombre + ' (N' + c.nivelRequerido + ')' + (i.last ? '' : ', ')}">
+                      th:text="${c.caracteristica.nombre
+                                 + ' ('
+                                 + (c.nivelRequerido == 1 ? 'Básico' : (c.nivelRequerido == 2 ? 'Intermedio' : 'Avanzado'))
+                                 + ')'
+                                 + (i.last ? '' : ', ')}">
                 </span>
             </td>
         </tr>
