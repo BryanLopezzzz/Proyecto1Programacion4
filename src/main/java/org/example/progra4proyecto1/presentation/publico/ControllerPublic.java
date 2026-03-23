@@ -258,6 +258,24 @@ public class ControllerPublic {
         }
         model.addAttribute("v_primerApellido", primerApellido);
 
+        // Validar nacionalidad
+        if (nacionalidad == null || nacionalidad.isBlank()) {
+            model.addAttribute("errorGeneral", "La nacionalidad es requerida");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_primerApellido", primerApellido);
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-oferente";
+        }
+
+        // Validar residencia
+        if (residencia == null || residencia.isBlank()) {
+            model.addAttribute("errorGeneral", "La residencia es requerida");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_primerApellido", primerApellido);
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-oferente";
+        }
+
         if (clave == null || clave.isBlank() || clave.length() < 6) {
             model.addAttribute("errorClave", "La contraseña debe tener mínimo 6 caracteres");
             model.addAttribute("v_telefono", telefono);
