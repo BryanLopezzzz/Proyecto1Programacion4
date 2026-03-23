@@ -59,8 +59,16 @@ public class PuestoService {
         });
     }
 
-    public List<Puesto> buscarPublicos(List<Integer> ids, boolean modoTodos) {
+    public List<Puesto> buscarPublicos(List<Integer> ids, boolean modoTodos, Integer monedaId) {
         List<Puesto> todos = puestoRepository.findAllPublicosActivos();
+
+        // Filtrar por moneda si se especificó
+        if (monedaId != null) {
+            todos = todos.stream()
+                    .filter(p -> p.getMoneda().getId().equals(monedaId))
+                    .collect(Collectors.toList());
+        }
+
         if (ids == null || ids.isEmpty()) return todos;
         return filtrar(todos, ids, modoTodos);
     }

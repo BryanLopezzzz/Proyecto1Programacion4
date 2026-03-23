@@ -10,7 +10,6 @@
             background: #fdfafb;
             color: #2d0a0a;
         }
-
         nav {
             background: #4c0519;
             padding: 15px 40px;
@@ -19,11 +18,9 @@
         nav .brand { color: #fff1f2; font-weight: 800; font-size: 20px; }
         nav a { color: #fecdd3; text-decoration: none; font-size: 13px; margin-left: 20px; }
         nav a:hover { color: #ffffff; }
-
         .container { padding: 40px 10%; max-width: 960px; }
         h2 { color: #4c0519; margin-bottom: 20px; font-size: 26px; font-weight: 900; }
         h3 { color: #4c0519; margin-bottom: 12px; font-size: 18px; font-weight: 800; }
-
         .arbol {
             border: 1px solid #fecdd3;
             padding: 16px; border-radius: 12px;
@@ -38,7 +35,6 @@
             gap: 6px; cursor: pointer; color: #4c0519;
         }
         .arbol input[type=checkbox] { accent-color: #831843; cursor: pointer; }
-
         .modo {
             margin: 14px 0 18px; font-size: 14px;
             display: flex; gap: 24px; align-items: center; color: #4c0519;
@@ -46,7 +42,6 @@
         .modo strong { color: #4c0519; }
         .modo label { cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .modo input[type=radio] { accent-color: #831843; }
-
         .btns { display: flex; gap: 10px; margin-bottom: 28px; }
         .btn {
             padding: 9px 22px; border: none; border-radius: 8px;
@@ -59,7 +54,6 @@
             border: 2px solid #831843; text-decoration: none; display: inline-block;
         }
         .btn-limpiar:hover { background: #831843; color: white; }
-
         table {
             width: 100%; border-collapse: collapse; background: white;
             border-radius: 12px; overflow: hidden;
@@ -72,9 +66,28 @@
         td { padding: 11px 14px; border-bottom: 1px solid #fff1f2; font-size: 13px; color: #2d0a0a; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: #fff1f2; }
-
         .empty { color: #9f1239; font-style: italic; margin-top: 14px; font-size: 14px; }
-
+        .filtro-moneda {
+            margin-bottom: 16px;
+        }
+        .filtro-moneda label {
+            display: block;
+            font-size: 13px;
+            color: #4c0519;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .filtro-moneda select {
+            padding: 8px 12px;
+            border: 1px solid #fecdd3;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #2d0a0a;
+            background: white;
+            accent-color: #831843;
+            min-width: 240px;
+        }
+        .filtro-moneda select:focus { border-color: #831843; outline: none; }
         footer {
             background: #4c0519; color: #fecdd3;
             padding: 30px 40px; margin-top: 60px;
@@ -99,6 +112,8 @@
     <h2>Buscar puestos por características</h2>
 
     <form method="post" th:action="@{/buscar}">
+
+        <!-- Árbol de características -->
         <div class="arbol">
             <div th:each="raiz : ${raices}">
                 <label>
@@ -127,6 +142,20 @@
             </div>
         </div>
 
+        <!-- Filtro por moneda -->
+        <div class="filtro-moneda">
+            <label>Filtrar por moneda (opcional)</label>
+            <select name="monedaId">
+                <option value="">-- Todas las monedas --</option>
+                <option th:each="m : ${monedas}"
+                        th:value="${m.id}"
+                        th:text="${m.nombre + ' (' + m.codigo + ')'}"
+                        th:selected="${monedaSeleccionada != null && monedaSeleccionada == m.id}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Modo de búsqueda AND/OR -->
         <div class="modo">
             <strong>Modo de búsqueda:</strong>
             <label>

@@ -115,8 +115,8 @@ CREATE TABLE IF NOT EXISTS oferente_habilidad (
 
 -- Moneda por defecto (colones costarricenses)
 INSERT INTO moneda (codigo, nombre) VALUES
-    ('CRC', 'Colón Costarricense');
-
+                                        ('CRC', 'Colón Costarricense'),
+                                        ('USD', 'Dólar Estadounidense');
 -- Administrador por defecto
 -- Identificación: admin | Clave: admin123 (hash BCrypt)
 INSERT INTO administrador (identificacion, clave) VALUES
@@ -149,3 +149,4 @@ INSERT INTO caracteristica (id, nombre, padre_id) VALUES
                                                       (17, 'Ciberseguridad', NULL),
                                                       (18, 'OWASP',      17),
                                                       (19, 'Redes',      17);
+

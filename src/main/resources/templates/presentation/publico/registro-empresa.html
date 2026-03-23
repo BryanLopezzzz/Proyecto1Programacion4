@@ -20,17 +20,18 @@
         <label>Correo electrónico *</label>
         <input type="email" name="correo" placeholder="contacto@empresa.com"
                th:value="${v_correo}"/>
+        <span class="field-error" th:if="${errorCorreo}" th:text="${errorCorreo}"></span>
 
         <label>Contraseña *</label>
-        <input type="password" name="clave" placeholder="Mínimo 6 caracteres"/>
+        <input type="password" name="clave" placeholder="Mínimo 6 caracteres" minlength="6" required/>
 
         <label>Confirmar contraseña *</label>
-        <input type="password" name="clave2" placeholder="Repetir contraseña"/>
-        <span class="field-error" th:if="${errorClave}" th:text="${errorClave}"></span>
-
+        <input type="password" name="clave2" placeholder="Repetir contraseña" minlength="6" required/>
         <label>Localización *</label>
+
         <input type="text" name="localizacion" placeholder="San José, Costa Rica"
                th:value="${v_localizacion}"/>
+        <span class="field-error" th:if="${errorLocalizacion}" th:text="${errorLocalizacion}"></span>
 
         <label>Teléfono * (+506 XXXX XXXX)</label>
         <input type="text" name="telefono" placeholder="+506 8888 8888"
@@ -40,6 +41,8 @@
         <label>Descripción *</label>
         <textarea name="descripcion" placeholder="Descripción de la empresa..."
                   th:text="${v_descripcion}"></textarea>
+        <span class="field-error" th:if="${errorDescripcion}" th:text="${errorDescripcion}"></span>
+
         <button type="submit" class="btn btn-primary" style="width:100%;margin-top:22px">Registrar Empresa</button>
     </form>
 

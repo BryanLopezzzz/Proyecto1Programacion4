@@ -44,16 +44,19 @@ public class ControllerPublic {
         return "presentation/publico/buscar";
     }
 
+
     @PostMapping("/buscar")
     public String buscarResultados(
             @RequestParam(value = "caracteristicas", required = false) List<Integer> ids,
             @RequestParam(value = "modoTodos", defaultValue = "false") boolean modoTodos,
+            @RequestParam(value = "monedaId", required = false) Integer monedaId,
             Model model) {
         model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
-        model.addAttribute("resultados", puestoService.buscarPublicos(ids, modoTodos));
+        model.addAttribute("resultados", puestoService.buscarPublicos(ids, modoTodos, monedaId));
         model.addAttribute("seleccionadas", ids);
         model.addAttribute("modoTodos", modoTodos);
         model.addAttribute("monedas", monedaRepository.findAll());
+        model.addAttribute("monedaSeleccionada", monedaId);
         return "presentation/publico/buscar";
     }
 
@@ -91,11 +94,12 @@ public class ControllerPublic {
             model.addAttribute("v_telefono", telefono);
             return "presentation/publico/registro-empresa";
         }
-        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]+$")) {
-            model.addAttribute("errorNombre", "El nombre solo puede contener letras y espacios");
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ][a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s\\.]*$")) {
+            model.addAttribute("errorNombre", "El nombre solo puede contener letras, espacios y puntos");
             model.addAttribute("v_telefono", telefono);
             return "presentation/publico/registro-empresa";
         }
+
         if (nombre.isBlank()) {
             model.addAttribute("errorNombre", "El nombre no puede ser solo espacios");
             model.addAttribute("v_telefono", telefono);
@@ -109,16 +113,65 @@ public class ControllerPublic {
 
         model.addAttribute("v_nombre", nombre);
 
-        if (!clave.equals(clave2)) {
+        // Validar que la clave no esté vacía y tenga mínimo 6 caracteres
+        if (clave == null || clave.isBlank() || clave.length() < 6) {
+            model.addAttribute("errorClave", "La contraseña debe tener mínimo 6 caracteres");
+            model.addAttribute("v_nombre", nombre);
             model.addAttribute("v_telefono", telefono);
-            model.addAttribute("errorClave", "Las claves no coinciden");
             return "presentation/publico/registro-empresa";
         }
+
+        if (!clave.equals(clave2)) {
+            model.addAttribute("errorClave", "Las claves no coinciden");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_telefono", telefono);
+            return "presentation/publico/registro-empresa";
+        }
+
         if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
             model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
             return "presentation/publico/registro-empresa";
         }
 
+        // Validar correo
+        if (correo == null || correo.isBlank()) {
+            model.addAttribute("errorCorreo", "El correo es requerido");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_localizacion", localizacion);
+            model.addAttribute("v_descripcion", descripcion);
+            return "presentation/publico/registro-empresa";
+        }
+
+        // Validar localización
+        if (localizacion == null || localizacion.isBlank()) {
+            model.addAttribute("errorLocalizacion", "La localización es requerida");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_correo", correo);
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_descripcion", descripcion);
+            return "presentation/publico/registro-empresa";
+        }
+
+        // Validar descripción
+        if (descripcion == null || descripcion.isBlank()) {
+            model.addAttribute("errorDescripcion", "La descripción es requerida");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_correo", correo);
+            model.addAttribute("v_telefono", telefono);
+            model.addAttribute("v_localizacion", localizacion);
+            return "presentation/publico/registro-empresa";
+        }
+
+        // Validar teléfono
+        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+            model.addAttribute("v_nombre", nombre);
+            model.addAttribute("v_correo", correo);
+            model.addAttribute("v_localizacion", localizacion);
+            model.addAttribute("v_descripcion", descripcion);
+            return "presentation/publico/registro-empresa";
+        }
         Empresa empresa = new Empresa();
         empresa.setNombre(nombre);
         empresa.setLocalizacion(localizacion);
@@ -237,5 +290,7 @@ public class ControllerPublic {
         }
         return "redirect:/login?registrado=true";
     }
+
+
 }
 
