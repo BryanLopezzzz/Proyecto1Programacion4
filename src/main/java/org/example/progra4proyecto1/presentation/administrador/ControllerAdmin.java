@@ -14,7 +14,7 @@ public class ControllerAdmin {
 
     @Autowired private AdminService adminService;
     @Autowired private PuestoService puestoService;
-    @Autowired private ReporteService reporteService;
+    //@Autowired private ReporteService reporteService;
 
     @GetMapping("/dashboard")
     public String dashboard() {
