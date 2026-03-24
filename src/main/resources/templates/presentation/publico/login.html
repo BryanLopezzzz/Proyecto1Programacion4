@@ -16,8 +16,8 @@
     </div>
 
     <form method="post" th:action="@{/login}">
-        <label>Usuario (correo)</label>
-        <input type="email" name="correo" required placeholder="correo@ejemplo.com" autofocus/>
+        <label>Usuario</label>
+        <input type="text" name="correo" required placeholder="Correo o Identificación" autofocus/>
         <label>Contraseña</label>
         <input type="password" name="clave" required placeholder="••••••••"/>
         <button type="submit" class="btn btn-primary" style="width:100%;margin-top:24px">Entrar</button>
