@@ -205,27 +205,53 @@ public class ControllerPublic {
             @RequestParam String clave2,
             @RequestParam String telefono,
             @RequestParam String residencia,
+            @RequestParam String tipoIdentificacion,
             Model model) {
 
         model.addAttribute("v_identificacion", identificacion);
         model.addAttribute("v_correo", correo);
         model.addAttribute("v_nacionalidad", nacionalidad);
         model.addAttribute("v_residencia", residencia);
+        model.addAttribute("tipoIdentificacion", tipoIdentificacion);
 
-        // Validar identificación
-        if (identificacion == null || identificacion.isBlank()) {
-            model.addAttribute("errorIdentificacion", "La identificación es requerida");
+
+        // Validar tipo seleccionado
+        if (tipoIdentificacion == null || tipoIdentificacion.isBlank()) {
+            model.addAttribute("errorIdentificacion", "Debe seleccionar el tipo de identificación");
             model.addAttribute("v_telefono", telefono);
             model.addAttribute("v_primerApellido", primerApellido);
             return "presentation/publico/registro-oferente";
         }
-        // Formato cédula costarricense: X-XXXX-XXXX
-        if (!identificacion.matches("^\\d{1}-\\d{4}-\\d{4}$")) {
-            model.addAttribute("errorIdentificacion", "La identificación debe tener el formato X-XXXX-XXXX");
-            model.addAttribute("v_nombre", nombre);
+
+        // Validar identificación vacía
+        if (identificacion == null || identificacion.isBlank()) {
+            model.addAttribute("errorIdentificacion", "La identificación es requerida");
+            model.addAttribute("tipoIdentificacion", tipoIdentificacion);
             model.addAttribute("v_telefono", telefono);
             model.addAttribute("v_primerApellido", primerApellido);
             return "presentation/publico/registro-oferente";
+        }
+
+        if ("NACIONAL".equals(tipoIdentificacion)) {
+            // Validación estricta: formato X-XXXX-XXXX
+            if (!identificacion.matches("^\\d{1}-\\d{4}-\\d{4}$")) {
+                model.addAttribute("errorIdentificacion", "La identificación debe tener el formato X-XXXX-XXXX");
+                model.addAttribute("tipoIdentificacion", tipoIdentificacion);
+                model.addAttribute("v_nombre", nombre);
+                model.addAttribute("v_telefono", telefono);
+                model.addAttribute("v_primerApellido", primerApellido);
+                return "presentation/publico/registro-oferente";
+            }
+        } else if ("EXTRANJERO".equals(tipoIdentificacion)) {
+            // Validación flexible: no caracteres especiales, mínimo 3 caracteres
+            if (identificacion.length() < 3 || identificacion.matches(".*[^a-zA-Z0-9\\-].*")) {
+                model.addAttribute("errorIdentificacion", "La identificación solo puede contener letras, números y guiones");
+                model.addAttribute("tipoIdentificacion", tipoIdentificacion);
+                model.addAttribute("v_nombre", nombre);
+                model.addAttribute("v_telefono", telefono);
+                model.addAttribute("v_primerApellido", primerApellido);
+                return "presentation/publico/registro-oferente";
+            }
         }
 
         model.addAttribute("v_identificacion", identificacion);

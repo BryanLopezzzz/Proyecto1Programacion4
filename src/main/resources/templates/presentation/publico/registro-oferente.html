@@ -13,6 +13,13 @@
 
     <form method="post" th:action="@{/registro/oferente}">
 
+        <label>Tipo de identificación *</label>
+        <select name="tipoIdentificacion" required>
+            <option value="">-- Seleccione --</option>
+            <option value="NACIONAL" th:selected="${tipoIdentificacion == 'NACIONAL'}">Nacional (costarricense)</option>
+            <option value="EXTRANJERO" th:selected="${tipoIdentificacion == 'EXTRANJERO'}">Extranjero</option>
+        </select>
+
         <label>Identificación *</label>
         <input type="text" name="identificacion" placeholder="Ej: 1-1234-5678"
                th:value="${v_identificacion}"/>
