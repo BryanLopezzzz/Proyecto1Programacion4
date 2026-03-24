@@ -312,8 +312,10 @@ public class ControllerPublic {
             model.addAttribute("errorClave", "Las claves no coinciden");
             return "presentation/publico/registro-oferente";
         }
-        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
-            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+        String telefonoCompleto = "+506 " + telefono.trim();
+        if (!telefonoCompleto.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato XXXX XXXX");
+            model.addAttribute("v_telefono", telefono);
             return "presentation/publico/registro-oferente";
         }
 
@@ -322,7 +324,7 @@ public class ControllerPublic {
         oferente.setNombre(nombre);
         oferente.setPrimerApellido(primerApellido);
         oferente.setNacionalidad(nacionalidad);
-        oferente.setTelefono(telefono);
+        oferente.setTelefono(telefonoCompleto);
         oferente.setResidencia(residencia);
 
         try {
