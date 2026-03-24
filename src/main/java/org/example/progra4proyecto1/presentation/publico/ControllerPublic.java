@@ -164,18 +164,20 @@ public class ControllerPublic {
         }
 
         // Validar teléfono
-        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
-            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+        String telefonoCompleto = "+506 " + telefono.trim();
+        if (!telefonoCompleto.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato XXXX XXXX");
             model.addAttribute("v_nombre", nombre);
             model.addAttribute("v_correo", correo);
             model.addAttribute("v_localizacion", localizacion);
             model.addAttribute("v_descripcion", descripcion);
             return "presentation/publico/registro-empresa";
         }
+
         Empresa empresa = new Empresa();
         empresa.setNombre(nombre);
         empresa.setLocalizacion(localizacion);
-        empresa.setTelefono(telefono);
+        empresa.setTelefono(telefonoCompleto);
         empresa.setDescripcion(descripcion);
 
         try {
