@@ -33,9 +33,12 @@
                th:value="${v_localizacion}"/>
         <span class="field-error" th:if="${errorLocalizacion}" th:text="${errorLocalizacion}"></span>
 
-        <label>Teléfono * (+506 XXXX XXXX)</label>
-        <input type="text" name="telefono" placeholder="+506 8888 8888"
-               th:value="${v_telefono}"/>
+        <label>Teléfono * (XXXX XXXX)</label>
+        <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:600;color:#4c0519;font-size:14px">+506</span>
+            <input type="text" name="telefono" placeholder="8888 8888"
+                   th:value="${v_telefono}" style="flex:1"/>
+        </div>
         <span class="field-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></span>
 
         <label>Descripción *</label>

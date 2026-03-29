@@ -13,8 +13,15 @@
 
     <form method="post" th:action="@{/registro/oferente}">
 
+        <label>Tipo de identificación *</label>
+        <select name="tipoIdentificacion" required>
+            <option value="">-- Seleccione --</option>
+            <option value="NACIONAL" th:selected="${tipoIdentificacion == 'NACIONAL'}">Nacional (costarricense)</option>
+            <option value="EXTRANJERO" th:selected="${tipoIdentificacion == 'EXTRANJERO'}">Extranjero</option>
+        </select>
+
         <label>Identificación *</label>
-        <input type="text" name="identificacion" placeholder="Ej: 1-1234-5678"
+        <input type="text" name="identificacion" placeholder="Ej: 1-1234-5678 (Nacional)"
                th:value="${v_identificacion}"/>
         <span class="field-error" th:if="${errorIdentificacion}" th:text="${errorIdentificacion}"></span>
 
@@ -36,10 +43,13 @@
         <input type="text" name="residencia" placeholder="Ej: San José, Costa Rica"
                th:value="${v_residencia}"/>
 
-        <label>Teléfono * (+506 XXXX XXXX)</label>
-        <input type="text" name="telefono" placeholder="+506 8888 8888"
-               th:value="${v_telefono}"/>
-        <span class="field-error" th:if="${errorGeneral}" th:text="${errorGeneral}"></span>
+        <label>Teléfono * (XXXX XXXX)</label>
+        <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:600;color:#4c0519;font-size:14px">+506</span>
+            <input type="text" name="telefono" placeholder="8888 8888"
+                   th:value="${v_telefono}" style="flex:1"/>
+        </div>
+        <span class="field-error" th:if="${errorTelefono}" th:text="${errorTelefono}"></span>
 
         <label>Correo electrónico *</label>
         <input type="email" name="correo" placeholder="correo@ejemplo.com"
