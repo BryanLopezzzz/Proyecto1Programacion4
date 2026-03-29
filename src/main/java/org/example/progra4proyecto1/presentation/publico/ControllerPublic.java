@@ -88,9 +88,6 @@ public class ControllerPublic {
             model.addAttribute("v_nombre", nombre);
             model.addAttribute("v_telefono", telefono); return "presentation/publico/registro-empresa";
         }
-        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
-            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX"); return "presentation/publico/registro-empresa";
-        }
         if (correo == null || correo.isBlank()) {
             model.addAttribute("errorCorreo", "El correo es requerido");
             model.addAttribute("v_nombre", nombre);
@@ -114,18 +111,19 @@ public class ControllerPublic {
             model.addAttribute("v_telefono", telefono);
             model.addAttribute("v_localizacion", localizacion); return "presentation/publico/registro-empresa";
         }
-
-        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
-            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+        String telefonoFinal = "+506 " + telefono.trim();
+        if (!telefonoFinal.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato XXXX XXXX");
             model.addAttribute("v_nombre", nombre);
             model.addAttribute("v_correo", correo);
             model.addAttribute("v_localizacion", localizacion);
-            model.addAttribute("v_descripcion", descripcion); return "presentation/publico/registro-empresa";
+            model.addAttribute("v_descripcion", descripcion);
+            return "presentation/publico/registro-empresa";
         }
         Empresa empresa = new Empresa();
         empresa.setNombre(nombre);
         empresa.setLocalizacion(localizacion);
-        empresa.setTelefono(telefono);
+        empresa.setTelefono(telefonoFinal);
         empresa.setDescripcion(descripcion);
 
         try {
@@ -211,8 +209,10 @@ public class ControllerPublic {
             model.addAttribute("errorClave", "Las claves no coinciden");
             return "presentation/publico/registro-oferente";
         }
-        if (!telefono.matches("^\\+506 \\d{4} \\d{4}$")) {
-            model.addAttribute("errorGeneral", "El teléfono debe tener el formato +506 XXXX XXXX");
+        String telefFinal = "+506 " + telefono.trim();
+        if (!telefFinal.matches("^\\+506 \\d{4} \\d{4}$")) {
+            model.addAttribute("errorGeneral", "El teléfono debe tener el formato XXXX XXXX");
+            model.addAttribute("v_telefono", telefono);
             return "presentation/publico/registro-oferente";
         }
         Oferente oferente = new Oferente();
@@ -220,7 +220,7 @@ public class ControllerPublic {
         oferente.setNombre(nombre);
         oferente.setPrimerApellido(primerApellido);
         oferente.setNacionalidad(nacionalidad);
-        oferente.setTelefono(telefono);
+        oferente.setTelefono(telefFinal);
         oferente.setResidencia(residencia);
 
         try {
