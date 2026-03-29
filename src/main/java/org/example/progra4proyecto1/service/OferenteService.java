@@ -13,12 +13,11 @@ import java.util.*;
 
 @Service("oferenteService")
 public class OferenteService {
-
-    @Autowired private OferenteRepository oferenteRepository;
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private OferenteHabilidadRepository habilidadRepository;
-    @Autowired private CaracteristicaRepository caracteristicaRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private OferenteRepository ofeRepo;
+    @Autowired private UsuarioRepository usuRepo;
+    @Autowired private OferenteHabilidadRepository habilidadRepo;
+    @Autowired private CaracteristicaRepository caraRepo;
+    @Autowired private PasswordEncoder passEncoder;
 
     @Transactional
     public void registrar(Oferente oferente, String correo, String clave) {
@@ -29,25 +28,22 @@ public class OferenteService {
             }
             throw new IllegalArgumentException("El correo ya está registrado");
         }
-        if (oferenteRepository.existsByIdentificacion(oferente.getIdentificacion()))
+        if (ofeRepo.existsByIdentificacion(oferente.getIdentificacion()))
             throw new IllegalArgumentException("La identificación ya está registrada");
-
         Usuario usuario = new Usuario();
         usuario.setCorreo(correo);
-        usuario.setClave(passwordEncoder.encode(clave));
+        usuario.setClave(passEncoder.encode(clave));
         usuario.setRol(Usuario.Rol.OFERENTE);
         usuario.setEstado(Usuario.Estado.PENDIENTE);
-        usuarioRepository.save(usuario);
-
+        usuRepo.save(usuario);
         oferente.setUsuario(usuario);
-        oferenteRepository.save(oferente);
+        ofeRepo.save(oferente);
     }
-
     public Optional<Oferente> findByCorreo(String correo) {
-        return oferenteRepository.findByUsuario_Correo(correo);
+        return ofeRepo.findByUsuario_Correo(correo);
     }
     public Optional<Oferente> findById(Integer id) {
-        return oferenteRepository.findById(id);
+        return ofeRepo.findById(id);
     }
 
     @Transactional
@@ -59,21 +55,18 @@ public class OferenteService {
         h.setNivel(nivel);
         OferenteHabilidad.OferenteHabilidadId hId = new OferenteHabilidad.OferenteHabilidadId();
         hId.setOferenteId(oferente.getId());
-        hId.setCaracteristicaId(c.getId()); // usar c.getId() no caracteristicaId directo
+        hId.setCaracteristicaId(c.getId());
         h.setId(hId);
-
-        habilidadRepository.save(h);
+        habilidadRepo.save(h);
     }
     @Transactional
-    public void eliminarHabilidad(Oferente oferente, Integer caracteristicaId) {
-        habilidadRepository.deleteByOferenteAndCaracteristica_Id(oferente, caracteristicaId);
+    public void eliminarHabilidad(Oferente oferente, Integer caraID) {
+        habilidadRepo.deleteByOferenteAndCaracteristica_Id(oferente, caraID);
     }
-
     public List<OferenteHabilidad> getHabilidades(Oferente oferente) {
-        return habilidadRepository.findByOferente(oferente);
+        return habilidadRepo.findByOferente(oferente);
     }
-
     public void guardar(Oferente oferente) {
-        oferenteRepository.save(oferente);
+        ofeRepo.save(oferente);
     }
 }

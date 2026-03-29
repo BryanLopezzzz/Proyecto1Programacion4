@@ -23,37 +23,36 @@ public class ControllerAdmin {
 
     @GetMapping("/empresas/pendientes")
     public String empresasPendientes(Model model) {
-        model.addAttribute("pendientes", adminService.empresasPendientes());
-        return "presentation/admin/empresas-pendientes";
+        model.addAttribute("pendientes", adminServici.empresasPendientes());return "presentation/admin/empresas-pendientes";
     }
 
     @PostMapping("/empresas/aprobar/{id}")
     public String aprobarEmpresa(@PathVariable Integer id) {
-        adminService.aprobarUsuario(id);
+        adminServici.aprobarUsuario(id);
         return "redirect:/admin/empresas/pendientes";
     }
 
     @PostMapping("/empresas/rechazar/{id}")
     public String rechazarEmpresa(@PathVariable Integer id) {
-        adminService.rechazarUsuario(id);
+        adminServici.rechazarUsuario(id);
         return "redirect:/admin/empresas/pendientes";
     }
 
     @GetMapping("/oferentes/pendientes")
     public String oferentesPendientes(Model model) {
-        model.addAttribute("pendientes", adminService.oferentesPendientes());
+        model.addAttribute("pendientes", adminServici.oferentesPendientes());
         return "presentation/admin/oferentes-pendientes";
     }
 
     @PostMapping("/oferentes/aprobar/{id}")
     public String aprobarOferente(@PathVariable Integer id) {
-        adminService.aprobarUsuario(id);
+        adminServici.aprobarUsuario(id);
         return "redirect:/admin/oferentes/pendientes";
     }
 
     @PostMapping("/oferentes/rechazar/{id}")
     public String rechazarOferente(@PathVariable Integer id) {
-        adminService.rechazarUsuario(id);
+        adminServici.rechazarUsuario(id);
         return "redirect:/admin/oferentes/pendientes";
     }
 
@@ -62,9 +61,9 @@ public class ControllerAdmin {
         model.addAttribute("raices", adminServici.raices());
         model.addAttribute("todosNodos", adminServici.todosLosNodos());
         if (actualId != null) {
-            adminService.findCaracteristica(actualId).ifPresent(c -> {
+            adminServici.findCaracteristica(actualId).ifPresent(c -> {
                 model.addAttribute("actual", c);
-                model.addAttribute("hijos", adminService.hijosDe(actualId));
+                model.addAttribute("hijos", adminServici.hijosDe(actualId));
             });
         }
         return "presentation/admin/caracteristicas";
@@ -99,7 +98,7 @@ public class ControllerAdmin {
         List<Puesto> puestos = puesServicio.findByMesYAnio(mes, anio);
         List<List<CandidatoResult>> candidatosPorPuesto = new ArrayList<>();
         for (Puesto p : puestos) {
-            candidatosPorPuesto.add(puestoService.buscarCandidatos(p));
+            candidatosPorPuesto.add(puesServicio.buscarCandidatos(p));
         }
         model.addAttribute("puestos", puestos);
         model.addAttribute("candidatosPorPuesto", candidatosPorPuesto);

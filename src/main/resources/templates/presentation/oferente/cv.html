@@ -22,7 +22,7 @@
         <div class="alert-error" th:if="${error}" th:text="${error}"></div>
 
         <div class="cv-actual" th:if="${oferente.curriculumPdf != null}">
-            📄 CV actual: <strong th:text="${oferente.curriculumPdf}"></strong>
+                CV actual: <strong th:text="${oferente.curriculumPdf}"></strong>
             <br><br>
             <a class="btn btn-outline"
                th:href="@{/uploads/{f}(f=${oferente.curriculumPdf})}" target="_blank">
@@ -39,7 +39,7 @@
 </div>
 <footer>
     <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+    <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>

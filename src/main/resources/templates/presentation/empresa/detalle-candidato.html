@@ -16,7 +16,6 @@
 </nav>
 <div class="container-narrow">
     <h2>Detalle de Oferente</h2>
-
     <div class="card">
         <h3 th:text="${oferente.nombre + ' ' + oferente.primerApellido}"></h3>
         <div class="info-row"><span class="lbl">Identificación:</span><span class="val" th:text="${oferente.identificacion}"></span></div>
@@ -52,11 +51,11 @@
         </a>
     </div>
 
-    <a class="btn btn-secondary" th:href="@{/empresa/puestos}">← Volver</a>
+    <a class="btn btn-secondary" th:href="@{/empresa/puestos}"> Volver</a>
 </div>
 <footer>
     <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+    <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>

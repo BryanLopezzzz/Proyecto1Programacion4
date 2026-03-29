@@ -18,7 +18,6 @@
 </nav>
 <div class="container panels">
 
-    <!-- Panel izquierdo: tabla de habilidades -->
     <div class="card panel-left">
         <h2>Mis Habilidades</h2>
         <table th:if="${!#lists.isEmpty(habilidades)}">
@@ -36,7 +35,7 @@
                 <td>
                     <form method="post"
                           th:action="@{/oferente/habilidades/eliminar/{id}(id=${h.caracteristica.id})}">
-                        <button type="submit" class="btn btn-outline btn-sm">✕ Eliminar</button>
+                        <button type="submit" class="btn btn-outline btn-sm"> Eliminar</button>
                     </form>
                 </td>
             </tr>
@@ -45,7 +44,6 @@
         <p class="empty" th:if="${#lists.isEmpty(habilidades)}">No has registrado habilidades aún.</p>
     </div>
 
-    <!-- Panel derecho: agregar habilidad -->
     <div class="card panel-right">
         <h3>Agregar Habilidad</h3>
         <form method="post" th:action="@{/oferente/habilidades/agregar}">
@@ -95,7 +93,7 @@
 </div>
 <footer>
     <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+    <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>

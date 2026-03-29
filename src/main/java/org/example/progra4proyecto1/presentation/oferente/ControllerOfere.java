@@ -30,38 +30,30 @@ public class ControllerOfere {
 
     @Value("${app.upload.dir}")
     private String uploadDir;
-
     private Oferente getOferente(Principal principal) {
-        return oferenteService.findByCorreo(principal.getName()).orElseThrow();
+        return ofeServicio.findByCorreo(principal.getName()).orElseThrow();
     }
-
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
-        model.addAttribute("oferente", getOferente(principal));
-        return "presentation/oferente/dashboard";
+        model.addAttribute("oferente", getOferente(principal)); return "presentation/oferente/dashboard";
     }
-
     @GetMapping("/habilidades")
     public String habilidades(Model model, Principal principal) {
         Oferente oferente = getOferente(principal);
         model.addAttribute("oferente", oferente);
-        model.addAttribute("habilidades", oferenteService.getHabilidades(oferente));
-        model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
+        model.addAttribute("habilidades", ofeServicio.getHabilidades(oferente));
+        model.addAttribute("raices", caraRepo.findByPadreIsNull());
         return "presentation/oferente/habilidades";
     }
 
     @PostMapping("/habilidades/agregar")
-    public String agregar(@RequestParam Integer caracteristicaId,
-                          @RequestParam Integer nivel,
-                          Principal principal) {
-        oferenteService.agregarHabilidad(getOferente(principal), caracteristicaId, nivel);
-        return "redirect:/oferente/habilidades";
+    public String agregar(@RequestParam Integer caracteristicaId, @RequestParam Integer nivel, Principal principal) {
+        ofeServicio.agregarHabilidad(getOferente(principal), caracteristicaId, nivel); return "redirect:/oferente/habilidades";
     }
 
     @PostMapping("/habilidades/eliminar/{id}")
     public String eliminar(@PathVariable Integer id, Principal principal) {
-        oferenteService.eliminarHabilidad(getOferente(principal), id);
-        return "redirect:/oferente/habilidades";
+        ofeServicio.eliminarHabilidad(getOferente(principal), id); return "redirect:/oferente/habilidades";
     }
 
     @GetMapping("/cv")
@@ -71,58 +63,40 @@ public class ControllerOfere {
     }
 
     @PostMapping("/cv/subir")
-    public String subirCv(@RequestParam MultipartFile archivo,
-                          Principal principal,
-                          Model model) {
+    public String subirCv(@RequestParam MultipartFile archivo, Principal principal, Model model) {
         Oferente oferente = getOferente(principal);
-
         if (archivo.isEmpty()) {
             model.addAttribute("error", "Debe seleccionar un archivo");
-            model.addAttribute("oferente", oferente);
-            return "presentation/oferente/cv";
+            model.addAttribute("oferente", oferente); return "presentation/oferente/cv";
         }
-
         String originalFilename = archivo.getOriginalFilename();
         if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".pdf")) {
             model.addAttribute("error", "Solo se permiten archivos PDF");
-            model.addAttribute("oferente", oferente);
-            return "presentation/oferente/cv";
+            model.addAttribute("oferente", oferente); return "presentation/oferente/cv";
         }
         try {
-            /*
-             * CORRECCIÓN: se usa uploadDir inyectado desde application.properties.
-             * Se convierte a Path absoluto correctamente sin hardcodear user.dir.
-             */
             Path dirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             File dir = dirPath.toFile();
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-
             String nombre = UUID.randomUUID() + "_" + originalFilename;
             File destino = dirPath.resolve(nombre).toFile();
             archivo.transferTo(destino);
-
             oferente.setCurriculumPdf(nombre);
-            oferenteService.guardar(oferente);
-
+            ofeServicio.guardar(oferente);
         } catch (IOException e) {
             model.addAttribute("error", "Error al subir archivo: " + e.getMessage());
-            model.addAttribute("oferente", oferente);
-            return "presentation/oferente/cv";
+            model.addAttribute("oferente", oferente); return "presentation/oferente/cv";
         }
         return "redirect:/oferente/dashboard";
     }
 
     @GetMapping("/puestos")
-    public String buscarPuestos(
-            @RequestParam(required = false) List<Integer> caracteristicas,
-            @RequestParam(defaultValue = "false") boolean modoTodos,
-            Model model) {
-        model.addAttribute("resultados", puestoService.buscarTodos(caracteristicas, modoTodos));
-        model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
+    public String buscarPuestos(@RequestParam(required = false) List<Integer> caracteristicas, @RequestParam(defaultValue = "false") boolean modoTodos, Model model) {
+        model.addAttribute("resultados", puestServicio.buscarTodos(caracteristicas, modoTodos));
+        model.addAttribute("raices", caraRepo.findByPadreIsNull());
         model.addAttribute("seleccionadas", caracteristicas);
-        model.addAttribute("modoTodos", modoTodos);
-        return "presentation/oferente/buscar-puestos";
+        model.addAttribute("modoTodos", modoTodos); return "presentation/oferente/buscar-puestos";
     }
 }

@@ -8,12 +8,12 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #fdfafb; /* Fondo seda rosado muy pálido */
+            background: #fdfafb;
             color: #2d0a0a;
         }
 
         nav {
-            background: #4c0519; /* Borgoña oscuro */
+            background: #4c0519;
             padding: 15px 40px;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -30,7 +30,7 @@
         .card {
             background: #ffffff;
             border: 1px solid #f1f5f9;
-            border-top: 5px solid #831843; /* Borde superior vino */
+            border-top: 5px solid #831843;
             border-radius: 12px;
             width: 290px;
             padding: 24px;
@@ -52,27 +52,22 @@
             transition: 0.3s;
         }
         .btn-detail:hover { background: #831843; color: white; }
-
-        /* TOOLTIP CON EFECTO CRISTAL */
         .tooltip {
             display: none;
             position: absolute;
             top: 95%;
             left: 0;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
 
-            /* Efecto Glassmorphism */
-            background: rgba(255, 255, 255, 0.75); /* Blanco semi-transparente */
-            backdrop-filter: blur(12px);           /* El desenfoque mágico */
-            -webkit-backdrop-filter: blur(12px);    /* Soporte para Safari */
-
-            border: 1px solid rgba(131, 24, 67, 0.3); /* Borde vino muy sutil */
+            border: 1px solid rgba(131, 24, 67, 0.3);
             padding: 20px;
             border-radius: 12px;
             z-index: 100;
             width: 100%;
-            box-shadow: 0 15px 30px rgba(76, 5, 25, 0.15); /* Sombra con tinte vino */
+            box-shadow: 0 15px 30px rgba(76, 5, 25, 0.15);
 
-            /* Animación suave de entrada */
             animation: fadeIn 0.3s ease-out;
         }
 
@@ -129,8 +124,8 @@
 </div>
 
 <footer>
-    <strong style="color:white">Bolsa de Empleo</strong> &nbsp;|&nbsp;
-    Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo
+    <strong style="color:white">Bolsa de Empleo</strong> |
+    Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo
 </footer>
 </body>
 </html>

@@ -19,21 +19,18 @@
 </nav>
 <div class="container panels">
 
-    <!-- Panel izquierdo: árbol de características -->
     <div class="panel-left">
         <h2>Árbol de Características</h2>
 
         <div class="arbol" style="max-height: none;">
             <div th:each="raiz : ${raices}" class="grupo">
-                <a th:href="@{/admin/caracteristicas(actualId=${raiz.id})}"
-                   style="text-decoration:none">
-                    <strong th:text="${raiz.nombre}"
-                            style="color:#4c0519;cursor:pointer;font-size:14px"></strong>
+                <a th:href="@{/admin/caracteristicas(actualId=${raiz.id})}" style="text-decoration:none">
+                    <strong th:text="${raiz.nombre}" style="color:#4c0519;cursor:pointer;font-size:14px"></strong>
                 </a>
-                <!-- Hijos del nodo seleccionado -->
+
                 <ul th:if="${actual != null && actual.id == raiz.id && hijos != null && !hijos.isEmpty()}">
                     <li th:each="hijo : ${hijos}">
-                        <!-- Hijo también es clickeable para navegar a su nivel -->
+
                         <a th:href="@{/admin/caracteristicas(actualId=${hijo.id})}"
                            style="text-decoration:none;color:#831843;font-size:13px"
                            th:text="${hijo.nombre}"></a>
@@ -45,7 +42,6 @@
             </p>
         </div>
 
-        <!-- Detalle del nodo seleccionado -->
         <div th:if="${actual != null}" class="card" style="margin-top:20px">
             <h3>Hijos de: <span th:text="${actual.nombre}"></span></h3>
             <ul style="list-style:none;padding:0">
@@ -60,7 +56,6 @@
         </div>
     </div>
 
-    <!-- Panel derecho: crear nueva característica -->
     <div class="panel-right">
         <div class="card">
             <h3>Nueva Característica</h3>
@@ -68,11 +63,6 @@
                 <label>Nombre *</label>
                 <input type="text" name="nombre" required placeholder="Ej: Java"/>
 
-                <!--
-                    CORRECCIÓN: el select ahora muestra TODOS los nodos (no solo raíces),
-                    permitiendo crear características en cualquier nivel del árbol.
-                    todosNodos viene ordenado alfabéticamente desde AdminService.
-                -->
                 <label>Nodo padre (opcional)</label>
                 <select name="padreId">
                     <option value="">-- Raíz (sin padre) --</option>
@@ -90,15 +80,14 @@
         </div>
 
         <a class="btn btn-outline" th:href="@{/admin/dashboard}"
-           style="width:100%;text-align:center;margin-top:8px">
-            ← Volver al dashboard
+           style="width:100%;text-align:center;margin-top:8px">Volver al dashboard
         </a>
     </div>
 
 </div>
 <footer>
     <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+    <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>

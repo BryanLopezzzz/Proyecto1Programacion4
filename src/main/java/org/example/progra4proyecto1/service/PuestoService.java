@@ -11,33 +11,27 @@ import java.util.stream.Collectors;
 
 @Service("puestoService")
 public class PuestoService {
-
-    @Autowired private PuestoRepository puestoRepository;
-    @Autowired private OferenteRepository oferenteRepository;
-    @Autowired private OferenteHabilidadRepository habilidadRepository;
-    @Autowired private CaracteristicaRepository caracteristicaRepository;
-    @Autowired private MonedaRepository monedaRepository;
+    
+    @Autowired private PuestoRepository puesRepo;
+    @Autowired private OferenteRepository ofeRepo;
+    @Autowired private OferenteHabilidadRepository habiRepo;
+    @Autowired private CaracteristicaRepository cararepo;
+    @Autowired private MonedaRepository moneRepo;
 
     @Transactional
-    public void publicar(Puesto puesto, Empresa empresa,
-                         List<Integer> caracteristicaIds, List<Integer> niveles, Integer monedaId) {
-        //Se cambia debido a lo "nuevo" de PuestoRepositorio
-        if (puestoRepository.existsByEmpresaAndDescripcionIgnoreCaseAndActivoTrue(empresa, puesto.getDescripcion()))
+    public void publicar(Puesto puesto, Empresa empresa, List<Integer> caraID, List<Integer> niveles, Integer moneID) {
+        if (puesRepo.existsByEmpresaAndDescripcionIgnoreCaseAndActivoTrue(empresa, puesto.getDescripcion()))
             throw new IllegalArgumentException("Ya existe un puesto activo con esa descripción");
-
-        Moneda moneda = monedaRepository.findById(monedaId)
-                .orElseThrow(() -> new IllegalArgumentException("Moneda no válida"));
-
+        Moneda moneda = moneRepo.findById(moneID).orElseThrow(() -> new IllegalArgumentException("Moneda no válida"));
         puesto.setEmpresa(empresa);
         puesto.setMoneda(moneda);
         puesto.setActivo(true);
         puesto.setFechaRegistro(java.time.LocalDateTime.now());
-        Puesto saved = puestoRepository.save(puesto);
-
-        if (caracteristicaIds != null) {
+        Puesto saved = puesRepo.save(puesto);
+        if (caraID != null) {
             List<PuestoCaracteristica> reqs = new ArrayList<>();
-            for (int i = 0; i < caracteristicaIds.size(); i++) {
-                Caracteristica c = caracteristicaRepository.findById(caracteristicaIds.get(i)).orElseThrow();
+            for (int i = 0; i < caraID.size(); i++) {
+                Caracteristica c = cararepo.findById(caraID.get(i)).orElseThrow();
                 PuestoCaracteristica pc = new PuestoCaracteristica();
                 PuestoCaracteristica.PuestoCaracteristicaId pcId = new PuestoCaracteristica.PuestoCaracteristicaId();
                 pcId.setPuestoId(saved.getId());
@@ -49,15 +43,14 @@ public class PuestoService {
                 reqs.add(pc);
             }
             saved.setCaracteristicas(reqs);
-            puestoRepository.save(saved);
+            puesRepo.save(saved);
         }
     }
 
     public void desactivar(Integer id) {
-        puestoRepository.findById(id).ifPresent(p -> {
+        puesRepo.findById(id).ifPresent(p -> {
             p.setActivo(false);
-            puestoRepository.save(p);
-        });
+            puesRepo.save(p); });
     }
 
     public List<Puesto> buscarPublicos(List<Integer> ids, boolean modoTodos, Integer monedaId) {
@@ -70,7 +63,7 @@ public class PuestoService {
     }
 
     public List<Puesto> buscarTodos(List<Integer> ids, boolean modoTodos) {
-        List<Puesto> todos = puestoRepository.findAllActivos();
+        List<Puesto> todos = puesRepo.findAllActivos();
         if (ids == null || ids.isEmpty()) return todos;
         return filtrar(todos, ids, modoTodos);
     }
@@ -93,11 +86,10 @@ public class PuestoService {
             }
             if (!reqs.isEmpty()) {
                 double pct = (double) cumplidos / reqs.size() * 100.0;
-                resultados.add(new CandidatoResult(oferente, reqs.size(), cumplidos, pct));
-            }
-        });
-        resultados.sort((a, b) -> Double.compare(b.getPorcentajeCoincidencia(), a.getPorcentajeCoincidencia()));
-        return resultados;
+                resu.add(new CandidatoResult(oferente, reqs.size(), cumplidos, pct));
+            }});
+        resu.sort((a, b) -> Double.compare(b.getPorcentajeCoincidencia(), a.getPorcentajeCoincidencia()));
+        return resu;
     }
 
     public List<Puesto> findByEmpresa(Empresa empresa) { return puesRepo.findByEmpresaOrderByFechaRegistroDesc(empresa); }
@@ -106,7 +98,8 @@ public class PuestoService {
     }
 
     public List<Puesto> findTop5Publicos() {
-        return puestoRepository.findTop5ByTipoAndActivoTrueOrderByFechaRegistroDesc(Puesto.TipoPuesto.PUBLICO);
+        return puesRepo.findTop5ByTipoAndActivoTrueOrderByFechaRegistroDesc(Puesto.TipoPuesto.PUBLICO);
     }
-    public List<Puesto> findByMesYAnio(int mes, int anio) { return puestoRepository.findByMesYAnio(mes, anio); }
+
+    public List<Puesto> findByMesYAnio(int mes, int anio) { return puesRepo.findByMesYAnio(mes, anio); }
 }

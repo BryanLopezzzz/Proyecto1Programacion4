@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface EmpresaRepository extends CrudRepository<Empresa, Integer> {
-    Optional<Empresa> findByUsuario(Usuario usuario);
     Optional<Empresa> findByUsuario_Correo(String correo);
     List<Empresa> findByUsuario_Estado(Usuario.Estado estado);
 }

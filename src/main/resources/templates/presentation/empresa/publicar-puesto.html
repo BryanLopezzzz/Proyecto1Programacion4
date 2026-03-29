@@ -23,7 +23,7 @@
 
         <label>Descripción del puesto *</label>
         <textarea name="descripcion" required
-                  placeholder="Descripción detallada del puesto..."></textarea>
+                  placeholder="Descripción detallada del puesto "></textarea>
 
         <div class="row2">
             <div>
@@ -50,11 +50,8 @@
 
         <label>Características requeridas (marque y asigne nivel)</label>
         <div class="arbol">
-            <!-- Nivel 1: raíces -->
             <div class="grupo" th:each="raiz : ${raices}">
                 <strong th:text="${raiz.nombre}"></strong>
-
-                <!-- Nivel 2: hijos de raíz -->
                 <ul th:if="${raiz.hijos != null && !raiz.hijos.isEmpty()}">
                     <li th:each="hijo : ${raiz.hijos}">
                         <label>
@@ -68,8 +65,6 @@
                             <option value="2" selected>Intermedio</option>
                             <option value="3">Avanzado</option>
                         </select>
-
-                        <!-- Nivel 3: nietos -->
                         <ul th:if="${hijo.hijos != null && !hijo.hijos.isEmpty()}"
                             style="padding-left:14px;margin-top:4px">
                             <li th:each="nieto : ${hijo.hijos}">
@@ -96,7 +91,7 @@
 </div>
 <footer>
     <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+    <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>

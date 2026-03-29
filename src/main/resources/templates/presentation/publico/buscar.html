@@ -112,8 +112,6 @@
     <h2>Buscar puestos por características</h2>
 
     <form method="post" th:action="@{/buscar}">
-
-        <!-- Árbol de características -->
         <div class="arbol">
             <div th:each="raiz : ${raices}">
                 <label>
@@ -141,8 +139,6 @@
                 </ul>
             </div>
         </div>
-
-        <!-- Filtro por moneda -->
         <div class="filtro-moneda">
             <label>Filtrar por moneda (opcional)</label>
             <select name="monedaId">
@@ -154,8 +150,6 @@
                 </option>
             </select>
         </div>
-
-        <!-- Modo de búsqueda AND/OR -->
         <div class="modo">
             <strong>Modo de búsqueda:</strong>
             <label>
@@ -214,7 +208,7 @@
 
 <footer>
     <strong>Bolsa de Empleo</strong>
-    <span>Contacto: info@bolsaempleo.local &nbsp;|&nbsp; Créditos: Equipo de desarrollo</span>
+    <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
 </body>
 </html>
