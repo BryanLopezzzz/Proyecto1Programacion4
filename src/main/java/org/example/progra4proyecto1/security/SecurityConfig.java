@@ -1,6 +1,7 @@
-package org.example.progra4proyecto1.logic;
+package org.example.progra4proyecto1.security;
 
-import  org.example.progra4proyecto1.logic.CustomUserDetailsService;
+
+import org.example.progra4proyecto1.service.UsuarioDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private CustomUserDetailsService userDetailsService;
+    @Autowired private UsuarioDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }

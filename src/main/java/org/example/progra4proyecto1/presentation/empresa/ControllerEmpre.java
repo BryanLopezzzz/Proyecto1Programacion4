@@ -3,6 +3,9 @@ package org.example.progra4proyecto1.presentation.empresa;
 import org.example.progra4proyecto1.data.CaracteristicaRepository;
 import org.example.progra4proyecto1.data.MonedaRepository;
 import org.example.progra4proyecto1.logic.*;
+import org.example.progra4proyecto1.service.EmpresaService;
+import org.example.progra4proyecto1.service.OferenteService;
+import org.example.progra4proyecto1.service.PuestoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,66 +20,43 @@ import java.util.Map;
 @RequestMapping("/empresa")
 public class ControllerEmpre {
 
-    @Autowired private EmpresaService empresaService;
-    @Autowired private PuestoService puestoService;
-    @Autowired private OferenteService oferenteService;
-    @Autowired private CaracteristicaRepository caracteristicaRepository;
-    @Autowired private MonedaRepository monedaRepository;
+    @Autowired private EmpresaService empreServicio;
+    @Autowired private PuestoService puesServicio;
+    @Autowired private OferenteService OfeServicio;
+    @Autowired private CaracteristicaRepository caraRepo;
+    @Autowired private MonedaRepository moneRepo;
 
     private Empresa getEmpresa(Principal principal) {
-        return empresaService.findByCorreo(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
+        return empreServicio.findByCorreo(principal.getName()).orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
     }
-
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
-        model.addAttribute("empresa", getEmpresa(principal));
-        return "presentation/empresa/dashboard";
+        model.addAttribute("empresa", getEmpresa(principal)); return "presentation/empresa/dashboard";
     }
-
     @GetMapping("/puestos")
     public String misPuestos(Model model, Principal principal) {
-        model.addAttribute("puestos", puestoService.findByEmpresa(getEmpresa(principal)));
-        return "presentation/empresa/puestos";
+        model.addAttribute("puestos", puesServicio.findByEmpresa(getEmpresa(principal))); return "presentation/empresa/puestos";
     }
-
     @GetMapping("/puestos/nuevo")
     public String nuevoPuestoForm(Model model) {
         model.addAttribute("puesto", new Puesto());
-        model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
-        model.addAttribute("monedas", monedaRepository.findAll());
+        model.addAttribute("raices", caraRepo.findByPadreIsNull());
+        model.addAttribute("monedas", moneRepo.findAll());
+        //:)
         return "presentation/empresa/publicar-puesto";
     }
 
     @PostMapping("/puestos/nuevo")
-    public String nuevoPuestoGuardar(
-            @RequestParam String descripcion,
-            @RequestParam java.math.BigDecimal salario,
-            @RequestParam String tipo,
-            @RequestParam Integer monedaId,
-            @RequestParam Map<String, String> todosLosParams,
-            Principal principal,
-            Model model) {
+    public String nuevoPuestoGuardar(@RequestParam String descripcion, @RequestParam java.math.BigDecimal salario, @RequestParam String tipo,
+            @RequestParam Integer monedaId, @RequestParam Map<String, String> todosLosParams, Principal principal, Model model) {
+
         try {
-            /*
-             * CORRECCIÓN CRÍTICA:
-             * El formulario ya no envía dos arrays paralelos (caracteristicas[] y niveles[])
-             * que se desacoplan cuando no todos los checkboxes están marcados.
-             *
-             * Ahora envía:
-             *   sel_<id> = "true"   → checkbox marcado
-             *   nivel_<id> = "1..5" → nivel correspondiente a ese ID
-             *
-             * Aquí recorremos todos los parámetros buscando los que empiezan con "sel_",
-             * extraemos el ID y buscamos su nivel en nivel_<id>.
-             * Así el emparejamiento es siempre correcto.
-             */
             List<Integer> caracIds = new ArrayList<>();
             List<Integer> niveles  = new ArrayList<>();
 
             for (Map.Entry<String, String> entry : todosLosParams.entrySet()) {
                 if (entry.getKey().startsWith("sel_")) {
-                    String idStr = entry.getKey().substring(4); // quita "sel_"
+                    String idStr = entry.getKey().substring(4);
                     Integer caracteristicaId = Integer.parseInt(idStr);
                     String nivelStr = todosLosParams.get("nivel_" + idStr);
                     int nivel = (nivelStr != null) ? Integer.parseInt(nivelStr) : 3;
@@ -89,13 +69,12 @@ public class ControllerEmpre {
             puesto.setDescripcion(descripcion);
             puesto.setSalario(salario);
             puesto.setTipo(Puesto.TipoPuesto.valueOf(tipo));
-
-            puestoService.publicar(puesto, getEmpresa(principal), caracIds, niveles, monedaId);
+            puesServicio.publicar(puesto, getEmpresa(principal), caracIds, niveles, monedaId);
 
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("raices", caracteristicaRepository.findByPadreIsNull());
-            model.addAttribute("monedas", monedaRepository.findAll());
+            model.addAttribute("raices", caraRepo.findByPadreIsNull());
+            model.addAttribute("monedas", moneRepo.findAll());
             return "presentation/empresa/publicar-puesto";
         }
         return "redirect:/empresa/puestos";
@@ -104,9 +83,9 @@ public class ControllerEmpre {
     @PostMapping("/puestos/desactivar/{id}")
     public String desactivar(@PathVariable Integer id, Principal principal) {
         Empresa empresa = getEmpresa(principal);
-        puestoService.findById(id).ifPresent(p -> {
+        puesServicio.findById(id).ifPresent(p -> {
             if (p.getEmpresa().getId().equals(empresa.getId()))
-                puestoService.desactivar(id);
+                puesServicio.desactivar(id);
         });
         return "redirect:/empresa/puestos";
     }
@@ -114,19 +93,19 @@ public class ControllerEmpre {
     @GetMapping("/candidatos/buscar")
     public String buscarCandidatos(@RequestParam Integer puestoId, Model model, Principal principal) {
         Empresa empresa = getEmpresa(principal);
-        Puesto puesto = puestoService.findById(puestoId).orElseThrow();
+        Puesto puesto = puesServicio.findById(puestoId).orElseThrow();
         if (!puesto.getEmpresa().getId().equals(empresa.getId()))
             return "redirect:/empresa/puestos";
         model.addAttribute("puesto", puesto);
-        model.addAttribute("candidatos", puestoService.buscarCandidatos(puesto));
+        model.addAttribute("candidatos", puesServicio.buscarCandidatos(puesto));
         return "presentation/empresa/candidatos";
     }
 
     @GetMapping("/candidatos/{id}")
     public String detalleCandidato(@PathVariable Integer id, Model model) {
-        Oferente oferente = oferenteService.findById(id).orElseThrow();
+        Oferente oferente = OfeServicio.findById(id).orElseThrow();
         model.addAttribute("oferente", oferente);
-        model.addAttribute("habilidades", oferenteService.getHabilidades(oferente));
+        model.addAttribute("habilidades", OfeServicio.getHabilidades(oferente));
         return "presentation/empresa/detalle-candidato";
     }
 }

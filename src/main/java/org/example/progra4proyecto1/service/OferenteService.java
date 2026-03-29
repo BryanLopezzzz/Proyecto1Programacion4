@@ -1,7 +1,10 @@
-package org.example.progra4proyecto1.logic;
-
+package org.example.progra4proyecto1.service;
 
 import org.example.progra4proyecto1.data.*;
+import org.example.progra4proyecto1.logic.Caracteristica;
+import org.example.progra4proyecto1.logic.Oferente;
+import org.example.progra4proyecto1.logic.OferenteHabilidad;
+import org.example.progra4proyecto1.logic.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,10 +22,10 @@ public class OferenteService {
 
     @Transactional
     public void registrar(Oferente oferente, String correo, String clave) {
-        Optional<Usuario> existente = usuarioRepository.findByCorreo(correo);
-        if (existente.isPresent()) {
-            if (existente.get().getEstado() == Usuario.Estado.RECHAZADO) {
-                throw new IllegalArgumentException("Este correo fue rechazado previamente. Contacte al administrador.");
+        Optional<Usuario> exis = usuRepo.findByCorreo(correo);
+        if (exis.isPresent()) {
+            if (exis.get().getEstado() == Usuario.Estado.RECHAZADO) {
+                throw new IllegalArgumentException("Este correo fue rechazado previamente.");
             }
             throw new IllegalArgumentException("El correo ya está registrado");
         }
@@ -43,26 +46,17 @@ public class OferenteService {
     public Optional<Oferente> findByCorreo(String correo) {
         return oferenteRepository.findByUsuario_Correo(correo);
     }
-
     public Optional<Oferente> findById(Integer id) {
         return oferenteRepository.findById(id);
     }
 
     @Transactional
-    public void agregarHabilidad(Oferente oferente, Integer caracteristicaId, Integer nivel) {
-        Caracteristica c = caracteristicaRepository.findById(caracteristicaId)
-                .orElseThrow(() -> new IllegalArgumentException("Característica no encontrada"));
-
-        // Primero setear la caracteristica y el oferente ANTES del ID
-        OferenteHabilidad h = habilidadRepository
-                .findByOferenteAndCaracteristica_Id(oferente, caracteristicaId)
-                .orElse(new OferenteHabilidad());
-
+    public void agregarHabilidad(Oferente oferente, Integer caraID, Integer nivel) {
+        Caracteristica c = caraRepo.findById(caraID).orElseThrow(() -> new IllegalArgumentException("Característica no encontrada"));
+        OferenteHabilidad h = habilidadRepo.findByOferenteAndCaracteristica_Id(oferente, caraID).orElse(new OferenteHabilidad());
         h.setOferente(oferente);
         h.setCaracteristica(c);
         h.setNivel(nivel);
-
-        // Construir el ID DESPUÉS de setear las entidades
         OferenteHabilidad.OferenteHabilidadId hId = new OferenteHabilidad.OferenteHabilidadId();
         hId.setOferenteId(oferente.getId());
         hId.setCaracteristicaId(c.getId()); // usar c.getId() no caracteristicaId directo

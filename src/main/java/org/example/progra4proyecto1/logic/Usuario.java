@@ -3,6 +3,8 @@ package org.example.progra4proyecto1.logic;
 import jakarta.persistence.*;
 import lombok.Data;
 
+
+
 @Data
 @Entity
 @Table(name = "usuario")

@@ -1,12 +1,13 @@
-package org.example.progra4proyecto1.logic;
-
+package org.example.progra4proyecto1.service;
 
 import org.example.progra4proyecto1.data.*;
+import org.example.progra4proyecto1.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service("puestoService")
 public class PuestoService {
@@ -60,15 +61,10 @@ public class PuestoService {
     }
 
     public List<Puesto> buscarPublicos(List<Integer> ids, boolean modoTodos, Integer monedaId) {
-        List<Puesto> todos = puestoRepository.findAllPublicosActivos();
-
-        // Filtrar por moneda si se especificó
+        List<Puesto> todos = puesRepo.findAllPublicosActivos();
         if (monedaId != null) {
-            todos = todos.stream()
-                    .filter(p -> p.getMoneda().getId().equals(monedaId))
-                    .collect(Collectors.toList());
+            todos = todos.stream().filter(p -> p.getMoneda().getId().equals(monedaId)).collect(Collectors.toList());
         }
-
         if (ids == null || ids.isEmpty()) return todos;
         return filtrar(todos, ids, modoTodos);
     }
@@ -81,23 +77,19 @@ public class PuestoService {
 
     private List<Puesto> filtrar(List<Puesto> puestos, List<Integer> ids, boolean modoTodos) {
         return puestos.stream().filter(p -> {
-            Set<Integer> set = p.getCaracteristicas().stream()
-                    .map(pc -> pc.getCaracteristica().getId()).collect(Collectors.toSet());
-            return modoTodos ? set.containsAll(ids) : ids.stream().anyMatch(set::contains);
-        }).collect(Collectors.toList());
+            Set<Integer> set = p.getCaracteristicas().stream().map(pc -> pc.getCaracteristica().getId()).collect(Collectors.toSet());
+            return modoTodos ? set.containsAll(ids) : ids.stream().anyMatch(set::contains); }).collect(Collectors.toList());
     }
 
     public List<CandidatoResult> buscarCandidatos(Puesto puesto) {
-        List<CandidatoResult> resultados = new ArrayList<>();
-        oferenteRepository.findAll().forEach(oferente -> {
+        List<CandidatoResult> resu = new ArrayList<>();
+        ofeRepo.findAll().forEach(oferente -> {
             if (oferente.getUsuario().getEstado() != Usuario.Estado.APROBADO) return;
             List<PuestoCaracteristica> reqs = puesto.getCaracteristicas();
-            List<OferenteHabilidad> habs = habilidadRepository.findByOferente(oferente);
+            List<OferenteHabilidad> habs = habiRepo.findByOferente(oferente);
             int cumplidos = 0;
             for (PuestoCaracteristica req : reqs) {
-                if (habs.stream().anyMatch(h ->
-                        h.getCaracteristica().getId().equals(req.getCaracteristica().getId())
-                                && h.getNivel() >= req.getNivelRequerido())) cumplidos++;
+                if (habs.stream().anyMatch(h -> h.getCaracteristica().getId().equals(req.getCaracteristica().getId()) && h.getNivel() >= req.getNivelRequerido())) cumplidos++;
             }
             if (!reqs.isEmpty()) {
                 double pct = (double) cumplidos / reqs.size() * 100.0;
@@ -108,9 +100,11 @@ public class PuestoService {
         return resultados;
     }
 
-    public List<Puesto> findByEmpresa(Empresa empresa) { return puestoRepository.findByEmpresaOrderByFechaRegistroDesc(empresa); }
-    public Optional<Puesto> findById(Integer id) { return puestoRepository.findById(id); }
-    //Se cambia debido a lo "nuevo" de PuestoRepositorio
+    public List<Puesto> findByEmpresa(Empresa empresa) { return puesRepo.findByEmpresaOrderByFechaRegistroDesc(empresa); }
+
+    public Optional<Puesto> findById(Integer id) { return puesRepo.findById(id);
+    }
+
     public List<Puesto> findTop5Publicos() {
         return puestoRepository.findTop5ByTipoAndActivoTrueOrderByFechaRegistroDesc(Puesto.TipoPuesto.PUBLICO);
     }

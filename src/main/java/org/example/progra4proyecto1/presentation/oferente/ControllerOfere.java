@@ -1,7 +1,10 @@
 package org.example.progra4proyecto1.presentation.oferente;
 
+
 import org.example.progra4proyecto1.data.CaracteristicaRepository;
 import org.example.progra4proyecto1.logic.*;
+import org.example.progra4proyecto1.service.OferenteService;
+import org.example.progra4proyecto1.service.PuestoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,17 +22,12 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/oferente")
+
 public class ControllerOfere {
+    @Autowired private OferenteService ofeServicio;
+    @Autowired private PuestoService puestServicio;
+    @Autowired private CaracteristicaRepository caraRepo;
 
-    @Autowired private OferenteService oferenteService;
-    @Autowired private PuestoService puestoService;
-    @Autowired private CaracteristicaRepository caracteristicaRepository;
-
-    /*
-     * CORRECCIÓN: se usa el valor de application.properties (app.upload.dir)
-     * en lugar de construir la ruta con System.getProperty("user.dir") hardcodeado.
-     * Así la ruta es configurable por entorno sin tocar el código.
-     */
     @Value("${app.upload.dir}")
     private String uploadDir;
 
@@ -90,7 +88,6 @@ public class ControllerOfere {
             model.addAttribute("oferente", oferente);
             return "presentation/oferente/cv";
         }
-
         try {
             /*
              * CORRECCIÓN: se usa uploadDir inyectado desde application.properties.

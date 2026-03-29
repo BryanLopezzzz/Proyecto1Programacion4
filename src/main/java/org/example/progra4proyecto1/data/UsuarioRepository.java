@@ -8,5 +8,4 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends CrudRepository<Usuario, Integer> {
     Optional<Usuario> findByCorreo(String correo);
-    Iterable<Usuario> findByRolAndEstado(Usuario.Rol rol, Usuario.Estado estado);
 }

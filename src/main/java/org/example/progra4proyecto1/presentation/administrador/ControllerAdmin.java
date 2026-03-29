@@ -1,6 +1,8 @@
 package org.example.progra4proyecto1.presentation.administrador;
 
 import org.example.progra4proyecto1.logic.*;
+import org.example.progra4proyecto1.service.AdminService;
+import org.example.progra4proyecto1.service.PuestoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,9 +13,8 @@ import java.util.*;
 @RequestMapping("/admin")
 public class ControllerAdmin {
 
-    @Autowired private AdminService adminService;
-    @Autowired private PuestoService puestoService;
-    //@Autowired private ReporteService reporteService;
+    @Autowired private AdminService adminServici;
+    @Autowired private PuestoService puesServicio;
 
     @GetMapping("/dashboard")
     public String dashboard() {
@@ -58,15 +59,8 @@ public class ControllerAdmin {
 
     @GetMapping("/caracteristicas")
     public String caracteristicas(@RequestParam(required = false) Integer actualId, Model model) {
-        model.addAttribute("raices", adminService.raices());
-
-        /*
-         * CORRECCIÓN: se pasa la lista completa de nodos al modelo.
-         * El template la usa para el select de "padre al crear",
-         * permitiendo elegir cualquier nodo (no solo raíces) como padre.
-         */
-        model.addAttribute("todosNodos", adminService.todosLosNodos());
-
+        model.addAttribute("raices", adminServici.raices());
+        model.addAttribute("todosNodos", adminServici.todosLosNodos());
         if (actualId != null) {
             adminService.findCaracteristica(actualId).ifPresent(c -> {
                 model.addAttribute("actual", c);
@@ -77,13 +71,9 @@ public class ControllerAdmin {
     }
 
     @PostMapping("/caracteristicas/crear")
-    public String crearCaracteristica(
-            @RequestParam String nombre,
-            @RequestParam(required = false) Integer padreId) {
-        adminService.crearCaracteristica(nombre, padreId);
-        return padreId != null
-                ? "redirect:/admin/caracteristicas?actualId=" + padreId
-                : "redirect:/admin/caracteristicas";
+    public String crearCaracteristica(@RequestParam String nombre, @RequestParam(required = false) Integer padreId) {
+        adminServici.crearCaracteristica(nombre, padreId);
+        return padreId != null ? "redirect:/admin/caracteristicas?actualId=" + padreId : "redirect:/admin/caracteristicas";
     }
 
     @GetMapping("/reportes")
@@ -94,9 +84,8 @@ public class ControllerAdmin {
 
     @GetMapping("/reportes/puestos-mes")
     public String reportePuestosMes(@RequestParam int mes, @RequestParam int anio, Model model) {
-        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio",
-                "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
-        List<Puesto> puestos = puestoService.findByMesYAnio(mes, anio);
+        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio", "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+        List<Puesto> puestos = puesServicio.findByMesYAnio(mes, anio);
         model.addAttribute("puestos", puestos);
         model.addAttribute("mes", mes);
         model.addAttribute("anio", anio);
@@ -106,9 +95,8 @@ public class ControllerAdmin {
 
     @GetMapping("/reportes/coincidencias")
     public String reporteCoincidencias(@RequestParam int mes, @RequestParam int anio, Model model) {
-        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio",
-                "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
-        List<Puesto> puestos = puestoService.findByMesYAnio(mes, anio);
+        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio", "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+        List<Puesto> puestos = puesServicio.findByMesYAnio(mes, anio);
         List<List<CandidatoResult>> candidatosPorPuesto = new ArrayList<>();
         for (Puesto p : puestos) {
             candidatosPorPuesto.add(puestoService.buscarCandidatos(p));

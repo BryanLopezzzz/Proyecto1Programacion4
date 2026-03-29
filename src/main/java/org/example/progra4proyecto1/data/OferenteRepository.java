@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface OferenteRepository extends CrudRepository<Oferente, Integer> {
-    Optional<Oferente> findByUsuario(Usuario usuario);
     Optional<Oferente> findByUsuario_Correo(String correo);
     boolean existsByIdentificacion(String identificacion);
     List<Oferente> findByUsuario_Estado(Usuario.Estado estado);
