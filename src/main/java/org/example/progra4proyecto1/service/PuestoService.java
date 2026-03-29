@@ -54,7 +54,7 @@ public class PuestoService {
     }
 
     public List<Puesto> buscarPublicos(List<Integer> ids, boolean modoTodos, Integer monedaId) {
-        List<Puesto> todos = puesRepo.findAllPublicosActivos();
+        List<Puesto> todos = puesRepo.findByTipoAndActivoTrueOrderByFechaRegistroDesc(Puesto.TipoPuesto.PUBLICO);
         if (monedaId != null) {
             todos = todos.stream().filter(p -> p.getMoneda().getId().equals(monedaId)).collect(Collectors.toList());
         }
@@ -63,7 +63,7 @@ public class PuestoService {
     }
 
     public List<Puesto> buscarTodos(List<Integer> ids, boolean modoTodos) {
-        List<Puesto> todos = puesRepo.findAllActivos();
+        List<Puesto> todos = puesRepo.findByActivoTrueOrderByFechaRegistroDesc();
         if (ids == null || ids.isEmpty()) return todos;
         return filtrar(todos, ids, modoTodos);
     }
@@ -101,5 +101,7 @@ public class PuestoService {
         return puesRepo.findTop5ByTipoAndActivoTrueOrderByFechaRegistroDesc(Puesto.TipoPuesto.PUBLICO);
     }
 
-    public List<Puesto> findByMesYAnio(int mes, int anio) { return puesRepo.findByMesYAnio(mes, anio); }
-}
+    public List<Puesto> findByMesYAnio(int mes, int anio) {
+        return puesRepo.findByActivoTrueOrderByFechaRegistroDesc().stream().filter(p -> p.getFechaRegistro().getMonthValue() == mes
+                        && p.getFechaRegistro().getYear() == anio).collect(Collectors.toList());
+    }}
