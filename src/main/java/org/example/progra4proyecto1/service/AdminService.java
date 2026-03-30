@@ -13,9 +13,11 @@ import java.util.*;
 @Service("adminService")
 public class AdminService {
 
-    @Autowired private UsuarioRepository usuRepo;
+    @Autowired
+    private UsuarioRepository usuRepo;
     @Autowired private EmpresaRepository empreRepo;
-    @Autowired private OferenteRepository ofeRepo;
+    @Autowired
+    private OferenteRepository ofeRepo;
     @Autowired private CaracteristicaRepository caraRepo;
 
     @Transactional

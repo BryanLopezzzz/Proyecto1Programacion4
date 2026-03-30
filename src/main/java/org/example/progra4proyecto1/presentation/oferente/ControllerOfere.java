@@ -31,6 +31,7 @@ public class ControllerOfere {
     @Value("${app.upload.dir}")
     private String uploadDir;
     private Oferente getOferente(Principal principal) {
+        // para no repetir la busqueda a cada rato
         return ofeServicio.findByCorreo(principal.getName()).orElseThrow();
     }
     @GetMapping("/dashboard")
@@ -77,9 +78,11 @@ public class ControllerOfere {
         try {
             Path dirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             File dir = dirPath.toFile();
+            // si no existe la carpeta la creamos con el dir
             if (!dir.exists()) {
                 dir.mkdirs();
             }
+            //el uuid es para evitar nombres repetidos
             String nombre = UUID.randomUUID() + "_" + originalFilename;
             File destino = dirPath.resolve(nombre).toFile();
             archivo.transferTo(destino);

@@ -63,6 +63,8 @@ public class PuestoService {
     }
 
     public List<Puesto> buscarTodos(List<Integer> ids, boolean modoTodos) {
+        // List<Puesto> todos = new ArrayList<>();
+        // puesRepo.findAll().forEach(todos::add);
         List<Puesto> todos = puesRepo.findByActivoTrueOrderByFechaRegistroDesc();
         if (ids == null || ids.isEmpty()) return todos;
         return filtrar(todos, ids, modoTodos);
@@ -85,9 +87,12 @@ public class PuestoService {
                 if (habs.stream().anyMatch(h -> h.getCaracteristica().getId().equals(req.getCaracteristica().getId()) && h.getNivel() >= req.getNivelRequerido())) cumplidos++;
             }
             if (!reqs.isEmpty()) {
+                //este cast era necesario para no perder decimales en la division
+                //la formula es como porcentaje = (requisitos cumplidos / requisitos totales) * 100, para tenerla como guia
                 double pct = (double) cumplidos / reqs.size() * 100.0;
                 resu.add(new CandidatoResult(oferente, reqs.size(), cumplidos, pct));
             }});
+        // ordenamos de mayor a menor coincidencia, no sé si ese sort es el más eficiente para nuestro caso
         resu.sort((a, b) -> Double.compare(b.getPorcentajeCoincidencia(), a.getPorcentajeCoincidencia()));
         return resu;
     }
@@ -102,6 +107,7 @@ public class PuestoService {
     }
 
     public List<Puesto> findByMesYAnio(int mes, int anio) {
-        return puesRepo.findByActivoTrueOrderByFechaRegistroDesc().stream().filter(p -> p.getFechaRegistro().getMonthValue() == mes
+        return puesRepo.findByActivoTrueOrderByFechaRegistroDesc().stream().
+                filter(p -> p.getFechaRegistro().getMonthValue() == mes
                         && p.getFechaRegistro().getYear() == anio).collect(Collectors.toList());
     }}

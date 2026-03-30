@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS puesto (
 CREATE TABLE IF NOT EXISTS puesto_caracteristica (
                                                      puesto_id         INT NOT NULL,
                                                      caracteristica_id INT NOT NULL,
-                                                     nivel_requerido   INT NOT NULL,  -- 1 a 5
+                                                     nivel_requerido   INT NOT NULL,
                                                      PRIMARY KEY (puesto_id, caracteristica_id),
     CONSTRAINT fk_pc_puesto        FOREIGN KEY (puesto_id)         REFERENCES puesto(id),
     CONSTRAINT fk_pc_caracteristica FOREIGN KEY (caracteristica_id) REFERENCES caracteristica(id)
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS puesto_caracteristica (
 CREATE TABLE IF NOT EXISTS oferente_habilidad (
                                                   oferente_id       INT NOT NULL,
                                                   caracteristica_id INT NOT NULL,
-                                                  nivel             INT NOT NULL,  -- 1 a 5
+                                                  nivel             INT NOT NULL,
                                                   PRIMARY KEY (oferente_id, caracteristica_id),
     CONSTRAINT fk_oh_oferente       FOREIGN KEY (oferente_id)       REFERENCES oferente(id),
     CONSTRAINT fk_oh_caracteristica FOREIGN KEY (caracteristica_id) REFERENCES caracteristica(id)
@@ -91,11 +91,6 @@ INSERT INTO moneda (codigo, nombre) VALUES
 
 INSERT INTO administrador (identificacion, clave) VALUES
     ('admin', '$2a$10$tKsAdRe8SXxBjnOUM2t4..tVK.b6TV823bGvk9z/qNKPk6ro6b3ie');
-
-INSERT INTO usuario (correo, clave, rol, estado) VALUES
-    ('admin@bolsaempleo.com',
-     '$2a$10$tKsAdRe8SXxBjnOUM2t4..tVK.b6TV823bGvk9z/qNKPk6ro6b3ie',
-     'ADMIN', 'APROBADO');
 
 INSERT INTO caracteristica (id, nombre, padre_id) VALUES
                                                       (1,  'Lenguajes de programación', NULL),

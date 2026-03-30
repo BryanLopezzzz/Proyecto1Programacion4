@@ -28,6 +28,7 @@ public class OferenteService {
             }
             throw new IllegalArgumentException("El correo ya está registrado");
         }
+    // verificamos la identificacion aparte porque es unica por tabla
         if (ofeRepo.existsByIdentificacion(oferente.getIdentificacion()))
             throw new IllegalArgumentException("La identificación ya está registrada");
         Usuario usuario = new Usuario();
@@ -53,6 +54,7 @@ public class OferenteService {
         h.setOferente(oferente);
         h.setCaracteristica(c);
         h.setNivel(nivel);
+        // si ya tiene esa habilidad la actualizamos, sino creamos una nueva
         OferenteHabilidad.OferenteHabilidadId hId = new OferenteHabilidad.OferenteHabilidadId();
         hId.setOferenteId(oferente.getId());
         hId.setCaracteristicaId(c.getId());
@@ -66,7 +68,9 @@ public class OferenteService {
     public List<OferenteHabilidad> getHabilidades(Oferente oferente) {
         return habilidadRepo.findByOferente(oferente);
     }
+    //este guardar lo usa controller para guardar el cv
     public void guardar(Oferente oferente) {
+
         ofeRepo.save(oferente);
     }
 }

@@ -91,12 +91,14 @@ public class ControllerAdmin {
         model.addAttribute("nombreMes", meses[mes - 1]);
         return "presentation/admin/reporte-puestos";
     }
-
+    //recordemos que es el reporte adicional del proyecto
     @GetMapping("/reportes/coincidencias")
     public String reporteCoincidencias(@RequestParam int mes, @RequestParam int anio, Model model) {
-        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio", "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+        String[] meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio", "Julio","Agosto","Septiembre",
+                "Octubre","Noviembre","Diciembre"};
         List<Puesto> puestos = puesServicio.findByMesYAnio(mes, anio);
         List<List<CandidatoResult>> candidatosPorPuesto = new ArrayList<>();
+        // aca por cada puesto del mes buscamos sus candidatos
         for (Puesto p : puestos) {
             candidatosPorPuesto.add(puesServicio.buscarCandidatos(p));
         }

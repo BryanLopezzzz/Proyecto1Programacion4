@@ -12,9 +12,12 @@ import java.util.Optional;
 @Service("empresaService")
 public class EmpresaService {
 
-    @Autowired private EmpresaRepository empreRepo;
-    @Autowired private UsuarioRepository usuRepo;
-    @Autowired private PasswordEncoder passEncoder;
+    @Autowired
+    private EmpresaRepository empreRepo;
+    @Autowired
+    private UsuarioRepository usuRepo;
+    @Autowired
+    private PasswordEncoder passEncoder;
 
     @Transactional
     public void registrar(Empresa empresa, String correo, String clave) {

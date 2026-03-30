@@ -17,11 +17,16 @@ import java.util.List;
 
 @Controller
 public class ControllerPublic {
-    @Autowired private PuestoService pservicio;
-    @Autowired private EmpresaService eservicio;
-    @Autowired private OferenteService oservicio;
-    @Autowired private CaracteristicaRepository caraRepe;
-    @Autowired private MonedaRepository repoMone;
+    @Autowired
+    private PuestoService pservicio;
+    @Autowired
+    private EmpresaService eservicio;
+    @Autowired
+    private OferenteService oservicio;
+    @Autowired
+    private CaracteristicaRepository caraRepe;
+    @Autowired
+    private MonedaRepository repoMone;
 
     @GetMapping("/")
     public String inicio(Model model) {
@@ -53,6 +58,7 @@ public class ControllerPublic {
     public String regEmpresaForm() {
         return "presentation/publico/registro-empresa";
     }
+    //recordar las validaciones para evitar que el proyecto el profe lo tire jeje
     @PostMapping("/registro/empresa")
     public String regEmpresaGuardar(@RequestParam String nombre, @RequestParam String correo, @RequestParam String clave,
             @RequestParam String clave2, @RequestParam String localizacion, @RequestParam String telefono, @RequestParam String descripcion, Model model) {
@@ -133,7 +139,7 @@ public class ControllerPublic {
         }
         return "redirect:/login?registrado=true";
     }
-
+    // mismo flujo que empresa pero con los campos del oferente
     @GetMapping("/registro/oferente")
     public String regOferenteForm() {
         return "presentation/publico/registro-oferente";

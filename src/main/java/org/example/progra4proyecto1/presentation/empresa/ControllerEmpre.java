@@ -27,6 +27,7 @@ public class ControllerEmpre {
     @Autowired private MonedaRepository moneRepo;
 
     private Empresa getEmpresa(Principal principal) {
+        // a diferencia del oferente, aqui lanzamos excepcion con mensaje
         return empreServicio.findByCorreo(principal.getName()).orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
     }
     @GetMapping("/dashboard")
@@ -53,7 +54,8 @@ public class ControllerEmpre {
         try {
             List<Integer> caracIds = new ArrayList<>();
             List<Integer> niveles  = new ArrayList<>();
-
+            // esto es para obtener las caracteristicas y niveles que la empresa
+            // seleccionó al momento de publicar el puesto
             for (Map.Entry<String, String> entry : todosLosParams.entrySet()) {
                 if (entry.getKey().startsWith("sel_")) {
                     String idStr = entry.getKey().substring(4);

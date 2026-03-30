@@ -20,14 +20,14 @@ public class SecurityConfig {
     @Autowired private UsuarioDetailsService userDetailsService;
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passEnco() { return new BCryptPasswordEncoder(); }
 
     //este metodo permite conectar el servicio de usuarios con el sistema de autenticación
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider p = new DaoAuthenticationProvider();
         p.setUserDetailsService(userDetailsService);
-        p.setPasswordEncoder(passwordEncoder());
+        p.setPasswordEncoder(passEnco());
         return p;
     }
 
