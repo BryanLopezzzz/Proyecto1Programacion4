@@ -22,6 +22,7 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
+    //este metodo permite conectar el servicio de usuarios con el sistema de autenticación
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider p = new DaoAuthenticationProvider();
@@ -30,6 +31,7 @@ public class SecurityConfig {
         return p;
     }
 
+    //aqui se decide a donde va a redirigir el programa al usuario
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         return (request, response, authentication) -> {
@@ -43,6 +45,7 @@ public class SecurityConfig {
         };
     }
 
+    //aqui se deciden las reglas de seguridad, por asi decirlo
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
