@@ -21,6 +21,4 @@ public class Caracteristica {
     @OneToMany(mappedBy = "padre", fetch = FetchType.LAZY)
     private List<Caracteristica> hijos;
 
-    public boolean isRaiz() { return padre == null; }
-    public boolean isHoja() { return hijos == null || hijos.isEmpty(); }
 }
