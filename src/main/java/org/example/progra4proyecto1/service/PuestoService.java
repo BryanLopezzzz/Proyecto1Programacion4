@@ -92,7 +92,7 @@ public class PuestoService {
                 double pct = (double) cumplidos / reqs.size() * 100.0;
                 resu.add(new CandidatoResult(oferente, reqs.size(), cumplidos, pct));
             }});
-        // ordenamos de mayor a menor coincidencia, no sé si ese sort es el más eficiente para nuestro caso
+        // ordenamos de mayor a menor coincidencia
         resu.sort((a, b) -> Double.compare(b.getPorcentajeCoincidencia(), a.getPorcentajeCoincidencia()));
         return resu;
     }
