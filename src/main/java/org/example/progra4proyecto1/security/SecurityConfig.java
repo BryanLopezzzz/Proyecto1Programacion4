@@ -1,77 +1,78 @@
 package org.example.progra4proyecto1.security;
 
-
-import org.example.progra4proyecto1.service.UsuarioDetailsService;
+import org.example.progra4proyecto1.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private UsuarioDetailsService userDetailsService;
+    @Autowired private JwtFilter jwtFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); }
-
-    //este metodo permite conectar el servicio de usuarios con el sistema de autenticación
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
-        p.setUserDetailsService(userDetailsService);
-        p.setPasswordEncoder(passwordEncoder());
-        return p;
+        return new BCryptPasswordEncoder();
     }
 
-    //aqui se decide a donde va a redirigir el programa al usuario
     @Bean
-    public AuthenticationSuccessHandler successHandler() {
-        return (request, response, authentication) -> {
-            String role = authentication.getAuthorities().iterator().next().getAuthority();
-            switch (role) {
-                case "ROLE_EMPRESA"  -> response.sendRedirect("/empresa/dashboard");
-                case "ROLE_OFERENTE" -> response.sendRedirect("/oferente/dashboard");
-                case "ROLE_ADMIN"    -> response.sendRedirect("/admin/dashboard");
-                default              -> response.sendRedirect("/");
-            }
-        };
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
+        return config.getAuthenticationManager();
     }
 
-    //aqui se deciden las reglas de seguridad, por asi decirlo
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(List.of("*"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        cfg.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cfg);
+        return source;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authenticationProvider(authProvider())
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/buscar", "/registro/**", "/login", "/css/**", "/uploads/**").permitAll()
-                        .requestMatchers("/empresa/**").hasRole("EMPRESA")
-                        .requestMatchers("/oferente/**").hasRole("OFERENTE")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // Públicos
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/puestos/publicos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/puestos/buscar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/caracteristicas/**").permitAll()
+                        // Rutas de la SPA (index.html)
+                        .requestMatchers("/", "/index.html", "/static/**",
+                                "/*.js", "/*.css", "/*.ico",
+                                "/uploads/**").permitAll()
+                        // Protegidos por rol
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/empresa/**").hasAuthority("ROLE_EMPRESA")
+                        .requestMatchers("/api/oferente/**").hasAuthority("ROLE_OFERENTE")
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .usernameParameter("correo")
-                        .passwordParameter("clave")
-                        .successHandler(successHandler())
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/")
-                        .permitAll()
-                );
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
