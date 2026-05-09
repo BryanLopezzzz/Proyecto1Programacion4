@@ -93,19 +93,36 @@ public class EmpresaApiController {
         Empresa empresa = getEmpresa(auth);
         Puesto puesto = puestoService.findById(id)
                 .filter(p -> p.getEmpresa().getId().equals(empresa.getId()))
-                .orElseThrow(() -> new RuntimeException("Puesto no encontrado o sin acceso"));
+                .orElseThrow(() -> new RuntimeException("Sin acceso"));
 
-        return puestoService.buscarCandidatos(puesto).stream().map(c -> Map.<String, Object>of(
-                "oferente", Map.of(
-                        "id",             c.getOferente().getId(),
-                        "nombre",         c.getOferente().getNombre(),
-                        "primerApellido", c.getOferente().getPrimerApellido(),
-                        "correo",         c.getOferente().getUsuario().getCorreo()
-                ),
-                "requisitosCumplidos",   c.getRequisitosCumplidos(),
-                "requisitosTotal",       c.getRequisitosTotal(),
-                "porcentajeCoincidencia",c.getPorcentajeCoincidencia()
-        )).collect(Collectors.toList());
+        return puestoService.buscarCandidatos(puesto).stream().map(c -> {
+            List<Map<String, Object>> detalle = c.getDetalle().stream().map(d ->
+                    Map.<String, Object>of(
+                            "caracteristica",   d.getCaracteristica(),
+                            "nivelRequerido",   d.getNivelRequerido(),
+                            "nivelOferente",    d.getNivelOferente(),
+                            "cumple",           d.isCumple(),
+                            "puntajeObtenido",  d.getPuntajeObtenido(),
+                            "puntajeMaximo",    d.getPuntajeMaximo()
+                    )
+            ).collect(Collectors.toList());
+
+            return Map.<String, Object>of(
+                    "oferente", Map.of(
+                            "id",             c.getOferente().getId(),
+                            "nombre",         c.getOferente().getNombre(),
+                            "primerApellido", c.getOferente().getPrimerApellido(),
+                            "correo",         c.getOferente().getUsuario().getCorreo()
+                    ),
+                    "requisitosCumplidos",   c.getRequisitosCumplidos(),
+                    "requisitosTotal",       c.getRequisitosTotal(),
+                    "porcentajeCoincidencia",c.getPorcentajeCoincidencia(),
+                    "puntajePonderado",      c.getPuntajePonderado(),
+                    "puntajeMaximoPosible",  c.getPuntajeMaximoPosible(),
+                    "porcentajePonderado",   c.getPorcentajePonderado(),
+                    "detalle",               detalle
+            );
+        }).collect(Collectors.toList());
     }
 
     @GetMapping("/candidatos/{id}")

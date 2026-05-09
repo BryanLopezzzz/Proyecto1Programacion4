@@ -75,25 +75,61 @@ window._verCandidatos = async (puestoId) => {
     UI.loading();
     try {
         const candidatos = await Api.empresa.candidatos(puestoId);
-        const filas = candidatos.map(c => `
-      <tr>
-        <td>${c.oferente.nombre} ${c.oferente.primerApellido}</td>
-        <td>${c.requisitosCumplidos} / ${c.requisitosTotal}</td>
-        <td>${UI.barraCoincidencia(c.porcentajeCoincidencia)}</td>
-        <td><button class="btn btn-primary btn-sm" onclick="Router.go('/empresa/candidatos/${c.oferente.id}')">Ver detalle</button></td>
-      </tr>`).join('');
+
+        const filas = candidatos.map(c => {
+            const detalleHtml = c.detalle.map(d => `
+                <span style="display:inline-block;margin:2px 4px;padding:2px 8px;
+                      border-radius:10px;font-size:11px;
+                      background:${d.cumple ? '#dcfce7' : '#fff1f2'};
+                      color:${d.cumple ? '#166534' : '#9f1239'};
+                      border:1px solid ${d.cumple ? '#86efac' : '#fecdd3'}">
+                    ${d.cumple ? '✓' : '✗'} ${d.caracteristica}
+                    (tiene: ${d.nivelOferente > 0 ? d.nivelOferente : 'ninguno'},
+                     pide: ${d.nivelRequerido})
+                </span>`).join('');
+
+            return `<tr>
+                <td>${c.oferente.nombre} ${c.oferente.primerApellido}</td>
+                <td>${c.requisitosCumplidos} / ${c.requisitosTotal}</td>
+                <td>
+                    <div style="margin-bottom:4px;font-size:12px;color:#666">
+                        Binario: ${UI.barraCoincidencia(c.porcentajeCoincidencia)}
+                    </div>
+                    <div style="font-size:12px;color:#666">
+                        Ponderado: ${UI.barraCoincidencia(c.porcentajePonderado)}
+                    </div>
+                </td>
+                <td style="font-size:12px">${detalleHtml}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm"
+                            onclick="Router.go('/empresa/candidatos/${c.oferente.id}')">
+                        Ver detalle
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
 
         UI.render(`
-      <div class="container">
-        <h2>Candidatos para el puesto</h2>
-        ${candidatos.length ? `
-          <table>
-            <thead><tr><th>Oferente</th><th>Requisitos</th><th>% Coincidencia</th><th>Acción</th></tr></thead>
-            <tbody>${filas}</tbody>
-          </table>` : '<p class="empty">No se encontraron candidatos.</p>'}
-        <br/><button class="btn btn-outline" onclick="Router.go('/empresa/puestos')">← Volver</button>
-      </div>
-    `);
+            <div class="container">
+                <h2>Candidatos para el puesto</h2>
+                ${candidatos.length ? `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Oferente</th>
+                                <th>Requisitos</th>
+                                <th>% Coincidencia</th>
+                                <th>Detalle por característica</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>${filas}</tbody>
+                    </table>` : '<p class="empty">No se encontraron candidatos.</p>'}
+                <br/>
+                <button class="btn btn-outline"
+                        onclick="Router.go('/empresa/puestos')">← Volver</button>
+            </div>
+        `);
     } catch (e) { UI.toast(e.message, false); }
 };
 

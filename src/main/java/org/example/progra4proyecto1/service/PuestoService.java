@@ -78,22 +78,86 @@ public class PuestoService {
 
     public List<CandidatoResult> buscarCandidatos(Puesto puesto) {
         List<CandidatoResult> resu = new ArrayList<>();
+        List<PuestoCaracteristica> reqs = puesto.getCaracteristicas();
+
+        if (reqs == null || reqs.isEmpty()) return resu;
+
+        // Puntaje máximo posible = suma de todos los niveles requeridos al cuadrado
+        // Usamos nivel^2 para dar más peso a niveles altos
+        double puntajeMaxGlobal = reqs.stream()
+                .mapToDouble(r -> Math.pow(r.getNivelRequerido(), 2))
+                .sum();
+
         ofeRepo.findAll().forEach(oferente -> {
             if (oferente.getUsuario().getEstado() != Usuario.Estado.APROBADO) return;
-            List<PuestoCaracteristica> reqs = puesto.getCaracteristicas();
+
             List<OferenteHabilidad> habs = habiRepo.findByOferente(oferente);
             int cumplidos = 0;
+            double puntajeObtenido = 0;
+            List<CandidatoResult.DetalleRequisito> detalle = new ArrayList<>();
+
             for (PuestoCaracteristica req : reqs) {
-                if (habs.stream().anyMatch(h -> h.getCaracteristica().getId().equals(req.getCaracteristica().getId()) && h.getNivel() >= req.getNivelRequerido())) cumplidos++;
+                int nivelReq = req.getNivelRequerido();
+                double puntajeMaxReq = Math.pow(nivelReq, 2);
+
+                // Buscar si el oferente tiene esta habilidad
+                OferenteHabilidad habEncontrada = habs.stream()
+                        .filter(h -> h.getCaracteristica().getId()
+                                .equals(req.getCaracteristica().getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                int nivelOferente = habEncontrada != null ? habEncontrada.getNivel() : 0;
+                boolean cumple    = nivelOferente >= nivelReq;
+
+                // Puntaje obtenido:
+                // - Si no tiene la habilidad: 0
+                // - Si tiene pero menor al requerido: puntaje parcial proporcional
+                // - Si cumple exacto o supera: puntaje completo del requisito
+                double puntajeReq;
+                if (nivelOferente == 0) {
+                    puntajeReq = 0;
+                } else if (cumple) {
+                    // Cumple: puntaje completo. Si supera, pequeño bonus (máx 10%)
+                    double bonus = Math.min((nivelOferente - nivelReq) * 0.05, 0.10);
+                    puntajeReq = puntajeMaxReq * (1.0 + bonus);
+                } else {
+                    // No cumple pero tiene algo: puntaje parcial
+                    // nivel 1 de 3 requerido = (1/3)^2 * puntajeMax → penaliza más la brecha grande
+                    puntajeReq = puntajeMaxReq * Math.pow((double) nivelOferente / nivelReq, 2);
+                }
+
+                puntajeObtenido += puntajeReq;
+                if (cumple) cumplidos++;
+
+                detalle.add(new CandidatoResult.DetalleRequisito(
+                        req.getCaracteristica().getNombre(),
+                        nivelReq,
+                        nivelOferente,
+                        cumple,
+                        puntajeReq,
+                        puntajeMaxReq
+                ));
             }
-            if (!reqs.isEmpty()) {
-                //este cast era necesario para no perder decimales en la division
-                //la formula es como porcentaje = (requisitos cumplidos / requisitos totales) * 100, para tenerla como guia
-                double pct = (double) cumplidos / reqs.size() * 100.0;
-                resu.add(new CandidatoResult(oferente, reqs.size(), cumplidos, pct));
-            }});
-        // ordenamos de mayor a menor coincidencia
-        resu.sort((a, b) -> Double.compare(b.getPorcentajeCoincidencia(), a.getPorcentajeCoincidencia()));
+
+            double pctBinario    = (double) cumplidos / reqs.size() * 100.0;
+            double pctPonderado  = (puntajeObtenido / puntajeMaxGlobal) * 100.0;
+
+            resu.add(new CandidatoResult(
+                    oferente,
+                    reqs.size(),
+                    cumplidos,
+                    pctBinario,
+                    puntajeObtenido,
+                    puntajeMaxGlobal,
+                    pctPonderado,
+                    detalle
+            ));
+        });
+
+        // Ordenar por puntaje ponderado de mayor a menor
+        resu.sort((a, b) -> Double.compare(b.getPorcentajePonderado(),
+                a.getPorcentajePonderado()));
         return resu;
     }
 
