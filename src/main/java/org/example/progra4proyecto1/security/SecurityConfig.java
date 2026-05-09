@@ -63,8 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/caracteristicas/**").permitAll()
                         // Rutas de la SPA (index.html)
                         .requestMatchers("/", "/index.html", "/static/**",
-                                "/*.js", "/*.css", "/*.ico",
-                                "/uploads/**").permitAll()
+                                "/js/**", "/css/**", "/*.ico", "/uploads/**").permitAll()
                         // Protegidos por rol
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/empresa/**").hasAuthority("ROLE_EMPRESA")

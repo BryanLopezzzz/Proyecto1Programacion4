@@ -56,12 +56,14 @@ public class AuthController {
             if (!passwordEncoder.matches(clave, admin.getClave()))
                 return ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas"));
 
-            var uAdmin = usuarioRepo.findByCorreo("admin@bolsaempleo.com");
-            if (uAdmin.isEmpty())
-                return ResponseEntity.status(500).body(Map.of("error", "Error de configuración"));
-            //2- Aquí lo mismo
-            String token = jwtUtil.generateToken("admin@bolsaempleo.com", "ROLE_ADMIN");
-            return ResponseEntity.ok(Map.of("token", token, "role", "ROLE_ADMIN", "correo", "admin@bolsaempleo.com"));
+            //2- Aqui lo mismo
+            //El administrador no pasa por usuario porque no esta así en SQL
+            String token = jwtUtil.generateToken(admin.getIdentificacion(), "ROLE_ADMIN");
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "role",  "ROLE_ADMIN",
+                    "correo", admin.getIdentificacion()
+            ));
         }
 
         return ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado"));
