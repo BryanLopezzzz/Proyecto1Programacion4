@@ -4,6 +4,108 @@
     <meta charset="UTF-8">
     <title>Candidatos para el Puesto</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+    <style>
+        /* ── Tarjeta expandible ── */
+        .candidato-card {
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #fecdd3;
+            margin-bottom: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(76,5,25,.06);
+            transition: border-color .25s;
+        }
+        .candidato-card.expandido { border-color: #831843; }
+
+        .candidato-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .candidato-header:hover { background: #fff8f9; }
+
+        /* ── Medalla de ranking ── */
+        .rank-badge {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: #4c0519; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 15px; flex-shrink: 0;
+        }
+        .rank-badge.gold   { background: #b45309; }
+        .rank-badge.silver { background: #6b7280; }
+        .rank-badge.bronze { background: #92400e; }
+
+        /* ── Métricas múltiples ── */
+        .metricas {
+            display: flex;
+            gap: 18px;
+            flex-shrink: 0;
+        }
+        .metrica {
+            text-align: center;
+        }
+        .metrica .valor {
+            font-size: 20px; font-weight: 900; line-height: 1;
+        }
+        .metrica .etiqueta {
+            font-size: 10px; color: #9f1239;
+            text-transform: uppercase; letter-spacing: .5px;
+        }
+
+        /* ── Barra de progreso ── */
+        .barra-outer {
+            background: #fecdd3; border-radius: 99px;
+            height: 8px; overflow: hidden; width: 100%;
+        }
+        .barra-inner {
+            height: 100%; border-radius: 99px;
+            transition: width .5s ease;
+        }
+
+        /* ── Detalle de coincidencias ── */
+        .detalle-panel { border-top: 1px solid #fecdd3; }
+        .detalle-panel table { margin: 0; border-radius: 0; box-shadow: none; }
+        .detalle-panel th { font-size: 12px; padding: 8px 12px; }
+        .detalle-panel td { font-size: 13px; padding: 8px 12px; }
+
+        /* ── Pie de métricas ── */
+        .metricas-pie {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid #fecdd3;
+        }
+        .metrica-pie {
+            padding: 14px 0;
+            text-align: center;
+            border-right: 1px solid #fecdd3;
+        }
+        .metrica-pie:last-child { border-right: none; }
+        .metrica-pie .mv { font-size: 22px; font-weight: 900; }
+        .metrica-pie .ml { font-size: 11px; color: #9f1239; }
+        .metrica-pie .ms { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+
+        /* ── Estado badges ── */
+        .est-cumple       { background:#dcfce7; color:#15803d; }
+        .est-parcial      { background:#fef3c7; color:#b45309; }
+        .est-insuficiente { background:#fee2e2; color:#dc2626; }
+        .est-ausente      { background:#ede9fe; color:#7c3aed; }
+
+        .flecha-toggle {
+            font-size: 18px; color: #831843;
+            transition: transform .3s; flex-shrink: 0;
+        }
+        .expandido .flecha-toggle { transform: rotate(180deg); }
+
+        /* ── Empate badge ── */
+        .empate-badge {
+            background: #fef3c7; color: #b45309;
+            border-radius: 8px; padding: 1px 8px;
+            font-size: 11px; font-weight: 700;
+        }
+    </style>
 </head>
 <body>
 <nav>
@@ -14,52 +116,225 @@
     </div>
     <div><a th:href="@{/logout}">Salir</a></div>
 </nav>
+
 <div class="container">
     <h2>Candidatos para el puesto</h2>
-    <p>Puesto: <strong th:text="${puesto.descripcion}"></strong></p>
 
-    <table th:if="${!#lists.isEmpty(candidatos)}">
-        <thead>
-        <tr>
-            <th>Oferente</th>
-            <th>Requisitos cumplidos</th>
-            <th>% Coincidencia</th>
-            <th>Acción</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="c : ${candidatos}">
-            <td th:text="${c.oferente.nombre + ' ' + c.oferente.primerApellido}"></td>
-            <td th:text="${c.requisitosCumplidos + ' / ' + c.requisitosTotal}"></td>
-            <td>
-                <div class="bar-wrap">
-                    <div class="bar-outer">
-                        <div class="bar-inner"
-                             th:style="'width:' + ${c.porcentajeCoincidencia} + '%'">
+    <!-- Datos del puesto -->
+    <div class="card" style="margin-bottom:20px">
+        <h3 th:text="${puesto.descripcion}"></h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <div th:each="r : ${puesto.caracteristicas}"
+                 style="background:#4c0519;color:white;border-radius:10px;padding:7px 13px;font-size:13px">
+                <strong th:text="${r.caracteristica.nombre}"></strong>
+                <span style="opacity:.8;font-size:11px"
+                      th:text="' · Nivel ' + ${r.nivelRequerido}
+                               + ' (' + (r.nivelRequerido == 1 ? 'Básico'
+                               : (r.nivelRequerido == 2 ? 'Elemental'
+                               : (r.nivelRequerido == 3 ? 'Intermedio'
+                               : (r.nivelRequerido == 4 ? 'Avanzado' : 'Experto')))) + ')'">
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sin candidatos -->
+    <p class="empty" th:if="${#lists.isEmpty(candidatos)}">
+        No se encontraron candidatos para este puesto.
+    </p>
+
+    <!-- Lista de candidatos -->
+    <div th:each="c, iter : ${candidatos}"
+         th:id="'card-' + ${c.oferente.id}"
+         class="candidato-card"
+         th:classappend="${param.expanded != null and param.expanded == c.oferente.id.toString()} ? ' expandido' : ''">
+
+        <!-- ── Cabecera clicable ── -->
+        <div class="candidato-header"
+             th:onclick="'toggleCard(' + ${c.oferente.id} + ')'">
+
+            <!-- Medalla rank -->
+            <div class="rank-badge"
+                 th:classappend="${iter.index == 0} ? ' gold' : (${iter.index == 1} ? ' silver' : (${iter.index == 2} ? ' bronze' : ''))">
+                #<span th:text="${iter.count}"></span>
+            </div>
+
+            <!-- Nombre + barra -->
+            <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span style="font-weight:800;color:#2d0a0a;font-size:15px"
+                          th:text="${c.oferente.nombre + ' ' + c.oferente.primerApellido}"></span>
+                </div>
+                <div style="margin-top:6px">
+                    <div class="barra-outer">
+                        <div class="barra-inner"
+                             th:style="'width:' + ${c.porcentajeCoincidencia} + '%;background:'
+                                      + (${c.porcentajeCoincidencia} >= 85 ? '#15803d'
+                                      : (${c.porcentajeCoincidencia} >= 60 ? '#b45309'
+                                      : (${c.porcentajeCoincidencia} >= 30 ? '#dc2626' : '#7c3aed')))">
                         </div>
                     </div>
-                    <span class="bar-label"
-                          th:text="${#numbers.formatDecimal(c.porcentajeCoincidencia, 1, 2) + '%'}">
-                    </span>
                 </div>
-            </td>
-            <td>
+            </div>
+
+            <!-- Métricas múltiples — no un único número -->
+            <div class="metricas">
+                <div class="metrica">
+                    <div class="valor"
+                         th:style="'color:' + (${c.porcentajeCoincidencia} >= 85 ? '#15803d'
+                                  : (${c.porcentajeCoincidencia} >= 60 ? '#b45309'
+                                  : (${c.porcentajeCoincidencia} >= 30 ? '#dc2626' : '#7c3aed')))"
+                         th:text="${#numbers.formatDecimal(c.porcentajeCoincidencia, 1, 1) + '%'}">
+                    </div>
+                    <div class="etiqueta">score</div>
+                </div>
+                <div class="metrica">
+                    <div class="valor" style="color:#4c0519"
+                         th:text="${c.requisitosCumplidos + '/' + c.requisitosTotal}">
+                    </div>
+                    <div class="etiqueta">cumplidos</div>
+                </div>
+                <div class="metrica">
+                    <div class="valor" style="color:#6b7280"
+                         th:text="'+' + ${c.nivelExcedenteTotal}">
+                    </div>
+                    <div class="etiqueta">excedente</div>
+                </div>
+            </div>
+
+            <div class="flecha-toggle">▾</div>
+        </div>
+
+        <!-- ── Detalle expandible ── -->
+        <div class="detalle-panel"
+             th:id="'detalle-' + ${c.oferente.id}"
+             style="display:none">
+
+            <!-- Tabla: qué coincidió y qué no -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Característica</th>
+                    <th style="text-align:center">Requerido</th>
+                    <th style="text-align:center">Perfil del oferente</th>
+                    <th style="text-align:center">Peso</th>
+                    <th style="text-align:center">Aporte al score</th>
+                    <th style="text-align:center">Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="d : ${c.coincidencias}">
+                    <td style="font-weight:600" th:text="${d.nombreCaracteristica}"></td>
+
+                    <!-- Nivel requerido -->
+                    <td style="text-align:center">
+                        <span class="badge badge-privado"
+                              th:text="${d.nivelRequerido == 1 ? 'Básico' :
+                                        (d.nivelRequerido == 2 ? 'Elemental' :
+                                        (d.nivelRequerido == 3 ? 'Intermedio' :
+                                        (d.nivelRequerido == 4 ? 'Avanzado' : 'Experto')))}
+                                       + ' (' + ${d.nivelRequerido} + ')'">
+                        </span>
+                    </td>
+
+                    <!-- Nivel del oferente -->
+                    <td style="text-align:center">
+                        <span th:if="${d.nivelOferente != null}" class="badge badge-activo"
+                              th:text="${d.nivelOferente == 1 ? 'Básico' :
+                                        (d.nivelOferente == 2 ? 'Elemental' :
+                                        (d.nivelOferente == 3 ? 'Intermedio' :
+                                        (d.nivelOferente == 4 ? 'Avanzado' : 'Experto')))}
+                                       + ' (' + ${d.nivelOferente} + ')'">
+                        </span>
+                        <span th:if="${d.nivelOferente == null}" style="color:#9ca3af;font-style:italic">
+                            — sin habilidad —
+                        </span>
+                    </td>
+
+                    <!-- Peso -->
+                    <td style="text-align:center;font-weight:700;color:#831843"
+                        th:text="${#numbers.formatDecimal(d.peso * 100, 1, 1) + '%'}">
+                    </td>
+
+                    <!-- Aporte -->
+                    <td style="text-align:center;font-weight:700"
+                        th:style="'text-align:center;font-weight:700;color:'
+                                 + (${d.estado.name() == 'CUMPLE'} ? '#15803d'
+                                 : (${d.estado.name() == 'PARCIAL'} ? '#b45309' : '#dc2626'))"
+                        th:text="${#numbers.formatDecimal(d.aporte * 100, 1, 2) + ' pts'}">
+                    </td>
+
+                    <!-- Estado -->
+                    <td style="text-align:center">
+                        <span class="badge"
+                              th:classappend="${d.estado.name() == 'CUMPLE'}       ? 'est-cumple'       :
+                                             (${d.estado.name() == 'PARCIAL'}      ? 'est-parcial'      :
+                                             (${d.estado.name() == 'INSUFICIENTE'} ? 'est-insuficiente' :
+                                                                                     'est-ausente'))"
+                              th:text="${d.estado.name() == 'CUMPLE'}       ? '✓ Cumple'       :
+                                       (${d.estado.name() == 'PARCIAL'}     ? '~ Parcial'      :
+                                       (${d.estado.name() == 'INSUFICIENTE'}? '! Muy bajo'     :
+                                                                               '✗ Ausente'))">
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Pie: 3 métricas + botón ver perfil -->
+            <div class="metricas-pie">
+                <div class="metrica-pie">
+                    <div class="ml">Score ponderado</div>
+                    <div class="mv"
+                         th:style="'color:' + (${c.porcentajeCoincidencia} >= 85 ? '#15803d'
+                                  : (${c.porcentajeCoincidencia} >= 60 ? '#b45309' : '#dc2626'))"
+                         th:text="${#numbers.formatDecimal(c.porcentajeCoincidencia, 1, 2) + '%'}">
+                    </div>
+                    <div class="ms">cálculo principal</div>
+                </div>
+                <div class="metrica-pie">
+                    <div class="ml">Reqs. cumplidos</div>
+                    <div class="mv" style="color:#4c0519"
+                         th:text="${#numbers.formatDecimal(c.porcentajeCumplidos * 100, 1, 1) + '%'}">
+                    </div>
+                    <div class="ms">tie-breaker #1</div>
+                </div>
+                <div class="metrica-pie">
+                    <div class="ml">Nivel excedente</div>
+                    <div class="mv" style="color:#6b7280"
+                         th:text="'+' + ${c.nivelExcedenteTotal}">
+                    </div>
+                    <div class="ms">tie-breaker #2</div>
+                </div>
+            </div>
+
+            <!-- Botón ver perfil completo -->
+            <div style="padding:14px 20px;border-top:1px solid #fecdd3">
                 <a class="btn btn-primary btn-sm"
                    th:href="@{/empresa/candidatos/{id}(id=${c.oferente.id})}">
-                    Ver detalle
+                    Ver perfil completo y CV
                 </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
+    </div>
 
-    <p class="empty" th:if="${#lists.isEmpty(candidatos)}">No se encontraron candidatos para este puesto.</p>
     <br/>
-    <a class="btn btn-outline" th:href="@{/empresa/puestos}"> Volver a mis puestos</a>
+    <a class="btn btn-outline" th:href="@{/empresa/puestos}">← Volver a mis puestos</a>
 </div>
+
 <footer>
     <strong>Bolsa de Empleo</strong>
     <span>Contacto: info@bolsaempleo.local | Créditos: Equipo de desarrollo</span>
 </footer>
+
+<script>
+    function toggleCard(id) {
+        const card   = document.getElementById('card-' + id);
+        const panel  = document.getElementById('detalle-' + id);
+        const abierto = panel.style.display === 'block';
+        panel.style.display = abierto ? 'none' : 'block';
+        card.classList.toggle('expandido', !abierto);
+    }
+</script>
 </body>
 </html>

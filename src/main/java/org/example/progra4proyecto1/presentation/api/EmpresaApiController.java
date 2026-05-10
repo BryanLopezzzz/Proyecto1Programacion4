@@ -88,7 +88,7 @@ public class EmpresaApiController {
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No autorizado")));
     }
 
-    @GetMapping("/puestos/{id}/candidatos")
+    /* @GetMapping("/puestos/{id}/candidatos")
     public List<Map<String, Object>> candidatos(@PathVariable Integer id, Authentication auth) {
         Empresa empresa = getEmpresa(auth);
         Puesto puesto = puestoService.findById(id)
@@ -124,6 +124,8 @@ public class EmpresaApiController {
             );
         }).collect(Collectors.toList());
     }
+    Hay que cambiarlo para que funcione con el CandidatoResult y el PustoService
+     */
 
     @GetMapping("/candidatos/{id}")
     public Map<String, Object> detalleCandidato(@PathVariable Integer id) {
