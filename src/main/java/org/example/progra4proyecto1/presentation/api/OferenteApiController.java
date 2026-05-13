@@ -103,23 +103,42 @@ public class OferenteApiController {
     }
 
     @GetMapping("/puestos/buscar")
-    public List<Map<String, Object>> buscarPuestos(
+    public List<Map<String, Object>> buscarPuestosConScore(
             @RequestParam(required = false) List<Integer> caracteristicas,
             @RequestParam(defaultValue = "false") boolean modoTodos,
             Authentication auth) {
-        return puestoService.buscarTodos(caracteristicas, modoTodos)
-                .stream().map(p -> Map.<String, Object>of(
-                        "id",          p.getId(),
-                        "descripcion", p.getDescripcion(),
-                        "salario",     p.getSalario(),
-                        "moneda",      Map.of("codigo", p.getMoneda().getCodigo()),
-                        "tipo",        p.getTipo().name(),
-                        "empresa",     Map.of("nombre", p.getEmpresa().getNombre()),
-                        "caracteristicas", p.getCaracteristicas() == null ? List.of() :
-                                p.getCaracteristicas().stream().map(pc -> Map.of(
-                                        "nombre", pc.getCaracteristica().getNombre(),
-                                        "nivel",  pc.getNivelRequerido()
-                                )).collect(Collectors.toList())
-                )).collect(Collectors.toList());
+
+        Oferente oferente = getOferente(auth);
+
+        return puestoService.buscarPuestosConScore(oferente, caracteristicas, modoTodos)
+                .stream().map(r -> {
+                    Puesto p = r.getPuesto();
+
+                    List<Map<String, Object>> coincidencias = r.getCoincidencias().stream()
+                            .map(d -> Map.<String, Object>of(
+                                    "caracteristica", d.getNombreCaracteristica(),
+                                    "nivelRequerido", d.getNivelRequerido(),
+                                    "nivelOferente",  d.getNivelOferente() != null ? d.getNivelOferente() : -1,
+                                    "peso",           d.getPeso(),
+                                    "aporte",         d.getAporte(),
+                                    "estado",         d.getEstado().name()
+                            )).collect(Collectors.toList());
+
+                    Map<String, Object> entry = new LinkedHashMap<>();
+                    entry.put("id",                    p.getId());
+                    entry.put("descripcion",           p.getDescripcion());
+                    entry.put("salario",               p.getSalario());
+                    entry.put("moneda",                Map.of("codigo", p.getMoneda().getCodigo()));
+                    entry.put("tipo",                  p.getTipo().name());
+                    entry.put("empresa",               Map.of("nombre", p.getEmpresa().getNombre()));
+                    entry.put("scoreTotal",            r.getScoreTotal());
+                    entry.put("porcentajeCoincidencia", r.getPorcentajeCoincidencia());
+                    entry.put("porcentajeCumplidos",   r.getPorcentajeCumplidos() * 100);
+                    entry.put("nivelExcedenteTotal",   r.getNivelExcedenteTotal());
+                    entry.put("requisitosCumplidos",   r.getRequisitosCumplidos());
+                    entry.put("requisitosTotal",       r.getRequisitosTotal());
+                    entry.put("coincidencias",         coincidencias);
+                    return entry;
+                }).collect(Collectors.toList());
     }
 }

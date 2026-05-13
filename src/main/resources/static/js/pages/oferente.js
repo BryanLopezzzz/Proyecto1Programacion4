@@ -186,23 +186,42 @@ Pages.oferentePuestos = async () => {
 
             if (!res.length) { container.innerHTML = '<p class="empty">No se encontraron puestos.</p>'; return; }
 
-            container.innerHTML = `
-        <table>
-          <thead><tr><th>Empresa</th><th>Descripción</th><th>Salario</th><th>Moneda</th><th>Tipo</th><th>Características</th></tr></thead>
-          <tbody>
-            ${res.map(p => `
-              <tr>
-                <td>${p.empresa.nombre}</td>
-                <td>${p.descripcion.substring(0,60)}${p.descripcion.length>60?'…':''}</td>
-                <td>${Number(p.salario).toLocaleString('es-CR')}</td>
-                <td>${p.moneda.codigo}</td>
-                <td><span class="badge ${p.tipo==='PUBLICO'?'badge-publico':'badge-privado'}">${p.tipo}</span></td>
-                <td>${(p.caracteristicas||[]).map(c=>`${c.nombre} (${UI.nivelTexto(c.nivel)})`).join(', ')}</td>
-              </tr>`).join('')}
-          </tbody>
-        </table>`;
-        });
+            const estadoTexto = { CUMPLE:'✓', PARCIAL:'~', INSUFICIENTE:'!', AUSENTE:'✗' };
+            const estadoColor = { CUMPLE:'#dcfce7', PARCIAL:'#fef3c7', INSUFICIENTE:'#fee2e2', AUSENTE:'#ede9fe' };
 
+            container.innerHTML = res.map(p => `
+        <div class="card" style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                    <strong style="color:#4c0519">${p.empresa.nombre}</strong>
+                    <span style="font-size:12px;color:#9f1239;margin-left:8px">${p.tipo}</span>
+                    <div style="font-size:14px;margin-top:4px">${p.descripcion.substring(0,80)}…</div>
+                    <div style="font-size:13px;color:#4c0519;font-weight:bold;margin-top:6px">
+                        ${p.moneda.codigo} ${Number(p.salario).toLocaleString('es-CR')}
+                    </div>
+                </div>
+                <div style="text-align:center;min-width:90px">
+                    <div style="font-size:26px;font-weight:900;color:${p.porcentajeCoincidencia>=70?'#15803d':p.porcentajeCoincidencia>=40?'#b45309':'#dc2626'}">
+                        ${p.porcentajeCoincidencia.toFixed(1)}%
+                    </div>
+                    <div style="font-size:11px;color:#9f1239">match</div>
+                    <div style="font-size:11px;color:#6b7280">${p.requisitosCumplidos}/${p.requisitosTotal} cumplidos</div>
+                </div>
+            </div>
+            <div style="margin-top:10px">
+                ${UI.barraCoincidencia(p.porcentajeCoincidencia)}
+            </div>
+            ${p.coincidencias && p.coincidencias.length ? `
+            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px">
+                ${p.coincidencias.map(d => `
+                    <span style="font-size:11px;padding:2px 8px;border-radius:10px;
+                          background:${estadoColor[d.estado]};border:1px solid #d1d5db">
+                        ${estadoTexto[d.estado]} ${d.caracteristica}
+                        ${d.nivelOferente > 0 ? `(${d.nivelOferente}→${d.nivelRequerido})` : '(sin habilidad)'}
+                    </span>`).join('')}
+            </div>` : ''}
+        </div>`).join('');
+        });
         document.getElementById('op-limpiar').addEventListener('click', () => {
             document.querySelectorAll('.arbol input').forEach(cb => cb.checked = false);
             document.getElementById('op-res').innerHTML = '';

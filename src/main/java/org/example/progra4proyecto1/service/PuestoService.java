@@ -44,27 +44,34 @@ public class PuestoService {
     public List<CandidatoResult> buscarCandidatos(Puesto puesto) {
 
         List<PuestoCaracteristica> requerimientos = puesto.getCaracteristicas();
+        List<CandidatoResult> resultados = new ArrayList<>();
 
-        // Σ de todos los niveles requeridos → denominador de los pesos
+        // ── Guard: puesto sin requisitos → todos con score 0, orden alfabético ──
+        if (requerimientos == null || requerimientos.isEmpty()) {
+            ofeRepo.findAll().forEach(oferente -> {
+                if (oferente.getUsuario().getEstado() != Usuario.Estado.APROBADO) return;
+                resultados.add(new CandidatoResult(
+                        oferente, 0.0, 0.0, 0, 0, 0, List.of()
+                ));
+            });
+            resultados.sort(Comparator.comparing(c -> c.getOferente().getNombre()));
+            return resultados;
+        }
+
         double sumaWeights = requerimientos.stream()
                 .mapToDouble(PuestoCaracteristica::getNivelRequerido)
                 .sum();
 
-        List<CandidatoResult> resultados = new ArrayList<>();
-
-        // Reciclaje de perfil: iteramos TODOS los oferentes aprobados
         ofeRepo.findAll().forEach(oferente -> {
 
             if (oferente.getUsuario().getEstado() != Usuario.Estado.APROBADO) return;
 
             List<OferenteHabilidad> habilidades = habiRepo.findByOferente(oferente);
 
-            // Mapa rápido: caracteristicaId → nivel del oferente
             Map<Integer, Integer> mapaHabilidades = new HashMap<>();
             habilidades.forEach(h ->
                     mapaHabilidades.put(h.getCaracteristica().getId(), h.getNivel()));
 
-            // ── Calcular score y detalles por cada requisito ──────────────
             double scoreTotal          = 0.0;
             int    cumpleCompletos     = 0;
             int    nivelExcedenteTotal = 0;
@@ -72,28 +79,22 @@ public class PuestoService {
 
             for (PuestoCaracteristica req : requerimientos) {
 
-                int    nivelReq  = req.getNivelRequerido();
-                double peso      = (sumaWeights > 0) ? nivelReq / sumaWeights : 0.0;
+                int     nivelReq = req.getNivelRequerido();
+                double  peso     = nivelReq / sumaWeights;
                 Integer nivelOfe = mapaHabilidades.get(req.getCaracteristica().getId());
 
                 double aporte;
                 EstadoCoincidencia estado;
 
                 if (nivelOfe == null) {
-                    // Reciclaje de perfil: característica ausente → aporte 0
                     aporte = 0.0;
                     estado = EstadoCoincidencia.AUSENTE;
-
                 } else if (nivelOfe >= nivelReq) {
-                    // Cumple o supera el nivel requerido
                     aporte = peso * 1.0;
                     estado = EstadoCoincidencia.CUMPLE;
                     cumpleCompletos++;
-                    nivelExcedenteTotal += (nivelOfe - nivelReq); // guarda excedente
-
+                    nivelExcedenteTotal += (nivelOfe - nivelReq);
                 } else {
-                    // Nivel insuficiente — penalización por brecha
-                    // nivel 3 ≠ nivel 5: brecha distinta → aporte distinto
                     int    brecha = nivelReq - nivelOfe;
                     double factor = Math.max(0.0, 1.0 - brecha * FACTOR_PENALIZACION);
                     aporte = peso * factor;
@@ -105,39 +106,24 @@ public class PuestoService {
 
                 coincidencias.add(new DetalleCoincidencia(
                         req.getCaracteristica().getNombre(),
-                        nivelReq,
-                        nivelOfe,
-                        peso,
-                        aporte,
-                        estado
+                        nivelReq, nivelOfe, peso, aporte, estado
                 ));
             }
 
-            double porcentajeCumplidos = requerimientos.isEmpty()
-                    ? 0.0
-                    : (double) cumpleCompletos / requerimientos.size();
+            double porcentajeCumplidos = (double) cumpleCompletos / requerimientos.size();
 
             resultados.add(new CandidatoResult(
-                    oferente,
-                    scoreTotal,
-                    porcentajeCumplidos,
-                    nivelExcedenteTotal,
-                    requerimientos.size(),
-                    cumpleCompletos,
-                    coincidencias
+                    oferente, scoreTotal, porcentajeCumplidos,
+                    nivelExcedenteTotal, requerimientos.size(),
+                    cumpleCompletos, coincidencias
             ));
         });
 
-        // ── Ordenamiento con 4 criterios de desempate ─────────────────────
         resultados.sort(
                 Comparator
-                        // 1. Score ponderado total (mayor es mejor)
                         .comparingDouble(CandidatoResult::getScoreTotal).reversed()
-                        // 2. % reqs cumplidos completamente (tie-breaker 1)
                         .thenComparingDouble(CandidatoResult::getPorcentajeCumplidos).reversed()
-                        // 3. Niveles excedentes acumulados (tie-breaker 2)
                         .thenComparingInt(CandidatoResult::getNivelExcedenteTotal).reversed()
-                        // 4. Orden alfabético (estabilidad determinista)
                         .thenComparing(c -> c.getOferente().getNombre())
         );
 
@@ -232,5 +218,100 @@ public class PuestoService {
                 .filter(p -> p.getFechaRegistro().getMonthValue() == mes
                         && p.getFechaRegistro().getYear()       == anio)
                 .collect(Collectors.toList());
+    }
+    /**
+     * buscarPuestosConScore — perspectiva del OFERENTE.
+     *
+     * Devuelve TODOS los puestos accesibles (públicos + privados si está
+     * registrado) junto con el PuestoResult que indica cuánto encaja
+     * el perfil del oferente en cada puesto.
+     *
+     * La fórmula es simétrica a buscarCandidatos:
+     *   peso_i    = nivelRequerido_i / Σ(nivelRequerido)
+     *   aporte_i  = peso_i × factor(brecha)
+     *   scoreTotal = Σ(aporte_i) ∈ [0, 1]
+     *
+     * Incluye puestos con score 0 (reciclaje de perfil).
+     */
+    public List<PuestoResult> buscarPuestosConScore(Oferente oferente,
+                                                    List<Integer> caracteristicaIds,
+                                                    boolean modoTodos) {
+
+        // Mapa rápido de habilidades del oferente
+        Map<Integer, Integer> mapaHabilidades = new HashMap<>();
+        habiRepo.findByOferente(oferente)
+                .forEach(h -> mapaHabilidades.put(h.getCaracteristica().getId(), h.getNivel()));
+
+        // Candidato es APROBADO → ve públicos y privados
+        List<Puesto> puestos = puesRepo.findByActivoTrueOrderByFechaRegistroDesc();
+
+        // Filtro opcional por características (mismo que buscarTodos)
+        if (caracteristicaIds != null && !caracteristicaIds.isEmpty()) {
+            puestos = filtrar(puestos, caracteristicaIds, modoTodos);
+        }
+
+        List<PuestoResult> resultados = new ArrayList<>();
+
+        for (Puesto puesto : puestos) {
+            List<PuestoCaracteristica> reqs = puesto.getCaracteristicas();
+            if (reqs == null) reqs = new ArrayList<>();
+
+            double sumaWeights = reqs.stream()
+                    .mapToDouble(PuestoCaracteristica::getNivelRequerido)
+                    .sum();
+
+            double scoreTotal          = 0.0;
+            int    cumpleCompletos     = 0;
+            int    nivelExcedenteTotal = 0;
+            List<PuestoResult.DetalleCoincidencia> coincidencias = new ArrayList<>();
+
+            for (PuestoCaracteristica req : reqs) {
+                int     nivelReq = req.getNivelRequerido();
+                double  peso     = (sumaWeights > 0) ? nivelReq / sumaWeights : 0.0;
+                Integer nivelOfe = mapaHabilidades.get(req.getCaracteristica().getId());
+
+                double aporte;
+                PuestoResult.DetalleCoincidencia.EstadoCoincidencia estado;
+
+                if (nivelOfe == null) {
+                    aporte = 0.0;
+                    estado = PuestoResult.DetalleCoincidencia.EstadoCoincidencia.AUSENTE;
+                } else if (nivelOfe >= nivelReq) {
+                    aporte = peso * 1.0;
+                    estado = PuestoResult.DetalleCoincidencia.EstadoCoincidencia.CUMPLE;
+                    cumpleCompletos++;
+                    nivelExcedenteTotal += (nivelOfe - nivelReq);
+                } else {
+                    int    brecha = nivelReq - nivelOfe;
+                    double factor = Math.max(0.0, 1.0 - brecha * FACTOR_PENALIZACION);
+                    aporte = peso * factor;
+                    estado = (aporte > 0)
+                            ? PuestoResult.DetalleCoincidencia.EstadoCoincidencia.PARCIAL
+                            : PuestoResult.DetalleCoincidencia.EstadoCoincidencia.INSUFICIENTE;
+                }
+
+                scoreTotal += aporte;
+                coincidencias.add(new PuestoResult.DetalleCoincidencia(
+                        req.getCaracteristica().getNombre(),
+                        nivelReq, nivelOfe, peso, aporte, estado));
+            }
+
+            double porcentajeCumplidos = reqs.isEmpty()
+                    ? 0.0 : (double) cumpleCompletos / reqs.size();
+
+            resultados.add(new PuestoResult(
+                    puesto, scoreTotal, porcentajeCumplidos,
+                    nivelExcedenteTotal, reqs.size(), cumpleCompletos, coincidencias));
+        }
+
+        // Orden: mejor match primero, mismos tie-breakers que buscarCandidatos
+        resultados.sort(
+                Comparator.comparingDouble(PuestoResult::getScoreTotal).reversed()
+                        .thenComparingDouble(PuestoResult::getPorcentajeCumplidos).reversed()
+                        .thenComparingInt(PuestoResult::getNivelExcedenteTotal).reversed()
+                        .thenComparing(r -> r.getPuesto().getDescripcion())
+        );
+
+        return resultados;
     }
 }

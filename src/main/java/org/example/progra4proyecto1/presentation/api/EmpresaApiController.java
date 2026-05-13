@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.LinkedHashMap;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -88,44 +89,51 @@ public class EmpresaApiController {
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No autorizado")));
     }
 
-    /* @GetMapping("/puestos/{id}/candidatos")
-    public List<Map<String, Object>> candidatos(@PathVariable Integer id, Authentication auth) {
+    @GetMapping("/puestos/{id}/candidatos")
+    public ResponseEntity<?> candidatos(@PathVariable Integer id, Authentication auth) {
         Empresa empresa = getEmpresa(auth);
         Puesto puesto = puestoService.findById(id)
                 .filter(p -> p.getEmpresa().getId().equals(empresa.getId()))
-                .orElseThrow(() -> new RuntimeException("Sin acceso"));
+                .orElse(null);
 
-        return puestoService.buscarCandidatos(puesto).stream().map(c -> {
-            List<Map<String, Object>> detalle = c.getDetalle().stream().map(d ->
-                    Map.<String, Object>of(
-                            "caracteristica",   d.getCaracteristica(),
-                            "nivelRequerido",   d.getNivelRequerido(),
-                            "nivelOferente",    d.getNivelOferente(),
-                            "cumple",           d.isCumple(),
-                            "puntajeObtenido",  d.getPuntajeObtenido(),
-                            "puntajeMaximo",    d.getPuntajeMaximo()
-                    )
-            ).collect(Collectors.toList());
+        if (puesto == null) {
+            return ResponseEntity.status(403).body(Map.of("error", "No autorizado o puesto no existe"));
+        }
 
-            return Map.<String, Object>of(
-                    "oferente", Map.of(
+        List<Map<String, Object>> resultado = puestoService.buscarCandidatos(puesto)
+                .stream().map(c -> {
+                    List<Map<String, Object>> coincidencias = c.getCoincidencias().stream()
+                            .map(d -> {
+                                Map<String, Object> m = new LinkedHashMap<>();
+                                m.put("caracteristica",  d.getNombreCaracteristica());
+                                m.put("nivelRequerido",  d.getNivelRequerido());
+                                m.put("nivelOferente",   d.getNivelOferente());   // puede ser null
+                                m.put("peso",            d.getPeso());
+                                m.put("aporte",          d.getAporte());
+                                m.put("estado",          d.getEstado().name());
+                                return m;
+                            }).collect(Collectors.toList());
+
+                    Map<String, Object> entry = new LinkedHashMap<>();
+                    entry.put("oferente", Map.of(
                             "id",             c.getOferente().getId(),
                             "nombre",         c.getOferente().getNombre(),
                             "primerApellido", c.getOferente().getPrimerApellido(),
-                            "correo",         c.getOferente().getUsuario().getCorreo()
-                    ),
-                    "requisitosCumplidos",   c.getRequisitosCumplidos(),
-                    "requisitosTotal",       c.getRequisitosTotal(),
-                    "porcentajeCoincidencia",c.getPorcentajeCoincidencia(),
-                    "puntajePonderado",      c.getPuntajePonderado(),
-                    "puntajeMaximoPosible",  c.getPuntajeMaximoPosible(),
-                    "porcentajePonderado",   c.getPorcentajePonderado(),
-                    "detalle",               detalle
-            );
-        }).collect(Collectors.toList());
+                            "correo",         c.getOferente().getUsuario().getCorreo(),
+                            "identificacion", c.getOferente().getIdentificacion()
+                    ));
+                    entry.put("scoreTotal",           c.getScoreTotal());
+                    entry.put("porcentajeCoincidencia", c.getPorcentajeCoincidencia());
+                    entry.put("porcentajeCumplidos",  c.getPorcentajeCumplidos() * 100);
+                    entry.put("nivelExcedenteTotal",  c.getNivelExcedenteTotal());
+                    entry.put("requisitosCumplidos",  c.getRequisitosCumplidos());
+                    entry.put("requisitosTotal",      c.getRequisitosTotal());
+                    entry.put("coincidencias",        coincidencias);
+                    return entry;
+                }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resultado);
     }
-    Hay que cambiarlo para que funcione con el CandidatoResult y el PustoService
-     */
 
     @GetMapping("/candidatos/{id}")
     public Map<String, Object> detalleCandidato(@PathVariable Integer id) {

@@ -76,34 +76,40 @@ window._verCandidatos = async (puestoId) => {
     try {
         const candidatos = await Api.empresa.candidatos(puestoId);
 
-        const filas = candidatos.map(c => {
-            const detalleHtml = c.detalle.map(d => `
+        const filas = candidatos.map((c, idx) => {
+            const medallas = ['🥇','🥈','🥉'];
+            const medalla  = idx < 3 ? medallas[idx] : `#${idx+1}`;
+
+            const estadoColor = {
+                CUMPLE: '#dcfce7', PARCIAL: '#fef3c7',
+                INSUFICIENTE: '#fee2e2', AUSENTE: '#ede9fe'
+            };
+            const detalleHtml = c.coincidencias.map(d => `
                 <span style="display:inline-block;margin:2px 4px;padding:2px 8px;
                       border-radius:10px;font-size:11px;
-                      background:${d.cumple ? '#dcfce7' : '#fff1f2'};
-                      color:${d.cumple ? '#166534' : '#9f1239'};
-                      border:1px solid ${d.cumple ? '#86efac' : '#fecdd3'}">
-                    ${d.cumple ? '✓' : '✗'} ${d.caracteristica}
-                    (tiene: ${d.nivelOferente > 0 ? d.nivelOferente : 'ninguno'},
-                     pide: ${d.nivelRequerido})
+                      background:${estadoColor[d.estado] || '#f3f4f6'};
+                      border:1px solid #d1d5db">
+                    ${d.estado === 'CUMPLE' ? '✓' : d.estado === 'PARCIAL' ? '~' : '✗'}
+                    ${d.caracteristica}
+                    (tiene:${d.nivelOferente ?? '—'} pide:${d.nivelRequerido})
+                    <em style="font-size:10px">${(d.aporte*100).toFixed(1)}pts</em>
                 </span>`).join('');
 
             return `<tr>
-                <td>${c.oferente.nombre} ${c.oferente.primerApellido}</td>
+                <td><strong>${medalla}</strong> ${c.oferente.nombre} ${c.oferente.primerApellido}</td>
                 <td>${c.requisitosCumplidos} / ${c.requisitosTotal}</td>
                 <td>
-                    <div style="margin-bottom:4px;font-size:12px;color:#666">
-                        Binario: ${UI.barraCoincidencia(c.porcentajeCoincidencia)}
-                    </div>
-                    <div style="font-size:12px;color:#666">
-                        Ponderado: ${UI.barraCoincidencia(c.porcentajePonderado)}
+                    ${UI.barraCoincidencia(c.porcentajeCoincidencia)}
+                    <div style="font-size:11px;color:#6b7280;margin-top:2px">
+                        Cumplidos exactos: ${c.porcentajeCumplidos.toFixed(1)}%
+                        &nbsp;·&nbsp; Excedente: +${c.nivelExcedenteTotal}
                     </div>
                 </td>
                 <td style="font-size:12px">${detalleHtml}</td>
                 <td>
                     <button class="btn btn-primary btn-sm"
                             onclick="Router.go('/empresa/candidatos/${c.oferente.id}')">
-                        Ver detalle
+                        Ver perfil
                     </button>
                 </td>
             </tr>`;
@@ -112,25 +118,29 @@ window._verCandidatos = async (puestoId) => {
         UI.render(`
             <div class="container">
                 <h2>Candidatos para el puesto</h2>
+                <p style="font-size:13px;color:#9f1239">
+                    Ordenados por score ponderado. El score refleja el nivel requerido de cada
+                    característica, no solo si la tiene o no.
+                </p>
                 ${candidatos.length ? `
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Oferente</th>
-                                <th>Requisitos</th>
-                                <th>% Coincidencia</th>
-                                <th>Detalle por característica</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
+                        <thead><tr>
+                            <th>Oferente</th>
+                            <th>Cumplidos</th>
+                            <th>% Coincidencia</th>
+                            <th>Detalle por característica</th>
+                            <th>Acción</th>
+                        </tr></thead>
                         <tbody>${filas}</tbody>
                     </table>` : '<p class="empty">No se encontraron candidatos.</p>'}
                 <br/>
-                <button class="btn btn-outline"
-                        onclick="Router.go('/empresa/puestos')">← Volver</button>
+                <button class="btn btn-outline" onclick="Router.go('/empresa/puestos')">← Volver</button>
             </div>
         `);
-    } catch (e) { UI.toast(e.message, false); }
+    } catch (e) {
+        UI.toast(e.message, false);
+        UI.render(`<div class="container"><p class="alert-error">${e.message}</p></div>`);
+    }
 };
 
 Pages.empresaCandidatoDetalle = async (id) => {
