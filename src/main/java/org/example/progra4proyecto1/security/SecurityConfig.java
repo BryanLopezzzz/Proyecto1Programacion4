@@ -53,24 +53,26 @@ public class SecurityConfig {
         http
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Públicos
+                        // Todo lo que no sea /api/** es público (SPA + estáticos)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/puestos/publicos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/puestos/buscar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/caracteristicas/**").permitAll()
-                        // Rutas de la SPA (index.html)
-                        .requestMatchers("/", "/index.html", "/static/**",
-                                "/js/**", "/css/**", "/*.ico", "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/monedas").permitAll()
+                        .requestMatchers("/api/registro/**").permitAll()
                         // Protegidos por rol
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/empresa/**").hasAuthority("ROLE_EMPRESA")
                         .requestMatchers("/api/oferente/**").hasAuthority("ROLE_OFERENTE")
-                        .anyRequest().authenticated()
+                        // TODO lo demás (SPA, assets, index.html) es público
+                        .anyRequest().permitAll()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
