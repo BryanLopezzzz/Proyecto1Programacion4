@@ -18,20 +18,25 @@ export default function NuevoPuesto() {
     getMonedas().then(setMonedas).catch(() => {})
   }, [])
 
-  const renderArbol = (nodos, depth = 0) => nodos.map(n => (
-    <li key={n.id} style={{ marginLeft: depth * 16, margin: `6px 0 6px ${depth * 16}px` }}>
-      <label>
-        <input type="checkbox" data-id={n.id} />
-        <span style={{ marginLeft: 7 }}>{n.nombre}</span>
-      </label>
-      <select name={`nivel_${n.id}`} className="nivel-sel">
-        <option value="1">Básico</option>
-        <option value="2">Intermedio</option>
-        <option value="3">Avanzado</option>
-      </select>
-      {n.hijos && n.hijos.length > 0 && <ul style={{ listStyle: 'none', padding: 0 }}>{renderArbol(n.hijos, depth + 1)}</ul>}
-    </li>
-  ))
+    const renderArbol = (nodos, depth = 0) => nodos.map(n => (
+        <li key={n.id} style={{ marginLeft: depth * 16, margin: `6px 0 6px ${depth * 16}px` }}>
+            <label>
+                <input type="checkbox" data-id={n.id} />
+                <span style={{ marginLeft: 7 }}>{n.nombre}</span>
+            </label>
+            <select name={`nivel_${n.id}`} className="nivel-sel">
+                <option value="1">Básico</option>
+                <option value="2">Intermedio</option>
+                <option value="3">Avanzado</option>
+            </select>
+            {/* Solo un nivel de hijos */}
+            {depth === 0 && n.hijos && n.hijos.length > 0 && (
+                <ul style={{ listStyle: 'none', padding: 0 }}>
+                    {renderArbol(n.hijos, 1)}
+                </ul>
+            )}
+        </li>
+    ))
 
   const submit = async () => {
     setError('')

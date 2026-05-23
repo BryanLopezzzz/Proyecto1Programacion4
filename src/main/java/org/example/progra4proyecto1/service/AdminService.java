@@ -57,11 +57,24 @@ public class AdminService {
 
     @Transactional
     public void crearCaracteristica(String nombre, Integer padreId) {
-        Caracteristica c = new Caracteristica();
-        c.setNombre(nombre);
-        if (padreId != null) {
-            caraRepo.findById(padreId).ifPresent(c::setPadre);
-        }
-        caraRepo.save(c);
+            if (nombre == null || nombre.trim().isEmpty())
+                throw new IllegalArgumentException("El nombre es requerido");
+
+            Caracteristica c = new Caracteristica();
+            c.setNombre(nombre.trim());
+
+            if (padreId != null) {
+                Caracteristica padre = caraRepo.findById(padreId)
+                        .orElseThrow(() -> new IllegalArgumentException("Padre no encontrado"));
+
+                // el error que menciono el profe corregido, estandarizar todo a 2 niveles (hijos y padre)
+                if (padre.getPadre() != null)
+                    throw new IllegalArgumentException(
+                            "No se puede agregar un hijo a '" + padre.getNombre() +
+                                    "' porque ya es un nodo hijo. Solo se permiten dos niveles.");
+
+                c.setPadre(padre);
+            }
+            caraRepo.save(c);
     }
 }

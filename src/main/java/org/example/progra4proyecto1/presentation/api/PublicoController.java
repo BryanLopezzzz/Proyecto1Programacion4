@@ -70,20 +70,19 @@ public class PublicoController {
     }
 
     Map<String, Object> caracToMap(Caracteristica c) {
+        List<Map<String, Object>> hijos = c.getHijos() == null ? List.of() :
+                c.getHijos().stream()
+                        .map(h -> Map.<String, Object>of(
+                                "id",     h.getId(),
+                                "nombre", h.getNombre(),
+                                "hijos",  List.of()   // los dos niveles mencionados como recomendación del profe
+                        ))
+                        .collect(Collectors.toList());
+
         return Map.of(
                 "id",     c.getId(),
                 "nombre", c.getNombre(),
-                "hijos",  c.getHijos() == null ? List.of() :
-                        c.getHijos().stream().map(h -> Map.of(
-                                "id",     h.getId(),
-                                "nombre", h.getNombre(),
-                                "hijos",  h.getHijos() == null ? List.of() :
-                                        h.getHijos().stream().map(n -> Map.of(
-                                                "id",     n.getId(),
-                                                "nombre", n.getNombre(),
-                                                "hijos",  List.of()
-                                        )).collect(Collectors.toList())
-                        )).collect(Collectors.toList())
+                "hijos",  hijos
         );
     }
 }

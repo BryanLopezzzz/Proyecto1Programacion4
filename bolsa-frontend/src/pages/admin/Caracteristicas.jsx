@@ -4,12 +4,19 @@ import { adminCaracArbol, adminCaracTodos, adminCrearCarac } from '../../api/api
 
 function RenderArbol({ nodos, depth = 0 }) {
   return nodos.map(n => (
-    <div key={n.id} style={{ marginLeft: depth * 20, marginBottom: 6 }}>
-      <span style={{ color: depth === 0 ? '#4c0519' : '#831843', fontWeight: depth === 0 ? 800 : 500, fontSize: 14 - depth }}>
+      <div key={n.id} style={{ marginLeft: depth * 20, marginBottom: 6 }}>
+      <span style={{
+        color: depth === 0 ? 'var(--accent)' : 'var(--text-secondary)',
+        fontWeight: depth === 0 ? 700 : 400,
+        fontSize: depth === 0 ? 14 : 13
+      }}>
         {depth > 0 ? '↳ ' : ''}{n.nombre}
       </span>
-      {n.hijos && n.hijos.length > 0 && <RenderArbol nodos={n.hijos} depth={depth + 1} />}
-    </div>
+        {/* Solo renderiza hijos si estamos en nivel 0 */}
+        {depth === 0 && n.hijos && n.hijos.length > 0 && (
+            <RenderArbol nodos={n.hijos} depth={depth + 1} />
+        )}
+      </div>
   ))
 }
 
@@ -45,7 +52,12 @@ export default function AdminCaracteristicas() {
           <label>Nodo padre (opcional)</label>
           <select value={padreId} onChange={e => setPadreId(e.target.value)}>
             <option value="">-- Raíz (sin padre) --</option>
-            {todos.map(n => <option key={n.id} value={n.id}>{n.tienePadre ? '↳ ' : ''}{n.nombre}</option>)}
+            {todos
+                .filter(n => !n.tienePadre)   // solo nodos raíz
+                .map(n => (
+                    <option key={n.id} value={n.id}>{n.nombre}</option>
+                ))
+            }
           </select>
           <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={crear}>+ Agregar</button>
         </div>

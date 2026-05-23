@@ -77,19 +77,22 @@ public class AdminApiController {
     // ---- Características ----
     @GetMapping("/caracteristicas")
     public List<Map<String, Object>> caracteristicasArbol() {
-        return adminService.raices().stream().map(r -> Map.<String, Object>of(
-                "id",     r.getId(),
-                "nombre", r.getNombre(),
-                "hijos",  adminService.hijosDe(r.getId()).stream().map(h -> Map.<String, Object>of(
-                        "id",     h.getId(),
-                        "nombre", h.getNombre(),
-                        "hijos",  adminService.hijosDe(h.getId()).stream().map(n -> Map.<String, Object>of(
-                                "id",     n.getId(),
-                                "nombre", n.getNombre(),
-                                "hijos",  List.of()
-                        )).collect(Collectors.toList())
-                )).collect(Collectors.toList())
-        )).collect(Collectors.toList());
+        return adminService.raices().stream().map(r -> {
+            List<Map<String, Object>> hijos = adminService.hijosDe(r.getId())
+                    .stream()
+                    .map(h -> Map.<String, Object>of(
+                            "id",     h.getId(),
+                            "nombre", h.getNombre(),
+                            "hijos",  List.of()   // los hijos ya no tienen hijos, los dos niveles mencionados por el profee
+                    ))
+                    .collect(Collectors.toList());
+
+            return Map.<String, Object>of(
+                    "id",     r.getId(),
+                    "nombre", r.getNombre(),
+                    "hijos",  hijos
+            );
+        }).collect(Collectors.toList());
     }
 
     @GetMapping("/caracteristicas/todos")

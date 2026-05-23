@@ -40,10 +40,10 @@ export function ArbolCheckboxes({ raices, seleccionadas = [], onChange, mostrarN
             <option value={3}>Avanzado</option>
           </select>
         )}
-        {nodo.hijos && nodo.hijos.length > 0 && (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {nodo.hijos.map(h => renderNodo(h, depth + 1))}
-          </ul>
+        {depth === 0 && nodo.hijos && nodo.hijos.length > 0 && (
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {nodo.hijos.map(h => renderNodo(h, depth + 1))}
+            </ul>
         )}
       </li>
     )
