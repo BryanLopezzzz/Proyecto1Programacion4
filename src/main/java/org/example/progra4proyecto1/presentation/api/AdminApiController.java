@@ -97,11 +97,13 @@ public class AdminApiController {
 
     @GetMapping("/caracteristicas/todos")
     public List<Map<String, Object>> todosNodos() {
-        return adminService.todosLosNodos().stream().map(c -> Map.<String, Object>of(
-                "id",      c.getId(),
-                "nombre",  c.getNombre(),
-                "tienePadre", c.getPadre() != null
-        )).collect(Collectors.toList());
+        return adminService.raices().stream()
+                .map(c -> Map.<String, Object>of(
+                        "id",         c.getId(),
+                        "nombre",     c.getNombre(),
+                        "tienePadre", false
+                ))
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/caracteristicas")

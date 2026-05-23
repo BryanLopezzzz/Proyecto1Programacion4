@@ -17,35 +17,43 @@ export function ArbolCheckboxes({ raices, seleccionadas = [], onChange, mostrarN
   const renderNodo = (nodo, depth = 0) => {
     const checked = seleccionadas.includes(nodo.id)
     return (
-      <li key={nodo.id} style={{ marginLeft: depth * 16, margin: `6px 0 6px ${depth * 16}px` }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', margin: 0, fontWeight: 400 }}>
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={() => {
-              if (checked) onChange(seleccionadas.filter(id => id !== nodo.id))
-              else onChange([...seleccionadas, nodo.id])
-            }}
-          />
-          <span>{nodo.nombre}</span>
-        </label>
-        {mostrarNivel && (
-          <select
-            className="nivel-sel"
-            value={niveles[nodo.id] || 2}
-            onChange={e => onNivelChange && onNivelChange(nodo.id, parseInt(e.target.value))}
-          >
-            <option value={1}>Básico</option>
-            <option value={2}>Intermedio</option>
-            <option value={3}>Avanzado</option>
-          </select>
-        )}
-        {depth === 0 && nodo.hijos && nodo.hijos.length > 0 && (
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-              {nodo.hijos.map(h => renderNodo(h, depth + 1))}
-            </ul>
-        )}
-      </li>
+        <li key={nodo.id} style={{ marginLeft: depth * 16, margin: `6px 0 6px ${depth * 16}px` }}>
+          {depth === 0 ? (
+              // Padre: solo etiqueta agrupadora
+              <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>
+          {nodo.nombre}
+        </span>
+          ) : (
+              // Hijo: con checkbox y nivel opcional
+              <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', margin: 0, fontWeight: 400 }}>
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => {
+                      if (checked) onChange(seleccionadas.filter(id => id !== nodo.id))
+                      else onChange([...seleccionadas, nodo.id])
+                    }}
+                />
+                <span>{nodo.nombre}</span>
+              </label>
+          )}
+          {mostrarNivel && depth > 0 && (
+              <select
+                  className="nivel-sel"
+                  value={niveles[nodo.id] || 2}
+                  onChange={e => onNivelChange && onNivelChange(nodo.id, parseInt(e.target.value))}
+              >
+                <option value={1}>Básico</option>
+                <option value={2}>Intermedio</option>
+                <option value={3}>Avanzado</option>
+              </select>
+          )}
+          {depth === 0 && nodo.hijos && nodo.hijos.length > 0 && (
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {nodo.hijos.map(h => renderNodo(h, depth + 1))}
+              </ul>
+          )}
+        </li>
     )
   }
 
