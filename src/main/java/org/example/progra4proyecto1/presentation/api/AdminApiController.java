@@ -135,6 +135,7 @@ public class AdminApiController {
                                                           @RequestParam int anio) {
         return puestoService.findByMesYAnio(mes, anio).stream().map(p -> {
             List<Map<String, Object>> candidatos = puestoService.buscarCandidatos(p).stream()
+                    .filter(c -> c.getScoreTotal() > 0)
                     .map(c -> Map.<String, Object>of(
                             "nombre",         c.getOferente().getNombre() + " " + c.getOferente().getPrimerApellido(),
                             "identificacion", c.getOferente().getIdentificacion(),
