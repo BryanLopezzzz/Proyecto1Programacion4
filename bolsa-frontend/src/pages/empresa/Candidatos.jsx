@@ -17,12 +17,12 @@ export default function Candidatos() {
 
   if (loading) return <div className="loading">Cargando…</div>
 
-  const medallas = ['🥇', '🥈', '🥉']
+  const medallas = ['\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49']
 
   return (
     <div className="container">
       <h2>Candidatos para el puesto</h2>
-      <p style={{ fontSize: 13, color: '#9f1239' }}>Ordenados por score ponderado.</p>
+      <p style={{ fontSize: 13, color: '#000' }}>Ordenados por score ponderado.</p>
       {candidatos.length === 0
         ? <p className="empty">No se encontraron candidatos.</p>
         : <table>

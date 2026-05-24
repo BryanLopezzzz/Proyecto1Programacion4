@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { registrarEmpresa } from '../../api/api'
 
+const validarEmail = (correo) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())
+const validarTelefono = (tel) => /^\+506 \d{4} \d{4}$/.test(tel.trim())
+
 export default function RegistroEmpresa() {
   const nav = useNavigate()
   const [f, setF] = useState({ nombre: '', correo: '', clave: '', clave2: '', localizacion: '', telefono: '', descripcion: '' })
@@ -12,8 +15,13 @@ export default function RegistroEmpresa() {
 
   const submit = async () => {
     setError(''); setOk('')
+    if (!f.nombre.trim()) return setError('El nombre es requerido')
+    if (!validarEmail(f.correo)) return setError('El correo no tiene un formato válido (ej: usuario@dominio.com)')
     if (f.clave.length < 6) return setError('Contraseña mínimo 6 caracteres')
     if (f.clave !== f.clave2) return setError('Las claves no coinciden')
+    if (!f.localizacion.trim()) return setError('La localización es requerida')
+    if (!validarTelefono(f.telefono)) return setError('El teléfono debe tener el formato +506 XXXX XXXX')
+    if (!f.descripcion.trim()) return setError('La descripción es requerida')
     try {
       const res = await registrarEmpresa(f)
       setOk(res.mensaje + ' Redirigiendo al login…')
@@ -22,23 +30,23 @@ export default function RegistroEmpresa() {
   }
 
   return (
-    <div className="auth-centrado" style={{ padding: '40px 20px' }}>
-      <div className="auth-box">
-        <h2 style={{ textAlign: 'center', marginBottom: 22 }}>Registro de Empresa</h2>
-        {error && <div className="alert-error">{error}</div>}
-        {ok && <div className="alert-success">{ok}</div>}
-        <label>Nombre *</label><input type="text" value={f.nombre} onChange={set('nombre')} placeholder="TechCorp S.A." />
-        <label>Correo *</label><input type="email" value={f.correo} onChange={set('correo')} placeholder="contacto@empresa.com" />
-        <label>Contraseña * (mín. 6)</label><input type="password" value={f.clave} onChange={set('clave')} placeholder="••••••" />
-        <label>Confirmar contraseña *</label><input type="password" value={f.clave2} onChange={set('clave2')} placeholder="••••••" />
-        <label>Localización *</label><input type="text" value={f.localizacion} onChange={set('localizacion')} placeholder="San José, Costa Rica" />
-        <label>Teléfono * (formato +506 XXXX XXXX)</label><input type="text" value={f.telefono} onChange={set('telefono')} placeholder="+506 8888 8888" />
-        <label>Descripción *</label><textarea value={f.descripcion} onChange={set('descripcion')} placeholder="Descripción de la empresa…" />
-        <button className="btn btn-primary" style={{ width: '100%', marginTop: 22 }} onClick={submit}>Registrar Empresa</button>
-        <div className="auth-links" style={{ marginTop: 12 }}>
-          <a onClick={() => nav('/login')} style={{ cursor: 'pointer' }}>Ya tengo cuenta → Iniciar sesión</a>
+      <div className="auth-centrado" style={{ padding: '40px 20px' }}>
+        <div className="auth-box">
+          <h2 style={{ textAlign: 'center', marginBottom: 22 }}>Registro de Empresa</h2>
+          {error && <div className="alert-error">{error}</div>}
+          {ok && <div className="alert-success">{ok}</div>}
+          <label>Nombre *</label><input type="text" value={f.nombre} onChange={set('nombre')} placeholder="TechCorp S.A." />
+          <label>Correo *</label><input type="email" value={f.correo} onChange={set('correo')} placeholder="contacto@empresa.com" autoComplete="email" />
+          <label>Contraseña * (mín. 6)</label><input type="password" value={f.clave} onChange={set('clave')} placeholder="••••••" autoComplete="new-password" />
+          <label>Confirmar contraseña *</label><input type="password" value={f.clave2} onChange={set('clave2')} placeholder="••••••" autoComplete="new-password" />
+          <label>Localización *</label><input type="text" value={f.localizacion} onChange={set('localizacion')} placeholder="San José, Costa Rica" />
+          <label>Teléfono * (formato +506 XXXX XXXX)</label><input type="text" value={f.telefono} onChange={set('telefono')} placeholder="+506 8888 8888" />
+          <label>Descripción *</label><textarea value={f.descripcion} onChange={set('descripcion')} placeholder="Descripción de la empresa…" />
+          <button className="btn btn-primary" style={{ width: '100%', marginTop: 22 }} onClick={submit}>Registrar Empresa</button>
+          <div className="auth-links" style={{ marginTop: 12 }}>
+            <a onClick={() => nav('/login')} style={{ cursor: 'pointer' }}>Ya tengo cuenta → Iniciar sesión</a>
+          </div>
         </div>
       </div>
-    </div>
   )
 }
