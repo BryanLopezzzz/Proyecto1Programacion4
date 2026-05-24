@@ -41,18 +41,24 @@ export default function Navbar() {
   }
 
   return (
-    <nav>
-      <div>
-        <span className="brand" onClick={() => go('/')} style={{ cursor: 'pointer' }}>BolsaEmpleo</span>
-        {links}
-      </div>
-      <div>
-        {isLogged
-          ? <><span style={{ color: '#fecdd3', fontSize: 13 }}>{user}</span>
-              <a onClick={handleLogout} style={{ color: '#fecdd3', fontSize: 13, marginLeft: 14, cursor: 'pointer' }}>Salir</a></>
-          : <a onClick={() => go('/login')} style={{ color: '#fecdd3', fontSize: 13, cursor: 'pointer' }}>Login</a>
-        }
-      </div>
-    </nav>
+      <nav>
+        <div>
+      <span className="brand" onClick={() => go('/')} style={{ cursor: 'pointer' }}>
+        BolsaEmpleo
+      </span>
+          {links}
+        </div>
+
+        <div className="nav-user">
+          {isLogged ? (
+              <>
+                <span className="user-info">{user}</span>
+                <a onClick={handleLogout}>Salir</a>
+              </>
+          ) : (
+              <a onClick={() => go('/login')}>Login</a>
+          )}
+        </div>
+      </nav>
   )
 }
