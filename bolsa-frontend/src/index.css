@@ -995,6 +995,7 @@ body.centered {
 .puesto-grid {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: row;
     gap: 20px;
 }
 
@@ -1006,11 +1007,10 @@ body.centered {
     padding: 26px;
     position: relative;
     box-shadow: var(--shadow-sm);
-    transition: var(--transition);
+    transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .puesto-card:hover {
-    transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
     border-color: var(--accent-medium);
 }
