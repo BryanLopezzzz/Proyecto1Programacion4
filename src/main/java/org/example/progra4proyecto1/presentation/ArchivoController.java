@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//este controller sirve para los archivos pdf que los oferentes suben como el CV
 @Controller
 public class ArchivoController {
 

@@ -6,7 +6,6 @@ export default function ArbolCheckboxes({ raices, seleccionadas = [], mostrarNiv
         onChange && onChange(newSel)
     }
 
-    // Solo renderiza padre e hijos directos (depth máx 1)
     const renderNodo = (nodo, depth = 0) => (
         <li key={nodo.id} style={{ marginLeft: depth * 16, margin: `6px 0 6px ${depth * 16}px` }}>
             {depth === 0 ? (
@@ -15,7 +14,6 @@ export default function ArbolCheckboxes({ raices, seleccionadas = [], mostrarNiv
         {nodo.nombre}
       </span>
             ) : (
-                // Hijos con checkbox
                 <label>
                     <input
                         type="checkbox"

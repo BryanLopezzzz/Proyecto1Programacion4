@@ -68,7 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/empresa/**").hasAuthority("ROLE_EMPRESA")
                         .requestMatchers("/api/oferente/**").hasAuthority("ROLE_OFERENTE")
-                        // TODO lo demás (SPA, assets, index.html) es público
+
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter,

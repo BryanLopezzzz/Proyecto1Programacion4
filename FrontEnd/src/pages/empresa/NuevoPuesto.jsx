@@ -71,11 +71,13 @@ export default function NuevoPuesto() {
                 caracteristicas
             })
 
+            limpiar()
             nav('/empresa/puestos')
         } catch (e) {
             setError(e.message)
         }
     }
+
 
     const totalSeleccionadas = Object.keys(seleccionadas).length
 
@@ -189,7 +191,7 @@ export default function NuevoPuesto() {
                     {raices.map((categoria) => (
                         <div key={categoria.id} className="requisito-category-card">
                             <div className="skill-category-title">
-                                <span className="skill-icon">✦</span>
+                                <span className="skill-icon"></span>
                                 <strong>{categoria.nombre}</strong>
                             </div>
 

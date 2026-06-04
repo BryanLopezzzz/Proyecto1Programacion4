@@ -31,7 +31,7 @@ export default function MiCV() {
         {ok && <div className="alert-success">{ok}</div>}
         {perfil.curriculumPdf && (
           <div className="cv-actual">
-            📄 CV actual: <strong>{perfil.curriculumPdf}</strong><br /><br />
+             CV actual: <strong>{perfil.curriculumPdf}</strong><br /><br />
             <a className="btn btn-outline" href={`/uploads/${perfil.curriculumPdf}`} target="_blank" rel="noreferrer">Ver CV actual</a>
           </div>
         )}

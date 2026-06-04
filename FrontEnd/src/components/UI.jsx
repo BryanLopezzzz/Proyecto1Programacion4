@@ -19,12 +19,11 @@ export function ArbolCheckboxes({ raices, seleccionadas = [], onChange, mostrarN
     return (
         <li key={nodo.id} style={{ marginLeft: depth * 16, margin: `6px 0 6px ${depth * 16}px` }}>
           {depth === 0 ? (
-              // Padre: solo etiqueta agrupadora
               <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>
           {nodo.nombre}
         </span>
           ) : (
-              // Hijo: con checkbox y nivel opcional
+
               <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer', margin: 0, fontWeight: 400 }}>
                 <input
                     type="checkbox"

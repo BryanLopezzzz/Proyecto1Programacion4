@@ -11,9 +11,6 @@ import java.io.InputStream;
 @Controller
 public class SpaController {
 
-    // Archivos estáticos con extensión los maneja Spring Boot solo
-    // Rutas sin extensión → devolver index.html directamente
-
     @GetMapping(value = {
             "/",
             "/login",

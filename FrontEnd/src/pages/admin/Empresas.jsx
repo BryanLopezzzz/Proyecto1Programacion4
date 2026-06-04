@@ -22,8 +22,8 @@ export default function AdminEmpresas() {
                   <td>{e.nombre}</td><td>{e.correo}</td><td>{e.telefono}</td><td>{e.localizacion}</td>
                   <td>{e.descripcion.substring(0, 60)}…</td>
                   <td>
-                    <button className="btn btn-primary btn-sm" onClick={async () => { await adminAprobarEmpresa(e.usuarioId); cargar() }}>✔ Aprobar</button>
-                    <button className="btn btn-secondary btn-sm" onClick={async () => { await adminRechazarEmpresa(e.usuarioId); cargar() }}>✘ Rechazar</button>
+                    <button className="btn btn-primary btn-sm" onClick={async () => { await adminAprobarEmpresa(e.usuarioId); cargar() }}> Aprobar</button>
+                    <button className="btn btn-secondary btn-sm" onClick={async () => { await adminRechazarEmpresa(e.usuarioId); cargar() }}> Rechazar</button>
                   </td>
                 </tr>
               ))}

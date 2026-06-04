@@ -61,7 +61,7 @@ export default function AdminCaracteristicas() {
           </select>
           <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={crear}>+ Agregar</button>
         </div>
-        <button className="btn btn-outline" style={{ width: '100%', marginTop: 8 }} onClick={() => nav('/admin/dashboard')}>← Dashboard</button>
+        <button className="btn btn-outline" style={{ width: '100%', marginTop: 8 }} onClick={() => nav('/admin/dashboard')}> Dashboard</button>
       </div>
     </div>
   )

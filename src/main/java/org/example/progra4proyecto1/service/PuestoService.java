@@ -20,33 +20,13 @@ public class PuestoService {
     @Autowired private CaracteristicaRepository    cararepo;
     @Autowired private MonedaRepository        moneRepo;
 
-    // ── Factor de penalización por brecha de nivel ────────────────────────────
-    // Cada nivel de diferencia resta un 30 % del peso de esa característica.
-    // Ejemplo: requerido=5, oferente=3 → brecha=2 → factor = max(0, 1-2×0.30) = 0.40
     private static final double FACTOR_PENALIZACION = 0.30;
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // buscarCandidatos — REEMPLAZA el método anterior completamente
-    // ─────────────────────────────────────────────────────────────────────────
-    //
-    // Devuelve múltiples números por candidato (no uno solo):
-    //   • scoreTotal           — cálculo ponderado principal     [0,1]
-    //   • porcentajeCumplidos  — % reqs cumplidos exactamente    [0,1]  (tie-breaker 1)
-    //   • nivelExcedenteTotal  — suma de niveles extra                  (tie-breaker 2)
-    //   • coincidencias        — lista detalle de qué coincidió
-    //
-    // Reciclaje de perfil: aparecen TODOS los oferentes aprobados,
-    // incluso si no coinciden en nada (score=0). El profe pidió que
-    // se busque aunque no coincida.
-    //
-    // Ordenamiento: mejor → peor con 4 criterios de desempate.
-    // ─────────────────────────────────────────────────────────────────────────
     public List<CandidatoResult> buscarCandidatos(Puesto puesto) {
 
         List<PuestoCaracteristica> requerimientos = puesto.getCaracteristicas();
         List<CandidatoResult> resultados = new ArrayList<>();
 
-        // ── Guard: puesto sin requisitos → todos con score 0, orden alfabético ──
         if (requerimientos == null || requerimientos.isEmpty()) {
             ofeRepo.findAll().forEach(oferente -> {
                 if (oferente.getUsuario().getEstado() != Usuario.Estado.APROBADO) return;
@@ -129,10 +109,6 @@ public class PuestoService {
 
         return resultados;
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Resto del servicio — SIN CAMBIOS
-    // ─────────────────────────────────────────────────────────────────────────
 
     @Transactional
     public void publicar(Puesto puesto, Empresa empresa, List<Integer> caraID,
@@ -219,33 +195,17 @@ public class PuestoService {
                         && p.getFechaRegistro().getYear()       == anio)
                 .collect(Collectors.toList());
     }
-    /**
-     * buscarPuestosConScore — perspectiva del OFERENTE.
-     *
-     * Devuelve TODOS los puestos accesibles (públicos + privados si está
-     * registrado) junto con el PuestoResult que indica cuánto encaja
-     * el perfil del oferente en cada puesto.
-     *
-     * La fórmula es simétrica a buscarCandidatos:
-     *   peso_i    = nivelRequerido_i / Σ(nivelRequerido)
-     *   aporte_i  = peso_i × factor(brecha)
-     *   scoreTotal = Σ(aporte_i) ∈ [0, 1]
-     *
-     * Incluye puestos con score 0 (reciclaje de perfil).
-     */
+
     public List<PuestoResult> buscarPuestosConScore(Oferente oferente,
                                                     List<Integer> caracteristicaIds,
                                                     boolean modoTodos) {
 
-        // Mapa rápido de habilidades del oferente
         Map<Integer, Integer> mapaHabilidades = new HashMap<>();
         habiRepo.findByOferente(oferente)
                 .forEach(h -> mapaHabilidades.put(h.getCaracteristica().getId(), h.getNivel()));
 
-        // Candidato es APROBADO → ve públicos y privados
         List<Puesto> puestos = puesRepo.findByActivoTrueOrderByFechaRegistroDesc();
 
-        // Filtro opcional por características (mismo que buscarTodos)
         if (caracteristicaIds != null && !caracteristicaIds.isEmpty()) {
             puestos = filtrar(puestos, caracteristicaIds, modoTodos);
         }
@@ -304,7 +264,6 @@ public class PuestoService {
                     nivelExcedenteTotal, reqs.size(), cumpleCompletos, coincidencias));
         }
 
-        // Orden: mejor match primero, mismos tie-breakers que buscarCandidatos
         resultados.sort(
                 Comparator.comparingDouble(PuestoResult::getScoreTotal).reversed()
                         .thenComparingDouble(PuestoResult::getPorcentajeCumplidos).reversed()

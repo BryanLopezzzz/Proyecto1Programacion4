@@ -19,7 +19,7 @@ export default function MisPuestos() {
     <div className="container">
       <div className="top-bar">
         <h2>Mis Puestos</h2>
-        <button className="btn btn-primary" onClick={() => nav('/empresa/puestos/nuevo')}>+ Publicar nuevo puesto</button>
+        <button className="btn btn-primary" onClick={() => nav('/empresa/puestos/nuevo')}> Publicar nuevo puesto</button>
       </div>
       {puestos.length === 0
         ? <p className="empty">No has publicado puestos aún.</p>

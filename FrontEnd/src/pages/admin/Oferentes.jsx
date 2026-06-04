@@ -21,15 +21,15 @@ export default function AdminOferentes() {
                 <tr key={o.usuarioId}>
                   <td>{o.nombre} {o.primerApellido}</td><td>{o.identificacion}</td><td>{o.correo}</td><td>{o.telefono}</td><td>{o.nacionalidad}</td>
                   <td>
-                    <button className="btn btn-primary btn-sm" onClick={async () => { await adminAprobarOferente(o.usuarioId); cargar() }}>✔ Aprobar</button>
-                    <button className="btn btn-secondary btn-sm" onClick={async () => { await adminRechazarOferente(o.usuarioId); cargar() }}>✘ Rechazar</button>
+                    <button className="btn btn-primary btn-sm" onClick={async () => { await adminAprobarOferente(o.usuarioId); cargar() }}> Aprobar</button>
+                    <button className="btn btn-secondary btn-sm" onClick={async () => { await adminRechazarOferente(o.usuarioId); cargar() }}> Rechazar</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
       }
-      <br /><button className="btn btn-outline" onClick={() => nav('/admin/dashboard')}>← Dashboard</button>
+      <br /><button className="btn btn-outline" onClick={() => nav('/admin/dashboard')}> Dashboard</button>
     </div>
   )
 }

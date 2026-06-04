@@ -19,7 +19,6 @@ public class PublicoController {
     @Autowired private CaracteristicaRepository caracteristicaRepo;
     @Autowired private MonedaRepository monedaRepo;
 
-    // Top 5 públicos para la página de inicio
     @GetMapping("/puestos/publicos")
     public List<Map<String, Object>> top5Publicos() {
         return puestoService.findTop5Publicos().stream()
@@ -27,7 +26,6 @@ public class PublicoController {
                 .collect(Collectors.toList());
     }
 
-    // Búsqueda pública con filtros
     @GetMapping("/puestos/buscar")
     public List<Map<String, Object>> buscar(
             @RequestParam(required = false) List<Integer> caracteristicas,
@@ -37,20 +35,17 @@ public class PublicoController {
                 .stream().map(this::puestoToMap).collect(Collectors.toList());
     }
 
-    // Árbol de características
     @GetMapping("/caracteristicas")
     public List<Map<String, Object>> caracteristicas() {
         return caracteristicaRepo.findByPadreIsNull()
                 .stream().map(this::caracToMap).collect(Collectors.toList());
     }
 
-    // Monedas disponibles
     @GetMapping("/monedas")
     public Iterable<org.example.progra4proyecto1.logic.Moneda> monedas() {
         return monedaRepo.findAll();
     }
 
-    // ---- helpers ----
     Map<String, Object> puestoToMap(Puesto p) {
         return Map.of(
                 "id",          p.getId(),

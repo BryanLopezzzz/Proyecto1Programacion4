@@ -17,7 +17,7 @@ public class AdminApiController {
     @Autowired private AdminService adminService;
     @Autowired private PuestoService puestoService;
 
-    // ---- Empresas pendientes ----
+
     @GetMapping("/empresas/pendientes")
     public List<Map<String, Object>> empresasPendientes() {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -45,7 +45,7 @@ public class AdminApiController {
         return ResponseEntity.ok(Map.of("mensaje", "Empresa rechazada"));
     }
 
-    // ---- Oferentes pendientes ----
+
     @GetMapping("/oferentes/pendientes")
     public List<Map<String, Object>> oferentesPendientes() {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -74,7 +74,7 @@ public class AdminApiController {
         return ResponseEntity.ok(Map.of("mensaje", "Oferente rechazado"));
     }
 
-    // ---- Características ----
+
     @GetMapping("/caracteristicas")
     public List<Map<String, Object>> caracteristicasArbol() {
         return adminService.raices().stream().map(r -> {
@@ -83,7 +83,7 @@ public class AdminApiController {
                     .map(h -> Map.<String, Object>of(
                             "id",     h.getId(),
                             "nombre", h.getNombre(),
-                            "hijos",  List.of()   // los hijos ya no tienen hijos, los dos niveles mencionados por el profee
+                            "hijos",  List.of()   // los hijos ya no tienen hijos, los dos niveles mencionados por el profe
                     ))
                     .collect(Collectors.toList());
 
@@ -115,7 +115,6 @@ public class AdminApiController {
         return ResponseEntity.ok(Map.of("mensaje", "Característica creada"));
     }
 
-    // ---- Reportes ----
     @GetMapping("/reportes/puestos")
     public List<Map<String, Object>> reportePuestos(@RequestParam int mes,
                                                     @RequestParam int anio) {
