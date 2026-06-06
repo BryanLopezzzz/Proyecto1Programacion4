@@ -5,6 +5,7 @@ import org.example.progra4proyecto1.data.MonedaRepository;
 import org.example.progra4proyecto1.logic.*;
 import org.example.progra4proyecto1.service.PuestoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,14 @@ public class PublicoController {
         return puestoService.findTop5Publicos().stream()
                 .map(this::puestoToMap)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/puestos/{id}")
+    public ResponseEntity<?> detalle(@PathVariable Integer id) {
+        return puestoService.findById(id)
+                .filter(p -> p.getTipo() == Puesto.TipoPuesto.PUBLICO && p.getActivo())
+                .map(p -> ResponseEntity.ok(puestoToMap(p)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/puestos/buscar")

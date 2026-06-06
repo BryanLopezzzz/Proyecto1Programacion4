@@ -112,6 +112,7 @@ nav a {
     padding: 6px 2px;
     border-bottom: 2px solid transparent;
     transition: var(--transition-fast);
+    cursor: pointer;
 }
 
 nav a:hover {

@@ -32,10 +32,16 @@ export default function AdminCaracteristicas() {
 
   useEffect(() => { cargar() }, [])
 
+  const [error, setError] = useState('')
   const crear = async () => {
     if (!nombre.trim()) return
-    await adminCrearCarac({ nombre: nombre.trim(), padreId: padreId || null })
-    setNombre(''); setPadreId(''); cargar()
+    setError('')
+    try {
+      await adminCrearCarac({ nombre: nombre.trim(), padreId: padreId || null })
+      setNombre(''); setPadreId(''); cargar()
+    } catch (e) {
+      setError(e.message)
+    }
   }
 
   return (
@@ -53,12 +59,13 @@ export default function AdminCaracteristicas() {
           <select value={padreId} onChange={e => setPadreId(e.target.value)}>
             <option value="">-- Raíz (sin padre) --</option>
             {todos
-                .filter(n => !n.tienePadre)   // solo nodos raíz
+                .filter(n => !n.tienePadre)
                 .map(n => (
                     <option key={n.id} value={n.id}>{n.nombre}</option>
                 ))
             }
           </select>
+          {error && <div className="alert-error" style={{ marginTop: 12 }}>{error}</div>}
           <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={crear}>+ Agregar</button>
         </div>
         <button className="btn btn-outline" style={{ width: '100%', marginTop: 8 }} onClick={() => nav('/admin/dashboard')}> Dashboard</button>

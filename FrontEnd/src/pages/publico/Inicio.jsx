@@ -63,7 +63,7 @@ export default function Inicio() {
                         <a
                             className="btn btn-outline"
                             style={{ display: 'block', textAlign: 'center', width: '100%', cursor: 'pointer' }}
-                            onClick={() => nav('/buscar')}
+                            onClick={() => nav(`/puesto/${p.id}`)}
                         >
                             Ver detalle
                         </a>

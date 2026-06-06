@@ -108,11 +108,15 @@ public class AdminApiController {
 
     @PostMapping("/caracteristicas")
     public ResponseEntity<?> crearCaracteristica(@RequestBody Map<String, Object> body) {
-        String nombre = (String) body.get("nombre");
-        Integer padreId = body.get("padreId") != null
-                ? Integer.parseInt(body.get("padreId").toString()) : null;
-        adminService.crearCaracteristica(nombre, padreId);
-        return ResponseEntity.ok(Map.of("mensaje", "Característica creada"));
+        try {
+            String nombre = (String) body.get("nombre");
+            Integer padreId = body.get("padreId") != null
+                    ? Integer.parseInt(body.get("padreId").toString()) : null;
+            adminService.crearCaracteristica(nombre, padreId);
+            return ResponseEntity.ok(Map.of("mensaje", "Característica creada"));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @GetMapping("/reportes/puestos")

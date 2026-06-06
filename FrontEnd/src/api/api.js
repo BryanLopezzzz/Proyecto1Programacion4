@@ -87,3 +87,4 @@ export const adminReportePuestos = (mes, anio) =>
   fetchAPI(`/admin/reportes/puestos?mes=${mes}&anio=${anio}`)
 export const adminReporteCoincid = (mes, anio) =>
   fetchAPI(`/admin/reportes/coincidencias?mes=${mes}&anio=${anio}`)
+export const getPuestoDetalle = (id) => fetchAPI(`/puestos/${id}`)

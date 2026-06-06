@@ -36,55 +36,66 @@ export default function Habilidades() {
     cargar()
   }
 
+  const [confirmarId, setConfirmarId] = useState(null)
+
   const eliminar = async (id) => {
-    if (!confirm('¿Eliminar esta habilidad?')) return
     await oferenteEliminarHabilidad(id)
+    setConfirmarId(null)
     cargar()
   }
 
   const opciones = aplanarCarac(raices)
 
   return (
-    <div className="container panels" style={{ display: 'flex', gap: 28, flexWrap: 'wrap', padding: '40px 10%' }}>
-      <div className="card panel-left" style={{ flex: 1, minWidth: 320 }}>
-        <h2>Mis Habilidades</h2>
-        {habilidades.length === 0
-          ? <p className="empty">No has registrado habilidades aún.</p>
-          : <table>
-              <thead><tr><th>Característica</th><th>Nivel</th><th>Eliminar</th></tr></thead>
-              <tbody>
+      <div className="container panels" style={{ display: 'flex', gap: 28, flexWrap: 'wrap', padding: '40px 10%' }}>
+        <div className="card panel-left" style={{ flex: 1, minWidth: 320 }}>
+          <h2>Mis Habilidades</h2>
+          {habilidades.length === 0
+              ? <p className="empty">No has registrado habilidades aún.</p>
+              : <table>
+                <thead><tr><th>Característica</th><th>Nivel</th><th>Eliminar</th></tr></thead>
+                <tbody>
                 {habilidades.map(h => (
-                  <tr key={h.caracteristicaId}>
-                    <td>{h.caracteristicaNombre}</td>
-                    <td><span className="badge badge-activo">{nivelTexto(h.nivel)}</span></td>
-                    <td><button className="btn btn-outline btn-sm" onClick={() => eliminar(h.caracteristicaId)}>✕ Eliminar</button></td>
-                  </tr>
+                    <tr key={h.caracteristicaId}>
+                      <td>{h.caracteristicaNombre}</td>
+                      <td><span className="badge badge-activo">{nivelTexto(h.nivel)}</span></td>
+                      <td>
+                        {confirmarId === h.caracteristicaId
+                            ? <>
+                              <span style={{ fontSize: 13, color: 'var(--text-secondary)', marginRight: 8 }}>¿Eliminar?</span>
+                              <button className="btn btn-primary btn-sm" onClick={() => eliminar(h.caracteristicaId)}>Sí</button>
+                              <button className="btn btn-outline btn-sm" onClick={() => setConfirmarId(null)}>No</button>
+                            </>
+                            : <button className="btn btn-outline btn-sm" onClick={() => setConfirmarId(h.caracteristicaId)}>✕ Eliminar</button>
+                        }
+                      </td>
+                    </tr>
                 ))}
-              </tbody>
-            </table>
-        }
+                </tbody>
+              </table>
+          }
+        </div>
+        <div className="card" style={{ minWidth: 260 }}>
+          <h3>Agregar Habilidad</h3>
+          <label>Característica</label>
+          <select value={caracId} onChange={e => setCaracId(e.target.value)}>
+            <option value="">-- Seleccione --</option>
+            {opciones.map((o, i) =>
+                o.group
+                    ? <optgroup key={i} label={o.group}>
+                      {o.hijos.map(h => <option key={h.id} value={h.id}>{h.label}</option>)}
+                    </optgroup>
+                    : <option key={o.id} value={o.id}>{o.label}</option>
+            )}
+          </select>
+          <label>Nivel</label>
+          <select value={nivel} onChange={e => setNivel(e.target.value)}>
+            <option value="1">Básico</option>
+            <option value="2">Intermedio</option>
+            <option value="3">Avanzado</option>
+          </select>
+          <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={agregar}>Agregar habilidad</button>
+        </div>
       </div>
-      <div className="card" style={{ minWidth: 260 }}>
-        <h3>Agregar Habilidad</h3>
-        <label>Característica</label>
-        <select value={caracId} onChange={e => setCaracId(e.target.value)}>
-          <option value="">-- Seleccione --</option>
-          {opciones.map((o, i) =>
-            o.group
-              ? <optgroup key={i} label={o.group}>
-                  {o.hijos.map(h => <option key={h.id} value={h.id}>{h.label}</option>)}
-                </optgroup>
-              : <option key={o.id} value={o.id}>{o.label}</option>
-          )}
-        </select>
-        <label>Nivel</label>
-        <select value={nivel} onChange={e => setNivel(e.target.value)}>
-          <option value="1">Básico</option>
-          <option value="2">Intermedio</option>
-          <option value="3">Avanzado</option>
-        </select>
-        <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={agregar}>Agregar habilidad</button>
-      </div>
-    </div>
   )
 }

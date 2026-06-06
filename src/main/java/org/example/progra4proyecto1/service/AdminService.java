@@ -60,6 +60,22 @@ public class AdminService {
             if (nombre == null || nombre.trim().isEmpty())
                 throw new IllegalArgumentException("El nombre es requerido");
 
+        if (padreId != null) {
+            boolean yaExiste = caraRepo.findByPadreId(padreId)
+                    .stream()
+                    .anyMatch(h -> h.getNombre().equalsIgnoreCase(nombre.trim()));
+            if (yaExiste)
+                throw new IllegalArgumentException(
+                        "Ya existe una característica con ese nombre en esta categoría");
+        } else {
+            boolean yaExiste = caraRepo.findByPadreIsNull()
+                    .stream()
+                    .anyMatch(r -> r.getNombre().equalsIgnoreCase(nombre.trim()));
+            if (yaExiste)
+                throw new IllegalArgumentException(
+                        "Ya existe una categoría raíz con ese nombre");
+        }
+
             Caracteristica c = new Caracteristica();
             c.setNombre(nombre.trim());
 

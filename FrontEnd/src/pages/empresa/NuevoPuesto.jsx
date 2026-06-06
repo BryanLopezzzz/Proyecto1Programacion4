@@ -57,6 +57,11 @@ export default function NuevoPuesto() {
             return
         }
 
+        if (Object.keys(seleccionadas).length === 0) {
+            setError('Debe seleccionar al menos una característica requerida')
+            return
+        }
+
         const caracteristicas = Object.entries(seleccionadas).map(([id, nivel]) => ({
             id: Number(id),
             nivel: Number(nivel)

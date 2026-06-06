@@ -25,6 +25,7 @@ import AdminEmpresas from './pages/admin/Empresas'
 import AdminOferentes from './pages/admin/Oferentes'
 import AdminCaracteristicas from './pages/admin/Caracteristicas'
 import AdminReportes from './pages/admin/Reportes'
+import PuestoDetalle from './pages/publico/PuestoDetalle'
 
 function ProtectedRoute({ children, role }) {
   const { isLogged, role: userRole } = useAuth()
@@ -60,6 +61,7 @@ function AppRoutes() {
           <Route path="/admin/oferentes" element={<ProtectedRoute role="ROLE_ADMIN"><AdminOferentes /></ProtectedRoute>} />
           <Route path="/admin/caracteristicas" element={<ProtectedRoute role="ROLE_ADMIN"><AdminCaracteristicas /></ProtectedRoute>} />
           <Route path="/admin/reportes" element={<ProtectedRoute role="ROLE_ADMIN"><AdminReportes /></ProtectedRoute>} />
+          <Route path="/puesto/:id" element={<PuestoDetalle />} />
 
           <Route path="*" element={<div className="container"><h2>Página no encontrada</h2><a className="btn btn-outline" href="/">← Inicio</a></div>} />
         </Routes>
