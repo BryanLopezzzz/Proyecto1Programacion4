@@ -36,7 +36,7 @@ export default function CandidatoDetalle() {
             </table>
         }
       </div>
-      {o.curriculumPdf && <a className="btn btn-primary" href={`/uploads/${o.curriculumPdf}`} target="_blank" rel="noreferrer">Ver Currículo PDF</a>}
+        {o.curriculumPdf && <a className="btn btn-primary" href={`http://localhost:8080/uploads/${o.curriculumPdf}`} target="_blank" rel="noreferrer">Ver Currículo PDF</a>}
       <br /><br />
       <button className="btn btn-outline" onClick={() => nav(-1)}>← Volver</button>
     </div>
